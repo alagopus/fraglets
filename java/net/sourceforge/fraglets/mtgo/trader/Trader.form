@@ -116,7 +116,7 @@
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="licenseItem">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Item"/>
+                <Property name="text" type="java.lang.String" value="License ..."/>
               </Properties>
 
               <Events>

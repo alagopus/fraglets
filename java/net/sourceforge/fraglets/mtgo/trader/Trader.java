@@ -191,7 +191,7 @@ public class Trader extends JFrame {
         });
 
         helpMenu.add(aboutMenuItem);
-        licenseItem.setText("Item");
+        licenseItem.setText("License ...");
         licenseItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 licenseItemActionPerformed(evt);
