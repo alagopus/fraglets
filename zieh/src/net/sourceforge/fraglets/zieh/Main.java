@@ -53,7 +53,19 @@ import thinlet.FrameLauncher;
 import thinlet.Thinlet;
 
 /**
- * @author unknown
+ * GUI frontend to psftp (PuTTY sftp comment line client).
+ * 
+ * Command line arguments:
+ * <ul>
+ * <li>-backend <var>path</var> sets the executable path for the psftp
+ * backend.</li>
+ * <li>-open <var>[user@]host</var> open specified connection upon
+ * startup</li>
+ * <li>-buffer <var>size</var> sets the scrollback buffer size in bytes</li>
+ * </ul> 
+ * 
+ * @author Klaus Rennecke
+ * @version $Revision: 1.4 $
  */
 public class Main extends Thinlet implements Comparator {
     
@@ -68,6 +80,9 @@ public class Main extends Thinlet implements Comparator {
     private String sftpPwd = "Remote directory is ";
     private String sftpLPwd = "Current local directory is ";
     private String sftpLs = "Listing directory ";
+    private int scrollbackSize = 4096;
+    
+    
     private String sftpListingPath;
     private ArrayList sftpListing;
     
@@ -98,24 +113,64 @@ public class Main extends Thinlet implements Comparator {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+        parseArgs(args);
+    }
+    
+    protected void parseArgs(String args[]) {
+        String openCommand = null;
+        for (int i = 0; i < args.length; i++) {
+            String arg = args[i];
+            if (arg.equals("-backend")) {
+                if (++i >= args.length) {
+                    System.err.println("option requires an argument: -backend");
+                } else {
+                    setBackend(args[i]);
+                }
+            } else if (arg.equals("-open")) {
+                if (++i >= args.length) {
+                    System.err.println("option requires an argument: -open");
+                } else {
+                    openCommand = args[i];
+                }
+            } else if (arg.equals("-buffer")) {
+                if (++i >= args.length) {
+                    System.err.println("option requires an argument: -buffer");
+                } else {
+                    try {
+                        scrollbackSize = Integer.parseInt(arg);
+                    } catch (NumberFormatException e) {
+                        System.err.println("argument for -buffer is not a number");
+                    }
+                }
+            } else {
+                System.err.println("unknown argument or option: "+arg);
+            }
+        }
+        if (openCommand != null) {
+            sessionCommand(openCommand);
+        }
     }
     
     public void init () {
         ChatStream cs = new ChatStream();
         PrintStream ps = new PrintStream(cs);
-//        System.setErr(ps);
+        System.setErr(ps);
         System.setOut(ps);
         
         setString(find("localPath"), "text", System.getProperty("user.dir"));
         initLocal(find("localList"));
         
-        Thread finder = new Thread("Zieh backend finder") {
-            public void run() {
-                findBackend();
-            }
-        };
-        finder.setDaemon(true);
-        finder.start();
+        if (sftpCommand == null) {
+            Thread finder = new Thread("Zieh backend finder") {
+                public void run() {
+                    findBackend();
+                }
+            };
+            finder.setDaemon(true);
+            finder.start();
+        }
+        
+        requestFocus(find("sessionChat"));
     }
     
     protected void findBackend() {
@@ -124,6 +179,7 @@ public class Main extends Thinlet implements Comparator {
             try {
                 // shortcut
                 if (Thread.currentThread().isInterrupted()) return;
+                if (sftpCommand != null) return;
                 findBackend(new File(roots[i], "Program Files\\PuTTY"));
             } catch (Exception ex) {
                 // ignore
@@ -131,12 +187,14 @@ public class Main extends Thinlet implements Comparator {
             try {
                 // shortcut
                 if (Thread.currentThread().isInterrupted()) return;
+                if (sftpCommand != null) return;
                 findBackend(new File(roots[i], "Programme\\PuTTY"));
             } catch (Exception ex) {
                 // ignore
             }
             try {
                 if (Thread.currentThread().isInterrupted()) return;
+                if (sftpCommand != null) return;
                 findBackend(roots[i]);
             } catch (Exception ex) {
                 // ignore
@@ -158,10 +216,12 @@ public class Main extends Thinlet implements Comparator {
         if (probe.exists()) {
             setStatus("");
             setBackend(probe.getAbsolutePath());
+            return;
         }
         File list[] = root.listFiles(DIR_FILTER);
         for (int i = 0; i < list.length; i++) {
             if (Thread.currentThread().isInterrupted()) return;
+            if (sftpCommand != null) return;
             findBackend(list[i]);
         }
     }
@@ -169,7 +229,6 @@ public class Main extends Thinlet implements Comparator {
     protected void setBackend(String name) {
         appendChat("backend: '"+name+"'");
         sftpCommand = name;
-        Thread.currentThread().interrupt();
     }
 
     /////
@@ -191,18 +250,34 @@ public class Main extends Thinlet implements Comparator {
     public void actionClose() {
         try {
             if (sftp != null) {
-                sessionCommand("bye");
+                clearQueue();
+                
+                sendCommand("bye", false);
                 sftpStream.close();
-                sftp.getOutputStream().close();
+                try {
+                    sftp.getOutputStream().close();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
                 sftp.waitFor();
                 sftp = null;
+                setBoolean(find("menuClose"), "enabled", false);
+                
+                // try harder to get rid of extra open descriptors.
+                System.gc();
+                Thread.yield();
+                System.gc();
             }
+            setBoolean(find("menuOpen"), "enabled", true);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
     
     public void actionOpen() {
+        if (sftp != null) {
+            return;
+        }
         try {
             sftp = Runtime.getRuntime().exec(sftpCommand);
             Thread t;
@@ -223,6 +298,8 @@ public class Main extends Thinlet implements Comparator {
             
             Thread.sleep(400); // wait for new window
             ((Window)getParent()).toFront(); // nuisance
+            setBoolean(find("menuOpen"), "enabled", false);
+            setBoolean(find("menuClose"), "enabled", true);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -308,6 +385,7 @@ public class Main extends Thinlet implements Comparator {
             boolean dir = "true".equals(getProperty(row, "directory"));
             sessionCommand((dir ? "mget " : "get ") + quoteSsh2(name), false);
         }
+        enable(ALL_CONTROLS, sessionIdle);
     }
     
     protected void localRemove(File file) {
@@ -809,7 +887,7 @@ public class Main extends Thinlet implements Comparator {
             String start = command.substring(5);
             File base = new File(System.getProperty("user.dir"), start);
             File list[] = base.listFiles();
-            sessionCommand("mkdir " + start, false);
+            sessionCommand("mkdir " + quoteSsh2(start), false);
             for (int i = 0; i < list.length; i++) {
                 File file = list[i];
                 String name = start + '/' + file.getName();
@@ -846,7 +924,7 @@ public class Main extends Thinlet implements Comparator {
         setStatus("command: '"+command+"'");
         sftpStream.println(command);
         sftpStream.flush();
-//        appendHistory(command);
+        appendHistory(command);
     }
     
     protected void appendChat(String line) {
@@ -860,9 +938,9 @@ public class Main extends Thinlet implements Comparator {
         if (newline && buffer.charAt(buffer.length() - 1) != '\n') {
             buffer.append('\n');
         }
-        if (buffer.length() > 8192) {
+        if (buffer.length() > scrollbackSize) {
             int end = buffer.length();
-            int cutoff = buffer.length() - 8192 + 1024;
+            int cutoff = buffer.length() - scrollbackSize + scrollbackSize/4;
             while (cutoff < end && buffer.charAt(cutoff) != '\n') {
                 cutoff += 1;
             }
@@ -874,18 +952,26 @@ public class Main extends Thinlet implements Comparator {
         setInteger(chat, "end", sessionLength);
     }
 
-//    protected void appendHistory(String line) {
-//        Object history = find("sessionHistory");
-//        StringBuffer buffer = new StringBuffer(getString(history, "text"));
-//        buffer.append(line);
-//        if (buffer.charAt(buffer.length() - 1) != '\n') {
-//            buffer.append('\n');
-//        }
-//        int length = buffer.length();
-//        setString(history, "text", buffer.toString());
-//        setInteger(history, "start", length);
-//        setInteger(history, "end", length);
-//    }
+    protected void appendHistory(String line) {
+        Object history = find("sessionHistory");
+        StringBuffer buffer = new StringBuffer(getString(history, "text"));
+        buffer.append(line);
+        if (buffer.charAt(buffer.length() - 1) != '\n') {
+            buffer.append('\n');
+        }
+        if (buffer.length() > scrollbackSize) {
+            int end = buffer.length();
+            int cutoff = buffer.length() - scrollbackSize + scrollbackSize/4;
+            while (cutoff < end && buffer.charAt(cutoff) != '\n') {
+                cutoff += 1;
+            }
+            buffer.delete(0, cutoff);
+        }
+        int length = buffer.length();
+        setString(history, "text", buffer.toString());
+        setInteger(history, "start", length);
+        setInteger(history, "end", length);
+    }
 
     /////
     // -- handler utilities
@@ -1019,6 +1105,7 @@ public class Main extends Thinlet implements Comparator {
         stack = null;
         queueSize = 0;
         stackTop = 0;
+        updateQueue();
     }
     
     protected void updateQueue() {
@@ -1153,7 +1240,8 @@ public class Main extends Thinlet implements Comparator {
             }
             
             if (sftp != null && in == sftp.getInputStream()) {
-                sftpStream = null;
+                actionClose();
+                appendChat("backend closed");
             }
         }
 

@@ -2,8 +2,8 @@
 <panel name="mainpanel" columns="1">
 	<menubar weightx="1">
 		<menu text="File">
-			<menuitem text="Open" action="actionOpen" />
-			<menuitem text="Close" action="actionClose" />
+			<menuitem text="Open" name="menuOpen" action="actionOpen" />
+			<menuitem text="Close" name="menuClose" action="actionClose" enabled="false"/>
 		    <separator />
 			<menuitem text="Exit" action="actionExit" />
 		</menu>
@@ -48,13 +48,13 @@
 				</panel>
 			</panel>
 		</splitpane>
-		<!--tabbedpane weightx="1" weighty="0"-->
-			<!--tab text="Chat"/-->
+		<tabbedpane weightx="1" weighty="0">
+			<tab text="Chat"/>
 		 	<textarea name="sessionChat" action="sessionInsert" editable="true" columns="60" rows="6" weightx="1" weighty="0"
 		 		tooltip="SFTP chat window, use the help command to get a list."/>
-			<!--tab text="History"/-->
-		 	<!--textarea name="sessionHistory" action="sessionInsert" editable="false" columns="60" rows="6" weightx="1" weighty="0"/-->
-		<!--/tabbedpane-->
+			<tab text="History"/>
+		 	<textarea name="sessionHistory" action="sessionInsert" editable="false" columns="60" rows="6" weightx="1" weighty="0"/>
+		</tabbedpane>
 	</splitpane>
  	
   <separator />
