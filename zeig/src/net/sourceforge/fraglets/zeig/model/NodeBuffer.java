@@ -8,7 +8,7 @@ package net.sourceforge.fraglets.zeig.model;
 
 /**
  * @author unknown
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class NodeBuffer {
     public static final int MT[] = new int[0];
@@ -18,6 +18,10 @@ public class NodeBuffer {
     int id;
     
     public NodeBuffer() {
+    }
+    
+    public NodeBuffer(int initial) {
+        buffer = new int[initial];
     }
     
     public NodeBuffer(int initial[]) {
