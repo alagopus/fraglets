@@ -1,5 +1,9 @@
 Changes for version 1.23:
     - Completed level 65 class titles
+    - Added access methods to ui files
+    - Changed search for installation to be more flexible
+    - Created a wizard for easy updates
+    - Created an applet to run the wizard
 
 Changes for version 1.22:
     - Fixed link color in NEoP style.

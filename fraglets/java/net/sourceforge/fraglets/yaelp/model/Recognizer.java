@@ -8,6 +8,7 @@ package net.sourceforge.fraglets.yaelp.model;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Observable;
 
 /** This class implements a recognizer for log lines.
  *
@@ -26,9 +27,9 @@ import java.util.Iterator;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
-public class Recognizer {
+public class Recognizer extends Observable {
     /** Known avatars. */
     protected HashMap avatars = new HashMap();
     /** The number of lines recognized. */
@@ -511,6 +512,10 @@ public class Recognizer {
      */
     public void setChanged(boolean changed) {
         this.changed = changed;
+        if (changed) {
+            super.setChanged();
+            notifyObservers();
+        }
     }
     
 }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project basedir="..\..\..\.." default="all" name="yaelp">
 
-    <target name="init">
+    <target depends="query" name="init">
         <property name="package" value="net/sourceforge/fraglets/yaelp"/>
         <property file="${package}/version.properties"/>
         
@@ -18,12 +18,36 @@
         <taskdef classname="net.sourceforge.fraglets.taskdef.Query" classpath="." name="query"/>
     </target>
     
+    <target name="query">
+        <javac debug="false" includes="net/sourceforge/fraglets/taskdef/*.java" optimize="true" srcdir="." verbose="false">
+            <classpath>
+                <pathelement path="${netbeans.library.path}"/>
+                <pathelement path="${netbeans.filesystems.path}"/>
+            </classpath>
+        </javac>
+    </target>
+    
     <target depends="jars" name="all">
         <!-- WRITEME -->
     </target>
     
     <target depends="init" name="compile">
         <javac classpath=".;../jars/sax.jar;../jars/xp.jar;../jars/xt.jar" debug="false" includes="${package}/*.java" optimize="true" srcdir="." verbose="false"/>
+    </target>
+    
+    <target depends="init" name="wizard">
+        <delete>
+            <fileset dir="." includes="${package}/**/*.class"/>
+        </delete>
+        <javac classpath=".;../jars/sax.jar;../jars/xp.jar;../jars/xt.jar" debug="false" includes="${package}/UpdateApplet.java" optimize="true" srcdir="." verbose="false"/>
+        <jar compress="true" defaultexcludes="false" jarfile="../jars/wizard-${version}.jar" manifest="${package}/wizard.mf">
+            <fileset dir=".">
+                <include name="${package}/**/*.class"/>
+                <include name="${package}/**/*.properties"/>
+                <include name="${package}/**/*.gif"/>
+                <include name="net/sourceforge/fraglets/targa/TGADecoder*.class"/>
+            </fileset>
+        </jar>
     </target>
     
     <target depends="compile" name="jars">
@@ -36,11 +60,15 @@
         </zip>
         <zip basedir="../html/yaelp" includes="*.html,*.png" zipfile="../jars/yaelp-${version}-manual.zip"/>
         <zip basedir="." excludes="**/*.class" includes="${package}/**" zipfile="../jars/yaelp-${version}-source.zip"/>
+        <zip basedir="../jars" includes="wizard-${version}.jar,sax.jar,xp.jar" zipfile="../jars/wizard-${version}.zip">
+            <fileset dir="${package}" includes="*.txt"/>
+        </zip>
     </target>
     
-    <target depends="init,jars,sign-uptodate" description="Sign jars." name="sign" unless="sign-uptodate-all">
+    <target depends="init,jars,wizard,sign-uptodate" description="Sign jars." name="sign" unless="sign-uptodate-all">
         <query prompt="Enter keystore password for ${signer-keystore}" property="signer-storepass" secret="true" title="Keystore password"/>
         <signjar alias="${signer-alias}" jar="../jars/yaelp-${version}.jar" keystore="${signer-keystore}" signedjar="../sign/yaelp-${version}.jar" storepass="${signer-storepass}" storetype="${signer-storetype}"/>
+        <signjar alias="${signer-alias}" jar="../jars/wizard-${version}.jar" keystore="${signer-keystore}" signedjar="../sign/wizard-${version}.jar" storepass="${signer-storepass}" storetype="${signer-storetype}"/>
         <signjar alias="${signer-alias}" jar="../jars/sax.jar" keystore="${signer-keystore}" signedjar="../sign/sax.jar" storepass="${signer-storepass}" storetype="${signer-storetype}"/>
         <signjar alias="${signer-alias}" jar="../jars/xp.jar" keystore="${signer-keystore}" signedjar="../sign/xp.jar" storepass="${signer-storepass}" storetype="${signer-storetype}"/>
         <signjar alias="${signer-alias}" jar="../jars/xt.jar" keystore="${signer-keystore}" signedjar="../sign/xt.jar" storepass="${signer-storepass}" storetype="${signer-storetype}"/>
