@@ -48,7 +48,7 @@ import org.xml.sax.SAXException;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.20 $
+ * @version $Revision: 1.21 $
  */
 public class DOMContext implements Context {
     /** Context option. */
@@ -63,10 +63,19 @@ public class DOMContext implements Context {
     
     public static final String CONTEXT_NAMESPACE =
         "http://fraglets.sourceforge.net/zeig/DOMContext";
-    
+        
     public static final String CONTEXT_TAGNAME = "context";
     
     public static final String BINDING_TAGNAME = "binding";
+    
+    public static final NodeFactory.NameCacheKey VE_KEY =
+        new NodeFactory.NameCacheKey(CONTEXT_NAMESPACE, "ve");
+    
+    public static final NodeFactory.NameCacheKey ME_KEY =
+        new NodeFactory.NameCacheKey(CONTEXT_NAMESPACE, "me");
+    
+    public static final NodeFactory.NameCacheKey ID_KEY =
+        new NodeFactory.NameCacheKey("", "id");
     
     protected ConnectionContext connectionContext;
     private Environment environment;
@@ -150,6 +159,7 @@ public class DOMContext implements Context {
                 return NamingManager.getObjectInstance
                     (in, new CompositeName().add(atom), this, environment);
             } catch (Exception ex) {
+                Category.getInstance(getClass()).error("lookup", ex);
                 throw namingException("getObjectInstance", ex);
             }
         } else {
@@ -605,22 +615,32 @@ public class DOMContext implements Context {
     }
     
     public int getVe(Element el) throws NamingException {
-        int veTag;
         try {
-            veTag = connectionContext.getNodeFactory()
-                .getName(CONTEXT_NAMESPACE, "ve");
+            int veTag = connectionContext.getNodeFactory().getName(VE_KEY);
+            return Integer.parseInt
+                (((NamedNodeMapImpl)el.getAttributes())
+                    .getNamedItem(veTag).getNodeValue());
         } catch (SQLException ex) {
             throw namingException(ex);
         }
-        
-        return Integer.parseInt
-            (((NamedNodeMapImpl)el.getAttributes())
-                .getNamedItem(veTag).getNodeValue());
+    }
+    
+    
+    public boolean getMe(Element el) throws NamingException {
+        try {
+            int meTag = connectionContext.getNodeFactory().getName(ME_KEY);
+            Node attribute = ((NamedNodeMapImpl)el.getAttributes())
+                .getNamedItem(meTag);
+            return attribute != null &&
+                "true".equals(attribute.getNodeValue());
+        } catch (SQLException ex) {
+            throw namingException(ex);
+        }
     }
     
     public int getId() throws NamingException {
         try {
-            return connectionContext.getNodeFactory().getName("", "id");
+            return connectionContext.getNodeFactory().getName(ID_KEY);
         } catch (SQLException ex) {
             throw namingException(ex);
         }

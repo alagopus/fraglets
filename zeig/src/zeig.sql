@@ -7,7 +7,6 @@ CREATE TABLE `nm` (
   KEY `nm_sk` (`ns`,`v`)
 ) TYPE=MyISAM COMMENT='XML Name'; 
 
-
 CREATE TABLE `ns` (
   `id` int(11) NOT NULL auto_increment,
   `uri` int(11) NOT NULL default '0',
@@ -17,7 +16,6 @@ CREATE TABLE `ns` (
   UNIQUE KEY `ns_v` (`v`)
 ) TYPE=MyISAM COMMENT='XML Namespace'; 
 
-
 CREATE TABLE `pt` (
   `id` int(11) NOT NULL auto_increment,
   `hc` int(11) NOT NULL default '0',
@@ -25,7 +23,6 @@ CREATE TABLE `pt` (
   PRIMARY KEY  (`id`),
   KEY `pt_hc` (`hc`)
 ) TYPE=MyISAM COMMENT='Plain text'; 
-
 
 CREATE TABLE `ve` (
   `id` int(11) NOT NULL auto_increment,
@@ -38,7 +35,6 @@ CREATE TABLE `ve` (
   KEY `ve_fk` (`v`)
 ) TYPE=MyISAM COMMENT='Version'; 
 
-
 CREATE TABLE `xn` (
   `xt` int(11) NOT NULL default '0',
   `pos` int(11) NOT NULL default '0',
@@ -49,8 +45,6 @@ CREATE TABLE `xn` (
   KEY `xn_xt` (`xt`)
 ) TYPE=MyISAM COMMENT='XML Node'; 
 
-
-
 CREATE TABLE `xt` (
   `id` int(11) NOT NULL auto_increment,
   `hc` int(11) NOT NULL default '0',
@@ -59,3 +53,12 @@ CREATE TABLE `xt` (
   KEY `xt_sk` (`hc`,`nm`)
 ) TYPE=MyISAM COMMENT='XML text'; 
 
+CREATE TABLE `me` (
+  `id` int(11) NOT NULL auto_increment,
+  `hc` int(11) NOT NULL default '0',
+  `t` varchar(200) NOT NULL default 'application/octet-stream',
+  `v` blob NOT NULL,
+  PRIMARY KEY  (`id`),
+  KEY `me_t` (`t`),
+  KEY `me_hc` (`hc`)
+) TYPE=MyISAM COMMENT='Media'; 

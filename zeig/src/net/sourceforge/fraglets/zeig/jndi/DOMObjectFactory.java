@@ -29,7 +29,7 @@ import org.w3c.dom.Element;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  */
 public class DOMObjectFactory implements ObjectFactory {
 
@@ -43,6 +43,11 @@ public class DOMObjectFactory implements ObjectFactory {
                 DOMContext dctx = (DOMContext)ctx;
                 int ve = dctx.getVe((Element)obj);
                 int id = getLatest(dctx, ve);
+                boolean me = dctx.getMe((Element)obj);
+                if (me) {
+                    return dctx.connectionContext.getMediaFactory()
+                        .getMedia(id);
+                }
                 Document doc = new DocumentImpl(id, dctx.connectionContext);
                 if (isDOMContext(doc)) {
                     return new DOMContext(dctx, name.get(0), doc, ve);

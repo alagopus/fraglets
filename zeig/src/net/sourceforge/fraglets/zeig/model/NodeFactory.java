@@ -28,7 +28,7 @@ import org.xml.sax.SAXException;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class NodeFactory implements NodeTags {
     protected ConnectionFactory cf;
@@ -43,6 +43,7 @@ public class NodeFactory implements NodeTags {
     protected int pi = 0;
     
     private SimpleCache nameCache;
+    private SimpleCache qnameCache;
     
     public NodeFactory(ConnectionFactory cf) {
         this();
@@ -55,6 +56,7 @@ public class NodeFactory implements NodeTags {
     
     private NodeFactory() {
         this.nameCache = new SensorCache("node.name");
+        this.qnameCache = new SensorCache("node.qname");
     }
     
     public int getNamespace(String uri) throws SQLException {
@@ -75,34 +77,41 @@ public class NodeFactory implements NodeTags {
     }
     
     public int getName(String uri, String name) throws SQLException {
-        if (uri == null) {
-            uri = "";
-        }
-        String key = uri + '\n' + name;
-        int hc = OTPHash.hash(key);
-        NameCacheEntry entry = (NameCacheEntry )nameCache.get(hc, key);
+        return getName(new NameCacheKey(uri, name));
+    }
+    
+    public int getName(NameCacheKey key) throws SQLException {
+        NameCacheEntry entry = (NameCacheEntry)nameCache
+            .get(key.hash, key);
         if (entry != null) {
             return entry.getId();
         } else {
-            int id = nm.getName(getNamespace(uri), pt.getPlainText(name));
-            nameCache.put(new NameCacheEntry(key, hc, id));
+            int id = nm.getName(getNamespace(key.uri), pt.getPlainText(key.name));
+            nameCache.put(new NameCacheEntry(key, key.hash, id));
             return id;
         }
     }
     
     public int getName(String qName) throws SQLException {
-        String prefix, lName;
         int colon = qName.indexOf(':');
+        NameCacheKey key;
         if (colon >= 0) {
-            prefix = qName.substring(0, colon);
-            lName = qName.substring(colon + 1);
+            key = new NameCacheKey(qName.substring(0, colon),
+                qName.substring(colon + 1));
         } else {
-            prefix = "";
-            lName = qName;
+            key = new NameCacheKey(null, qName);
         }
-        return nm.getName(
-            ns.getNamespace(0, pt.getPlainText(prefix)),
-            pt.getPlainText(lName));
+        NameCacheEntry entry = (NameCacheEntry)qnameCache
+            .get(key.hash, key);
+        if (entry != null) {
+            return entry.getId();
+        } else {
+            int id = nm.getName(
+                ns.getNamespace(0, pt.getPlainText(key.uri/*prefix*/)),
+                pt.getPlainText(key.name));
+            qnameCache.put(new NameCacheEntry(key, key.hash, id));
+            return id;
+        }
     }
     
     public int getNode(int name, int node[]) throws SQLException {
@@ -242,15 +251,57 @@ public class NodeFactory implements NodeTags {
     public XMLTextFactory getXMLTextFactory() {
         return xt;
     }
+    
+    public static class NameCacheKey {
+        protected String uri;
+        protected String name;
+        protected int hash;
+        
+        public NameCacheKey(String uri, String name) {
+            if (uri == null) {
+                uri = "";
+            }
+            if (name == null) {
+                throw new NullPointerException("null name");
+            }
+            this.uri = uri;
+            this.name = name;
+            this.hash = OTPHash.chain(OTPHash.hash(uri),OTPHash.hash(name));
+        }
+        
+        public boolean equals(NameCacheKey other) {
+            return hash == other.hash
+                && uri.equals(other.uri) && name.equals(other.name);
+        }
+        
+        /**
+         * @see java.lang.Object#equals(java.lang.Object)
+         */
+        public boolean equals(Object other) {
+            try {
+                return equals((NameCacheKey)other);
+            } catch (ClassCastException ex) {
+                return false;
+            }
+        }
+
+        /**
+         * @see java.lang.Object#hashCode()
+         */
+        public int hashCode() {
+            return hash;
+        }
+
+    }
 
     public static class NameCacheEntry extends CacheEntry {
-        private String key;
+        private NameCacheKey key;
         int id;
 
         /**
          * @param hash
          */
-        public NameCacheEntry(String key, int hash, int id) {
+        public NameCacheEntry(NameCacheKey key, int hash, int id) {
             super(hash);
             this.key = key;
             this.id = id;

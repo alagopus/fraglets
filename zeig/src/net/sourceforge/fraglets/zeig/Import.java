@@ -7,9 +7,7 @@
 package net.sourceforge.fraglets.zeig;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -21,11 +19,10 @@ import net.sourceforge.fraglets.zeig.jndi.DOMContext;
 
 import org.apache.log4j.Category;
 import org.apache.log4j.Priority;
-import org.xml.sax.InputSource;
 
 /**
  * @author marion@users.souceforge.net
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class Import {
 
@@ -52,19 +49,11 @@ public class Import {
                 process(list[i], subCtx);
             }
         } else {
-            FileInputStream in = new FileInputStream(file);
             try {
                 CATEGORY.debug("reading " + file.getName());
-                InputSource is = new InputSource(in);
-                is.setSystemId(file.toString());
-                ctx.rebind(file.getName(), is);
+                ctx.rebind(file.getName(), file);
             } catch (NamingException ex) {
                 CATEGORY.error("failed to import", ex);
-            } finally {
-                try {
-                    in.close();
-                } catch (IOException ex) {
-                }
             }
         }
     }

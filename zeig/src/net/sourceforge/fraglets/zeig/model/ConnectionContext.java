@@ -15,12 +15,13 @@ import net.sourceforge.fraglets.zeig.jdbc.ConnectionFactory;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class ConnectionContext {
     private ConnectionFactory connectionFactory;
     private VersionFactory versionFactory;
     private NodeFactory nodeFactory;
+    private MediaFactory mediaFactory;
     private int shares;
     
     public ConnectionContext(Properties environment) {
@@ -78,6 +79,20 @@ public class ConnectionContext {
             }
         }
         return versionFactory;
+    }
+
+    /**
+     * @return
+     */
+    public MediaFactory getMediaFactory() {
+        if (mediaFactory == null) {
+            synchronized(this) {
+                if (mediaFactory == null) {
+                    mediaFactory = new MediaFactory(getConnectionFactory());
+                }
+            }
+        }
+        return mediaFactory;
     }
 
     public NameFactory getNameFactory() {
