@@ -122,7 +122,7 @@ public class EventCodecTest extends TestCase {
 	}
 
 	/*
-	 * Test for int hashCode(int[], int, int)
+	 * Test for int hashCode(int[], int, int).
 	 */
 	public void testHashCodeIArrayII() {
 	}
