@@ -1,5 +1,5 @@
 /*
-    $Id: config.h,v 1.1 2000-04-30 06:27:22 marion Exp $
+    $Id: config.h,v 1.2 2000-05-01 16:06:47 marion Exp $
     Internet dispatch server. (replacement)
 
     Copyright (C) 1995 Klaus Rennecke, all rights reserved.
@@ -25,10 +25,14 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-/* $Log: config.h,v $
-/* Revision 1.1  2000-04-30 06:27:22  marion
-/* Converted to MIT license.
 /*
+ * $Log: config.h,v $
+ * Revision 1.2  2000-05-01 16:06:47  marion
+ * Adapted to new RCS log message algorithm.
+ *
+ * Revision 1.1  2000/04/30 06:27:22  marion
+ * Converted to MIT license.
+ *
  * Revision 1.1  1995/09/06 00:03:34  marion
  * Added a configuration file for inetd.
  * The ancient header file relay.h vanished. All configuration

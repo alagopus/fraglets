@@ -1,5 +1,5 @@
 /*
-    $Id: ftprelay.c,v 1.1 2000-04-30 06:27:22 marion Exp $
+    $Id: ftprelay.c,v 1.2 2000-05-01 16:06:47 marion Exp $
 
     ftprelay.c - crude ftp relay process.
     Sep 04 1995 by marion@marble.sax.de
@@ -43,10 +43,14 @@
  * the use of the ftp PORT protocol.
  */
 
-/* $Log: ftprelay.c,v $
-/* Revision 1.1  2000-04-30 06:27:22  marion
-/* Converted to MIT license.
 /*
+ * $Log: ftprelay.c,v $
+ * Revision 1.2  2000-05-01 16:06:47  marion
+ * Adapted to new RCS log message algorithm.
+ *
+ * Revision 1.1  2000/04/30 06:27:22  marion
+ * Converted to MIT license.
+ *
  * Revision 1.1  1995/09/06 00:03:53  marion
  * Added a configuration file for inetd.
  * The ancient header file relay.h vanished. All configuration
