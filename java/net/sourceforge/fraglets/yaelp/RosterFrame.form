@@ -97,6 +97,18 @@
             </Property>
           </Properties>
           <SubComponents>
+            <MenuItem class="javax.swing.JMenuItem" name="noFilterItem">
+              <Properties>
+                <Property name="toolTipText" type="java.lang.String" value="Disable all filters."/>
+                <Property name="text" type="java.lang.String" value="no filter"/>
+              </Properties>
+
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="noFilterItemActionPerformed"/>
+              </Events>
+            </MenuItem>
+            <MenuItem class="javax.swing.JSeparator" name="jSeparator2">
+            </MenuItem>
             <MenuItem class="javax.swing.JCheckBoxMenuItem" name="level1FilterItem">
               <Properties>
                 <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
@@ -209,6 +221,20 @@
 
                   <Events>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cultureFilterItemActionPerformed"/>
+                  </Events>
+                </MenuItem>
+                <MenuItem class="javax.swing.JMenuItem" name="afterFilterItem">
+                  <Properties>
+                    <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                      <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="afterFilterItem.tooltip" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                    </Property>
+                    <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                      <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="afterFilterItem.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                    </Property>
+                  </Properties>
+
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="afterFilterItemActionPerformed"/>
                   </Events>
                 </MenuItem>
               </SubComponents>
@@ -331,10 +357,6 @@
               <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="helpMenu.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
             </Property>
           </Properties>
-
-          <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="helpMenuActionPerformed"/>
-          </Events>
           <SubComponents>
             <MenuItem class="javax.swing.JMenuItem" name="aboutItem">
               <Properties>
@@ -386,6 +408,54 @@
     </Menu>
     <Component class="javax.swing.ButtonGroup" name="styleButtonGroup">
     </Component>
+    <Menu class="javax.swing.JPopupMenu" name="contextMenu">
+      <Properties>
+        <Property name="label" type="java.lang.String" value="Edit"/>
+      </Properties>
+      <SubComponents>
+        <MenuItem class="javax.swing.JMenuItem" name="newEntryItem">
+          <Properties>
+            <Property name="toolTipText" type="java.lang.String" value="Create a new entry."/>
+            <Property name="text" type="java.lang.String" value="new entry"/>
+          </Properties>
+
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="newEntryItemActionPerformed"/>
+          </Events>
+        </MenuItem>
+        <MenuItem class="javax.swing.JMenuItem" name="hideMenuItem">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="hide selected"/>
+          </Properties>
+
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="hideMenuItemActionPerformed"/>
+          </Events>
+        </MenuItem>
+        <MenuItem class="javax.swing.JSeparator" name="jSeparator1">
+        </MenuItem>
+        <MenuItem class="javax.swing.JMenuItem" name="dingMenuItem">
+          <Properties>
+            <Property name="toolTipText" type="java.lang.String" value="Increase level by one."/>
+            <Property name="text" type="java.lang.String" value="DING!"/>
+          </Properties>
+
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="dingMenuItemActionPerformed"/>
+          </Events>
+        </MenuItem>
+        <MenuItem class="javax.swing.JMenuItem" name="dohMenuItem">
+          <Properties>
+            <Property name="toolTipText" type="java.lang.String" value="Decrease level by one."/>
+            <Property name="text" type="java.lang.String" value="DOH :("/>
+          </Properties>
+
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="dohMenuItemActionPerformed"/>
+          </Events>
+        </MenuItem>
+      </SubComponents>
+    </Menu>
   </NonVisualComponents>
   <Properties>
     <Property name="title" type="java.lang.String" value="YAELP log file parser"/>
@@ -431,6 +501,10 @@
               <Dimension value="[650, 200]"/>
             </Property>
           </Properties>
+
+          <Events>
+            <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="rosterTableMouseClicked"/>
+          </Events>
         </Component>
       </SubComponents>
     </Container>

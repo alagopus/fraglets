@@ -27,7 +27,7 @@ import java.util.Iterator;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author  Klaus Rennecke
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class Recognizer {
     /** Known avatars. */
@@ -78,7 +78,7 @@ public class Recognizer {
      * @param zone zone the avatar was last seen in
      * @return the updated or created avatar
      */    
-    protected Avatar updateAvatar(long timestamp, String name, int level,
+    public Avatar updateAvatar(long timestamp, String name, int level,
                                   Avatar.Class clazz, Avatar.Culture culture,
                                   Avatar.Guild guild, Avatar.Zone zone) {
         Avatar result = (Avatar)avatars.get(name.toString());
@@ -169,6 +169,9 @@ public class Recognizer {
                 if (input[position] == '<') {
                     guild = parseGuild();
                     skipSpace();
+                } else if (clazz != null) {
+                    // unguilded
+                    guild = Avatar.Guild.create("-");
                 }
             }
             Avatar.Zone zone = null;

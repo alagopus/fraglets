@@ -6,6 +6,8 @@
 
 package net.sourceforge.fraglets.yaelp;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeSupport;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -28,9 +30,11 @@ import java.util.HashMap;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author Klaus Rennecke
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class Avatar {
+    public static final PropertyChangeSupport CHANGE =
+        new PropertyChangeSupport(Avatar.class);
 
     /** Holds value of property level. */
     private int level;
@@ -144,6 +148,11 @@ public class Avatar {
         this.culture = culture;
     }
     
+    /** Fire a property change event signaling that a new instance was created. */
+    public static void fireNewInstance(Object instance) {
+        CHANGE.firePropertyChange(instance.getClass().getName(), null, instance);
+    }
+    
     /** Convert this Avatar to a user-presentable string representation.
      * @return the string prepresentation of this Avatar
      */    
@@ -173,9 +182,17 @@ public class Avatar {
     public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
     }
+    
+    public boolean equals(Object other) {
+        return other == this;
+    }
+    
+    public int hashCode() {
+        return name.hashCode();
+    }
 
     /** This class implements the object model of a guild. */
-    public static class Guild {
+    public static class Guild implements Comparable {
         /** Holds value of property name. */
         private String name;
         /** The map to register shared guilds. */
@@ -194,6 +211,7 @@ public class Avatar {
          */
         protected Guild(String name) {
             this.name = name;
+            fireNewInstance(this);
         }
         /** Create or reference a guild.
          * @param name name of the guild to create or reference
@@ -240,10 +258,15 @@ public class Avatar {
         public int hashCode() {
             return name.hashCode();
         }
+        
+        public int compareTo(Object obj) {
+            return comparator.compare(this, obj);
+        }
+        
     }
 
     /** This class implements the object model of a class. */
-    public static class Class {
+    public static class Class implements Comparable {
         /** Holds value of property name. */
         private String name;
         /** The map to register shared classes. */
@@ -262,6 +285,7 @@ public class Avatar {
          */
         protected Class(String name) {
             this.name = name;
+            fireNewInstance(this);
         }
         /** Create or reference the class with the specified name.
          * @param name name of the class
@@ -308,10 +332,15 @@ public class Avatar {
         public int hashCode() {
             return name.hashCode();
         }
+        
+        public int compareTo(Object obj) {
+            return comparator.compare(this, obj);
+        }
+        
     }
     
     /** This class implements the object model of a culture. */
-    public static class Culture {
+    public static class Culture implements Comparable {
         /** Holds value of property name. */
         private String name;
         /** The map to register shared cultures. */
@@ -330,6 +359,7 @@ public class Avatar {
          */
         protected Culture(String name) {
             this.name = name;
+            fireNewInstance(this);
         }
         /** Create or reference the culture with the specified name.
          * @param name name of the culture
@@ -376,10 +406,15 @@ public class Avatar {
         public int hashCode() {
             return name.hashCode();
         }
+        
+        public int compareTo(Object obj) {
+            return comparator.compare(this, obj);
+        }
+        
     }
     
     /** This class implements the object model of a zone. */
-    public static class Zone {
+    public static class Zone implements Comparable {
         /** Holds value of property name. */
         private String name;
         /** The map to register shared zones. */
@@ -398,6 +433,7 @@ public class Avatar {
          */
         protected Zone(String name) {
             this.name = name;
+            fireNewInstance(this);
         }
         /** Create or reference the zone with the specified name.
          * @param name name of the zone
@@ -444,5 +480,10 @@ public class Avatar {
         public int hashCode() {
             return name.hashCode();
         }
+        
+        public int compareTo(Object obj) {
+            return comparator.compare(this, obj);
+        }
+        
     }
 }
