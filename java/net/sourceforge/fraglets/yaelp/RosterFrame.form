@@ -7,17 +7,17 @@
         <Menu class="javax.swing.JMenu" name="fileMenu">
           <Properties>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-              <ResourceString bundle="de/rennecke/yaelp/YaelpResources.properties" key="fileMenu.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+              <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="fileMenu.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
             </Property>
           </Properties>
           <SubComponents>
             <MenuItem class="javax.swing.JMenuItem" name="parseFileItem">
               <Properties>
                 <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="de/rennecke/yaelp/YaelpResources.properties" key="parseFileItem.tooltip" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="parseFileItem.tooltip" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="de/rennecke/yaelp/YaelpResources.properties" key="parseFileItem.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="parseFileItem.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
 
@@ -30,10 +30,10 @@
             <MenuItem class="javax.swing.JMenuItem" name="exportTableItem">
               <Properties>
                 <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="de/rennecke/yaelp/YaelpResources.properties" key="exportTableItem.tooltip" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="exportTableItem.tooltip" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="de/rennecke/yaelp/YaelpResources.properties" key="exportTableItem.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="exportTableItem.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
 
@@ -44,10 +44,10 @@
             <MenuItem class="javax.swing.JMenuItem" name="exportXMLItem">
               <Properties>
                 <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="de/rennecke/yaelp/YaelpResources.properties" key="exportXMLItem.tooltip" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="exportXMLItem.tooltip" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="de/rennecke/yaelp/YaelpResources.properties" key="exportXMLItem.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="exportXMLItem.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
 
@@ -58,10 +58,10 @@
             <MenuItem class="javax.swing.JMenuItem" name="exportHTMLItem">
               <Properties>
                 <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="de/rennecke/yaelp/YaelpResources.properties" key="exportHTMLItem.tooltip" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="exportHTMLItem.tooltip" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="de/rennecke/yaelp/YaelpResources.properties" key="exportHTMLItem.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="exportHTMLItem.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
 
@@ -74,10 +74,10 @@
             <MenuItem class="javax.swing.JMenuItem" name="quitItem">
               <Properties>
                 <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="de/rennecke/yaelp/YaelpResources.properties" key="quitItem.tooltip" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="quitItem.tooltip" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="de/rennecke/yaelp/YaelpResources.properties" key="quitItem.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="quitItem.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
 
@@ -90,20 +90,20 @@
         <Menu class="javax.swing.JMenu" name="filterMenu">
           <Properties>
             <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-              <ResourceString bundle="de/rennecke/yaelp/YaelpResources.properties" key="filterMenu.tooltip" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+              <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="filterMenu.tooltip" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
             </Property>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-              <ResourceString bundle="de/rennecke/yaelp/YaelpResources.properties" key="filterMenu.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+              <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="filterMenu.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
             </Property>
           </Properties>
           <SubComponents>
             <MenuItem class="javax.swing.JCheckBoxMenuItem" name="level1FilterItem">
               <Properties>
                 <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="de/rennecke/yaelp/YaelpResources.properties" key="level1FilterItem.tooltip" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="level1FilterItem.tooltip" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="de/rennecke/yaelp/YaelpResources.properties" key="level1FilterItem.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="level1FilterItem.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
 
@@ -116,7 +116,7 @@
             <MenuItem class="javax.swing.JCheckBoxMenuItem" name="defaultFilterItem">
               <Properties>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="de/rennecke/yaelp/YaelpResources.properties" key="defaultFilterItem.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="defaultFilterItem.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
 
@@ -127,7 +127,7 @@
             <MenuItem class="javax.swing.JCheckBoxMenuItem" name="alliedFilterItem">
               <Properties>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="de/rennecke/yaelp/YaelpResources.properties" key="alliedFilterItem.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="alliedFilterItem.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
 
@@ -138,7 +138,7 @@
             <MenuItem class="javax.swing.JCheckBoxMenuItem" name="friendFilterItem">
               <Properties>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="de/rennecke/yaelp/YaelpResources.properties" key="friendFilterItem.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="friendFilterItem.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
 
@@ -151,17 +151,17 @@
             <Menu class="javax.swing.JMenu" name="newFilterMenu">
               <Properties>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="de/rennecke/yaelp/YaelpResources.properties" key="newFilterMenu.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="newFilterMenu.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
               <SubComponents>
                 <MenuItem class="javax.swing.JMenuItem" name="newGuildFilterItem">
                   <Properties>
                     <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="de/rennecke/yaelp/YaelpResources.properties" key="newGuildFilterItem.tooltip" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="newGuildFilterItem.tooltip" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                     </Property>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="de/rennecke/yaelp/YaelpResources.properties" key="newGuildFilterItem.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="newGuildFilterItem.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
 
@@ -172,10 +172,10 @@
                 <MenuItem class="javax.swing.JMenuItem" name="levelFilterItem">
                   <Properties>
                     <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="de/rennecke/yaelp/YaelpResources.properties" key="levelFilterItem.tooltip" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="levelFilterItem.tooltip" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                     </Property>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="de/rennecke/yaelp/YaelpResources.properties" key="levelFilterItem.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="levelFilterItem.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
 
@@ -186,10 +186,10 @@
                 <MenuItem class="javax.swing.JMenuItem" name="classFilterItem">
                   <Properties>
                     <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="de/rennecke/yaelp/YaelpResources.properties" key="classFilterItem.tooltip" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="classFilterItem.tooltip" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                     </Property>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="de/rennecke/yaelp/YaelpResources.properties" key="classFilterItem.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="classFilterItem.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
 
@@ -200,10 +200,10 @@
                 <MenuItem class="javax.swing.JMenuItem" name="cultureFilterItem">
                   <Properties>
                     <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="de/rennecke/yaelp/YaelpResources.properties" key="cultureFilterItem.tooltip" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="cultureFilterItem.tooltip" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                     </Property>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="de/rennecke/yaelp/YaelpResources.properties" key="cultureFilterItem.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="cultureFilterItem.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
 
@@ -218,21 +218,21 @@
         <Menu class="javax.swing.JMenu" name="styleMenu">
           <Properties>
             <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-              <ResourceString bundle="de/rennecke/yaelp/YaelpResources.properties" key="styleMenu.tooltip" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+              <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="styleMenu.tooltip" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
             </Property>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-              <ResourceString bundle="de/rennecke/yaelp/YaelpResources.properties" key="styleMenu.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+              <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="styleMenu.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
             </Property>
           </Properties>
           <SubComponents>
             <MenuItem class="javax.swing.JRadioButtonMenuItem" name="defaultStyleItem">
               <Properties>
                 <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="de/rennecke/yaelp/YaelpResources.properties" key="defaultStyleItem.tooltip" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="defaultStyleItem.tooltip" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
                 <Property name="selected" type="boolean" value="true"/>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="de/rennecke/yaelp/YaelpResources.properties" key="defaultStyleItem.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="defaultStyleItem.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
             </MenuItem>
@@ -241,30 +241,30 @@
             <MenuItem class="javax.swing.JRadioButtonMenuItem" name="mwStyleItem">
               <Properties>
                 <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="de/rennecke/yaelp/YaelpResources.properties" key="mwStyleItem.tooltip" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="mwStyleItem.tooltip" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="de/rennecke/yaelp/YaelpResources.properties" key="mwStyleItem.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="mwStyleItem.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
             </MenuItem>
             <MenuItem class="javax.swing.JRadioButtonMenuItem" name="ssStyleItem">
               <Properties>
                 <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="de/rennecke/yaelp/YaelpResources.properties" key="ssStyleItem.tooltip" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="ssStyleItem.tooltip" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="de/rennecke/yaelp/YaelpResources.properties" key="ssStyleItem.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="ssStyleItem.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
             </MenuItem>
             <MenuItem class="javax.swing.JRadioButtonMenuItem" name="vlStyleItem">
               <Properties>
                 <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="de/rennecke/yaelp/YaelpResources.properties" key="vlStyleItem.tooltip" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="vlStyleItem.tooltip" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="de/rennecke/yaelp/YaelpResources.properties" key="vlStyleItem.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="vlStyleItem.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
             </MenuItem>
@@ -273,17 +273,17 @@
             <Menu class="javax.swing.JMenu" name="newStyleMenu">
               <Properties>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="de/rennecke/yaelp/YaelpResources.properties" key="newStyleMenu.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="newStyleMenu.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
               <SubComponents>
                 <MenuItem class="javax.swing.JMenuItem" name="styleWizardItem">
                   <Properties>
                     <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="de/rennecke/yaelp/YaelpResources.properties" key="styleWizardItem.tooltip" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="styleWizardItem.tooltip" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                     </Property>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="de/rennecke/yaelp/YaelpResources.properties" key="styleWizardItem.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="styleWizardItem.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                     </Property>
                     <Property name="enabled" type="boolean" value="false"/>
                   </Properties>
@@ -291,10 +291,10 @@
                 <MenuItem class="javax.swing.JMenuItem" name="styleFileItem">
                   <Properties>
                     <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="de/rennecke/yaelp/YaelpResources.properties" key="styleFileItem.tooltip" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="styleFileItem.tooltip" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                     </Property>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="de/rennecke/yaelp/YaelpResources.properties" key="styleFileItem.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="styleFileItem.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
 
@@ -309,17 +309,17 @@
         <Menu class="javax.swing.JMenu" name="optionsMenu">
           <Properties>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-              <ResourceString bundle="de/rennecke/yaelp/YaelpResources.properties" key="optionsMenu.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+              <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="optionsMenu.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
             </Property>
           </Properties>
           <SubComponents>
             <MenuItem class="javax.swing.JCheckBoxMenuItem" name="displayHTMLItem">
               <Properties>
                 <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="de/rennecke/yaelp/YaelpResources.properties" key="displayHTMLItem.tooltip" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="displayHTMLItem.tooltip" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="de/rennecke/yaelp/YaelpResources.properties" key="displayHTMLItem.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="displayHTMLItem.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
             </MenuItem>
@@ -328,7 +328,7 @@
         <Menu class="javax.swing.JMenu" name="helpMenu">
           <Properties>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-              <ResourceString bundle="de/rennecke/yaelp/YaelpResources.properties" key="helpMenu.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+              <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="helpMenu.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
             </Property>
           </Properties>
 
@@ -339,7 +339,7 @@
             <MenuItem class="javax.swing.JMenuItem" name="aboutItem">
               <Properties>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="de/rennecke/yaelp/YaelpResources.properties" key="aboutItem.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="aboutItem.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
 
@@ -350,7 +350,7 @@
             <MenuItem class="javax.swing.JMenuItem" name="licenseItem">
               <Properties>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="de/rennecke/yaelp/YaelpResources.properties" key="licenseItem.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="licenseItem.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
 
@@ -361,7 +361,7 @@
             <MenuItem class="javax.swing.JMenuItem" name="xpLicenseItem">
               <Properties>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="de/rennecke/yaelp/YaelpResources.properties" key="xpLicenseItem.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="xpLicenseItem.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
 
@@ -372,7 +372,7 @@
             <MenuItem class="javax.swing.JMenuItem" name="xtLicenseItem">
               <Properties>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="de/rennecke/yaelp/YaelpResources.properties" key="xtLicenseItem.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="xtLicenseItem.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
 

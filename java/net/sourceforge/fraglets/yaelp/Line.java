@@ -4,7 +4,7 @@
  * Created on 28. April 2001, 06:20
  */
 
-package de.rennecke.yaelp;
+package net.sourceforge.fraglets.yaelp;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -28,7 +28,7 @@ import java.util.Locale;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author  kre
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class Line {
     /** Temporary time stamp specification until first parse. */

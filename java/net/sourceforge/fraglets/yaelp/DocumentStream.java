@@ -4,7 +4,7 @@
  * Created on 1. Mai 2001, 18:55
  */
 
-package de.rennecke.yaelp;
+package net.sourceforge.fraglets.yaelp;
 
 /** This class implements an OutputStream which prints to a JTextComponent's
  * Document.
@@ -24,7 +24,7 @@ package de.rennecke.yaelp;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author Klaus Rennecke
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class DocumentStream extends java.io.OutputStream {
 

@@ -4,7 +4,7 @@
  * Created on 1. Mai 2001, 11:39
  */
 
-package de.rennecke.yaelp;
+package net.sourceforge.fraglets.yaelp;
 
 import com.jclark.xml.sax.CommentDriver;
 import com.jclark.xsl.sax.Destination;
@@ -36,7 +36,7 @@ import org.xml.sax.SAXParseException;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author  kre
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class RosterFrame extends javax.swing.JFrame {
     /** The file chooser used to select files to parse and export.
@@ -349,9 +349,9 @@ public class RosterFrame extends javax.swing.JFrame {
         rosterTable = new javax.swing.JTable();
         status = new javax.swing.JTextField();
         
-        fileMenu.setText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("fileMenu.text"));
-        parseFileItem.setToolTipText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("parseFileItem.tooltip"));
-        parseFileItem.setText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("parseFileItem.text"));
+        fileMenu.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("fileMenu.text"));
+        parseFileItem.setToolTipText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("parseFileItem.tooltip"));
+        parseFileItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("parseFileItem.text"));
         parseFileItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 parseFileItemActionPerformed(evt);
@@ -360,8 +360,8 @@ public class RosterFrame extends javax.swing.JFrame {
         
         fileMenu.add(parseFileItem);
         fileMenu.add(separator1);
-        exportTableItem.setToolTipText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("exportTableItem.tooltip"));
-        exportTableItem.setText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("exportTableItem.text"));
+        exportTableItem.setToolTipText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("exportTableItem.tooltip"));
+        exportTableItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("exportTableItem.text"));
         exportTableItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 exportTableItemActionPerformed(evt);
@@ -369,8 +369,8 @@ public class RosterFrame extends javax.swing.JFrame {
         });
         
         fileMenu.add(exportTableItem);
-        exportXMLItem.setToolTipText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("exportXMLItem.tooltip"));
-        exportXMLItem.setText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("exportXMLItem.text"));
+        exportXMLItem.setToolTipText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("exportXMLItem.tooltip"));
+        exportXMLItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("exportXMLItem.text"));
         exportXMLItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 exportXMLItemActionPerformed(evt);
@@ -378,8 +378,8 @@ public class RosterFrame extends javax.swing.JFrame {
         });
         
         fileMenu.add(exportXMLItem);
-        exportHTMLItem.setToolTipText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("exportHTMLItem.tooltip"));
-        exportHTMLItem.setText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("exportHTMLItem.text"));
+        exportHTMLItem.setToolTipText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("exportHTMLItem.tooltip"));
+        exportHTMLItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("exportHTMLItem.text"));
         exportHTMLItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 exportHTMLItemActionPerformed(evt);
@@ -388,8 +388,8 @@ public class RosterFrame extends javax.swing.JFrame {
         
         fileMenu.add(exportHTMLItem);
         fileMenu.add(separator2);
-        quitItem.setToolTipText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("quitItem.tooltip"));
-        quitItem.setText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("quitItem.text"));
+        quitItem.setToolTipText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("quitItem.tooltip"));
+        quitItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("quitItem.text"));
         quitItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 quitItemActionPerformed(evt);
@@ -398,10 +398,10 @@ public class RosterFrame extends javax.swing.JFrame {
         
         fileMenu.add(quitItem);
         menuBar.add(fileMenu);
-        filterMenu.setToolTipText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("filterMenu.tooltip"));
-        filterMenu.setText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("filterMenu.text"));
-        level1FilterItem.setToolTipText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("level1FilterItem.tooltip"));
-        level1FilterItem.setText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("level1FilterItem.text"));
+        filterMenu.setToolTipText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("filterMenu.tooltip"));
+        filterMenu.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("filterMenu.text"));
+        level1FilterItem.setToolTipText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("level1FilterItem.tooltip"));
+        level1FilterItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("level1FilterItem.text"));
         level1FilterItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 filterItemActionPerformed(evt);
@@ -410,7 +410,7 @@ public class RosterFrame extends javax.swing.JFrame {
         
         filterMenu.add(level1FilterItem);
         filterMenu.add(separator3);
-        defaultFilterItem.setText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("defaultFilterItem.text"));
+        defaultFilterItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("defaultFilterItem.text"));
         defaultFilterItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 filterItemActionPerformed(evt);
@@ -418,7 +418,7 @@ public class RosterFrame extends javax.swing.JFrame {
         });
         
         filterMenu.add(defaultFilterItem);
-        alliedFilterItem.setText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("alliedFilterItem.text"));
+        alliedFilterItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("alliedFilterItem.text"));
         alliedFilterItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 filterItemActionPerformed(evt);
@@ -426,7 +426,7 @@ public class RosterFrame extends javax.swing.JFrame {
         });
         
         filterMenu.add(alliedFilterItem);
-        friendFilterItem.setText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("friendFilterItem.text"));
+        friendFilterItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("friendFilterItem.text"));
         friendFilterItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 filterItemActionPerformed(evt);
@@ -435,9 +435,9 @@ public class RosterFrame extends javax.swing.JFrame {
         
         filterMenu.add(friendFilterItem);
         filterMenu.add(separator4);
-        newFilterMenu.setText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("newFilterMenu.text"));
-        newGuildFilterItem.setToolTipText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("newGuildFilterItem.tooltip"));
-        newGuildFilterItem.setText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("newGuildFilterItem.text"));
+        newFilterMenu.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("newFilterMenu.text"));
+        newGuildFilterItem.setToolTipText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("newGuildFilterItem.tooltip"));
+        newGuildFilterItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("newGuildFilterItem.text"));
         newGuildFilterItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 newGuildFilterItemActionPerformed(evt);
@@ -445,8 +445,8 @@ public class RosterFrame extends javax.swing.JFrame {
         });
         
         newFilterMenu.add(newGuildFilterItem);
-        levelFilterItem.setToolTipText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("levelFilterItem.tooltip"));
-        levelFilterItem.setText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("levelFilterItem.text"));
+        levelFilterItem.setToolTipText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("levelFilterItem.tooltip"));
+        levelFilterItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("levelFilterItem.text"));
         levelFilterItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 levelFilterItemActionPerformed(evt);
@@ -454,8 +454,8 @@ public class RosterFrame extends javax.swing.JFrame {
         });
         
         newFilterMenu.add(levelFilterItem);
-        classFilterItem.setToolTipText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("classFilterItem.tooltip"));
-        classFilterItem.setText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("classFilterItem.text"));
+        classFilterItem.setToolTipText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("classFilterItem.tooltip"));
+        classFilterItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("classFilterItem.text"));
         classFilterItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 classFilterItemActionPerformed(evt);
@@ -463,8 +463,8 @@ public class RosterFrame extends javax.swing.JFrame {
         });
         
         newFilterMenu.add(classFilterItem);
-        cultureFilterItem.setToolTipText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("cultureFilterItem.tooltip"));
-        cultureFilterItem.setText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("cultureFilterItem.text"));
+        cultureFilterItem.setToolTipText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("cultureFilterItem.tooltip"));
+        cultureFilterItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("cultureFilterItem.text"));
         cultureFilterItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cultureFilterItemActionPerformed(evt);
@@ -474,30 +474,30 @@ public class RosterFrame extends javax.swing.JFrame {
         newFilterMenu.add(cultureFilterItem);
         filterMenu.add(newFilterMenu);
         menuBar.add(filterMenu);
-        styleMenu.setToolTipText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("styleMenu.tooltip"));
-        styleMenu.setText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("styleMenu.text"));
-        defaultStyleItem.setToolTipText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("defaultStyleItem.tooltip"));
+        styleMenu.setToolTipText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("styleMenu.tooltip"));
+        styleMenu.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("styleMenu.text"));
+        defaultStyleItem.setToolTipText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("defaultStyleItem.tooltip"));
         defaultStyleItem.setSelected(true);
-        defaultStyleItem.setText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("defaultStyleItem.text"));
+        defaultStyleItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("defaultStyleItem.text"));
         styleMenu.add(defaultStyleItem);
         styleMenu.add(separator5);
-        mwStyleItem.setToolTipText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("mwStyleItem.tooltip"));
-        mwStyleItem.setText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("mwStyleItem.text"));
+        mwStyleItem.setToolTipText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("mwStyleItem.tooltip"));
+        mwStyleItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("mwStyleItem.text"));
         styleMenu.add(mwStyleItem);
-        ssStyleItem.setToolTipText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("ssStyleItem.tooltip"));
-        ssStyleItem.setText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("ssStyleItem.text"));
+        ssStyleItem.setToolTipText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("ssStyleItem.tooltip"));
+        ssStyleItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("ssStyleItem.text"));
         styleMenu.add(ssStyleItem);
-        vlStyleItem.setToolTipText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("vlStyleItem.tooltip"));
-        vlStyleItem.setText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("vlStyleItem.text"));
+        vlStyleItem.setToolTipText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("vlStyleItem.tooltip"));
+        vlStyleItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("vlStyleItem.text"));
         styleMenu.add(vlStyleItem);
         styleMenu.add(separator6);
-        newStyleMenu.setText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("newStyleMenu.text"));
-        styleWizardItem.setToolTipText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("styleWizardItem.tooltip"));
-        styleWizardItem.setText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("styleWizardItem.text"));
+        newStyleMenu.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("newStyleMenu.text"));
+        styleWizardItem.setToolTipText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("styleWizardItem.tooltip"));
+        styleWizardItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("styleWizardItem.text"));
         styleWizardItem.setEnabled(false);
         newStyleMenu.add(styleWizardItem);
-        styleFileItem.setToolTipText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("styleFileItem.tooltip"));
-        styleFileItem.setText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("styleFileItem.text"));
+        styleFileItem.setToolTipText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("styleFileItem.tooltip"));
+        styleFileItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("styleFileItem.text"));
         styleFileItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 styleFileItemActionPerformed(evt);
@@ -507,19 +507,19 @@ public class RosterFrame extends javax.swing.JFrame {
         newStyleMenu.add(styleFileItem);
         styleMenu.add(newStyleMenu);
         menuBar.add(styleMenu);
-        optionsMenu.setText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("optionsMenu.text"));
-        displayHTMLItem.setToolTipText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("displayHTMLItem.tooltip"));
-        displayHTMLItem.setText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("displayHTMLItem.text"));
+        optionsMenu.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("optionsMenu.text"));
+        displayHTMLItem.setToolTipText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("displayHTMLItem.tooltip"));
+        displayHTMLItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("displayHTMLItem.text"));
         optionsMenu.add(displayHTMLItem);
         menuBar.add(optionsMenu);
-        helpMenu.setText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("helpMenu.text"));
+        helpMenu.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("helpMenu.text"));
         helpMenu.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 helpMenuActionPerformed(evt);
             }
         });
         
-        aboutItem.setText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("aboutItem.text"));
+        aboutItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("aboutItem.text"));
         aboutItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 aboutItemActionPerformed(evt);
@@ -527,7 +527,7 @@ public class RosterFrame extends javax.swing.JFrame {
         });
         
         helpMenu.add(aboutItem);
-        licenseItem.setText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("licenseItem.text"));
+        licenseItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("licenseItem.text"));
         licenseItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 licenseItemActionPerformed(evt);
@@ -535,7 +535,7 @@ public class RosterFrame extends javax.swing.JFrame {
         });
         
         helpMenu.add(licenseItem);
-        xpLicenseItem.setText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("xpLicenseItem.text"));
+        xpLicenseItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("xpLicenseItem.text"));
         xpLicenseItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 xpLicenseItemActionPerformed(evt);
@@ -543,7 +543,7 @@ public class RosterFrame extends javax.swing.JFrame {
         });
         
         helpMenu.add(xpLicenseItem);
-        xtLicenseItem.setText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("xtLicenseItem.text"));
+        xtLicenseItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("xtLicenseItem.text"));
         xtLicenseItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 xtLicenseItemActionPerformed(evt);
@@ -1290,7 +1290,7 @@ public class RosterFrame extends javax.swing.JFrame {
                 }
             }
             aboutText =
-            "YAELP log file parser, $Revision: 1.5 $.\n"+
+            "YAELP log file parser, $Revision: 1.6 $.\n"+
             "Copyright © 2001 Klaus Rennecke.\n"+
             "XML parser Copyright © 1997, 1998 James Clark.\n"+
             "XSL transformation Copyright © 1998, 1999 James Clark.\n"+

@@ -4,7 +4,7 @@
  * Created on 1. Mai 2001, 23:28
  */
 
-package de.rennecke.yaelp;
+package net.sourceforge.fraglets.yaelp;
 
 import java.util.HashMap;
 
@@ -25,7 +25,7 @@ import java.util.HashMap;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author  Klaus Rennecke
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class Clazz {
     /** Holds value of property name. */

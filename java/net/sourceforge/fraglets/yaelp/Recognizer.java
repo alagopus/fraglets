@@ -4,7 +4,7 @@
  * Created on 30. April 2001, 09:30
  */
 
-package de.rennecke.yaelp;
+package net.sourceforge.fraglets.yaelp;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -27,7 +27,7 @@ import java.util.Iterator;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author  Klaus Rennecke
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class Recognizer {
     /** Known avatars. */

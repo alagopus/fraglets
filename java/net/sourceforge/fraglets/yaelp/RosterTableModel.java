@@ -4,7 +4,7 @@
  * Created on 18. Juni 2001, 03:05
  */
 
-package de.rennecke.yaelp;
+package net.sourceforge.fraglets.yaelp;
 
 import java.util.Comparator;
 
