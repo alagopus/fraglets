@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+    <classpathentry kind="src" path="src"/>
+    <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+    <classpathentry kind="var" path="MYSQL_J"/>
+    <classpathentry kind="src" path="/fraglets"/>
+    <classpathentry kind="lib"
+        path="/3rd/apache.org/xerces-1_2_0/xerces.jar" sourcepath="/3rd/apache.org/dist/Xerces-J-src.1.2.0.zip"/>
+    <classpathentry kind="output" path="bin"/>
+</classpath>
