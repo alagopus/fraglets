@@ -35,7 +35,7 @@ import java.util.zip.GZIPInputStream;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author  kre
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class EqlogParser {
     public static final String PREFIX = "[Sun Apr 01 16:38:57 2001] ";
@@ -45,13 +45,11 @@ public class EqlogParser {
     public static final int LINE_START = PREFIX.length();
     
     protected BufferedReader in;
-    protected Word buffer[];
     
     /** Creates new Parser */
     public EqlogParser(BufferedReader in)
     {
         this.in = in;
-        buffer = new Word[20];
     }
     
     public synchronized Line readLine()
@@ -63,27 +61,7 @@ public class EqlogParser {
         } else  try {
             String timestamp = line.substring(TIMESTAMP_START, TIMESTAMP_END);
             char rest[] = line.substring(LINE_START).toCharArray();
-            int index = 0;      // index into buffer
-            int start = 0;      // start character
-            int scan = 0;       // current character
-            int end = rest.length;
-            while (scan <= end) {
-                if (scan == end || !Character.isLetterOrDigit(rest[scan])) {
-                    if (scan > start) {
-                        if (index >= buffer.length) {
-                            Word grow[] = new Word[buffer.length*2];
-                            System.arraycopy(buffer, 0, grow, 0, buffer.length);
-                            buffer = grow;
-                        }
-                        buffer[index++] = Word.create(rest, start, scan-start);
-                    }
-                    start = scan + 1;
-                }
-                scan++;
-            }
-            Word words[] = new Word[index];
-            System.arraycopy(buffer, 0, words, 0, index);
-            return new Line(timestamp, words);
+            return new Line(timestamp, rest);
         } catch (StringIndexOutOfBoundsException ex) {
             throw new IOException("invalid log file format");
         }

@@ -25,7 +25,7 @@ import java.util.HashMap;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author  Klaus Rennecke
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class Culture {
 
@@ -53,7 +53,21 @@ public class Culture {
         }
         return result;
     }
-
+    /** Get all known values. */
+    public static java.util.Collection getValues() {
+        return shared.values();
+    }
+    /** Get a suitable comparator for sorting. */
+    public static java.util.Comparator getComparator() {
+        return new java.util.Comparator() {
+            public int compare(Object o1, Object o2) {
+                return ((Culture)o1).getName().compareTo(((Culture)o2).getName());
+            }
+            public boolean equals(Object other) {
+                return getClass() == other.getClass();
+            }
+        };
+    }
     /** Getter for property name.
      * @return Value of property name.
      */

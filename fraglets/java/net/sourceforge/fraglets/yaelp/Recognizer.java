@@ -27,9 +27,9 @@ import java.util.Iterator;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author  Klaus Rennecke
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
-public class Recognizer implements Vocabulary {
+public class Recognizer {
     /** Known avatars. */
     protected HashMap avatars = new HashMap();
     /** The number of lines recognized. */

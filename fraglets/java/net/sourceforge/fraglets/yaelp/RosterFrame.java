@@ -36,12 +36,14 @@ import org.xml.sax.SAXParseException;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author  kre
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class RosterFrame extends javax.swing.JFrame {
     /** The file chooser used to select files to parse and export.
      */    
     protected javax.swing.JFileChooser chooser;
+    /** The table model. */
+    protected RosterTableModel model = new RosterTableModel();
     /** The recognizer used to parse the input files.
      */    
     protected Recognizer recognizer = new Recognizer();
@@ -51,11 +53,13 @@ public class RosterFrame extends javax.swing.JFrame {
     
     protected String aboutText;
     
-    protected Comparator order;
+    protected StyleSelection styleSelection
+        = new StyleSelection(getResource("roster.xsl"));
     
-    protected java.net.URL style;
-    
+    /** Client property key for filter property. */
     public static final String FILTER_PROPERTY = "RosterFrame.filter";
+    /** Client property key for style property. */
+    public static final String STYLE_PROPERTY = "RosterFrame.style";
     
     /** Interface for a filter on the roster.
      */    
@@ -204,16 +208,47 @@ public class RosterFrame extends javax.swing.JFrame {
         }
     }
     
-    /** Headers for the roster table.
-     */    
-    protected static final String headers[] = {
-        "Name", "Culture", "Class", "Level", "Guild", "Zone", "Time"
-    };
-
+    public static class StyleSelection extends javax.swing.AbstractAction {
+        private java.net.URL selectedStyle;
+        public StyleSelection(java.net.URL initialSelection) {
+            super("select style");
+            this.selectedStyle = initialSelection;
+        }
+        public java.net.URL getSelectedStyle() {
+            return selectedStyle;
+        }
+        public void setSelectedStyle(java.net.URL newStyle) {
+            selectedStyle = newStyle;
+        }
+        public void actionPerformed(java.awt.event.ActionEvent ev) {
+            Object source = ev.getSource();
+            if (source instanceof javax.swing.JComponent) {
+                Object value = ((javax.swing.JComponent)source)
+                    .getClientProperty(STYLE_PROPERTY);
+                if (value instanceof java.net.URL) {
+                    selectedStyle = (java.net.URL)value;
+                }
+            }
+        }
+    }
+    
     /** Creates new form RosterFrame */
     public RosterFrame() {
         initComponents();
+        // initialize sorting
         doNameOrder();
+        rosterTable.getTableHeader().addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent ev) {
+                javax.swing.table.JTableHeader header = rosterTable.getTableHeader();
+                int index = header.columnAtPoint(ev.getPoint());
+                if (index >= 0) {
+                    doOrder(rosterTable.getColumnModel().getColumn(index)
+                            .getIdentifier().toString());
+                }
+            }
+        });
+
+        // attach filters
         level1FilterItem.putClientProperty(FILTER_PROPERTY,
             new AvatarFilterLevel(1));
         defaultFilterItem.putClientProperty(FILTER_PROPERTY,
@@ -222,6 +257,29 @@ public class RosterFrame extends javax.swing.JFrame {
             new AvatarFilterGuild("Sovereign Storm"));
         friendFilterItem.putClientProperty(FILTER_PROPERTY,
             new AvatarFilterGuild("Veterans Legion"));
+        
+        // attach styles
+        defaultStyleItem.putClientProperty(STYLE_PROPERTY,
+            getResource("roster.xsl"));
+        mwStyleItem.putClientProperty(STYLE_PROPERTY,
+            getResource("roster_mw.xsl"));
+        ssStyleItem.putClientProperty(STYLE_PROPERTY,
+            getResource("roster_ss.xsl"));
+        vlStyleItem.putClientProperty(STYLE_PROPERTY,
+            getResource("roster_vl.xsl"));
+        
+        // HACK: Since the Netbeans 3.2 IDE drops all button
+        // group assignments on CVS checkin, we do it here.
+        // Likewise, we can't set the button name after the action
+        // so the text would get mangled.
+        styleButtonGroup.add(defaultStyleItem);
+        defaultStyleItem.addActionListener(styleSelection);
+        styleButtonGroup.add(mwStyleItem);
+        mwStyleItem.addActionListener(styleSelection);
+        styleButtonGroup.add(ssStyleItem);
+        ssStyleItem.addActionListener(styleSelection);
+        styleButtonGroup.add(vlStyleItem);
+        vlStyleItem.addActionListener(styleSelection);
     }
 
     /** This method is called from within the constructor to
@@ -253,11 +311,14 @@ public class RosterFrame extends javax.swing.JFrame {
         cultureFilterItem = new javax.swing.JMenuItem();
         styleMenu = new javax.swing.JMenu();
         defaultStyleItem = new javax.swing.JRadioButtonMenuItem();
+        separator5 = new javax.swing.JSeparator();
         mwStyleItem = new javax.swing.JRadioButtonMenuItem();
         ssStyleItem = new javax.swing.JRadioButtonMenuItem();
         vlStyleItem = new javax.swing.JRadioButtonMenuItem();
-        separator5 = new javax.swing.JSeparator();
-        newStyleItem = new javax.swing.JMenuItem();
+        separator6 = new javax.swing.JSeparator();
+        newStyleMenu = new javax.swing.JMenu();
+        styleWizardItem = new javax.swing.JMenuItem();
+        styleFileItem = new javax.swing.JMenuItem();
         optionsMenu = new javax.swing.JMenu();
         displayHTMLItem = new javax.swing.JCheckBoxMenuItem();
         helpMenu = new javax.swing.JMenu();
@@ -270,8 +331,9 @@ public class RosterFrame extends javax.swing.JFrame {
         rosterTable = new javax.swing.JTable();
         status = new javax.swing.JTextField();
         
-        fileMenu.setText("File");
-        parseFileItem.setText("Parse files ...");
+        fileMenu.setText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("fileMenu.text"));
+        parseFileItem.setToolTipText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("parseFileItem.tooltip"));
+        parseFileItem.setText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("parseFileItem.text"));
         parseFileItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 parseFileItemActionPerformed(evt);
@@ -280,7 +342,8 @@ public class RosterFrame extends javax.swing.JFrame {
         
         fileMenu.add(parseFileItem);
         fileMenu.add(separator1);
-        exportTableItem.setText("Export table ...");
+        exportTableItem.setToolTipText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("exportTableItem.tooltip"));
+        exportTableItem.setText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("exportTableItem.text"));
         exportTableItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 exportTableItemActionPerformed(evt);
@@ -288,7 +351,8 @@ public class RosterFrame extends javax.swing.JFrame {
         });
         
         fileMenu.add(exportTableItem);
-        exportXMLItem.setText("Export XML ...");
+        exportXMLItem.setToolTipText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("exportXMLItem.tooltip"));
+        exportXMLItem.setText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("exportXMLItem.text"));
         exportXMLItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 exportXMLItemActionPerformed(evt);
@@ -296,7 +360,8 @@ public class RosterFrame extends javax.swing.JFrame {
         });
         
         fileMenu.add(exportXMLItem);
-        exportHTMLItem.setText("Export HTML ...");
+        exportHTMLItem.setToolTipText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("exportHTMLItem.tooltip"));
+        exportHTMLItem.setText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("exportHTMLItem.text"));
         exportHTMLItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 exportHTMLItemActionPerformed(evt);
@@ -305,7 +370,8 @@ public class RosterFrame extends javax.swing.JFrame {
         
         fileMenu.add(exportHTMLItem);
         fileMenu.add(separator2);
-        quitItem.setText("Quit");
+        quitItem.setToolTipText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("quitItem.tooltip"));
+        quitItem.setText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("quitItem.text"));
         quitItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 quitItemActionPerformed(evt);
@@ -314,8 +380,10 @@ public class RosterFrame extends javax.swing.JFrame {
         
         fileMenu.add(quitItem);
         menuBar.add(fileMenu);
-        filterMenu.setText("Filter");
-        level1FilterItem.setText("no anonymous");
+        filterMenu.setToolTipText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("filterMenu.tooltip"));
+        filterMenu.setText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("filterMenu.text"));
+        level1FilterItem.setToolTipText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("level1FilterItem.tooltip"));
+        level1FilterItem.setText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("level1FilterItem.text"));
         level1FilterItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 filterItemActionPerformed(evt);
@@ -324,7 +392,7 @@ public class RosterFrame extends javax.swing.JFrame {
         
         filterMenu.add(level1FilterItem);
         filterMenu.add(separator3);
-        defaultFilterItem.setText("Mad Wanderer");
+        defaultFilterItem.setText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("defaultFilterItem.text"));
         defaultFilterItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 filterItemActionPerformed(evt);
@@ -332,7 +400,7 @@ public class RosterFrame extends javax.swing.JFrame {
         });
         
         filterMenu.add(defaultFilterItem);
-        alliedFilterItem.setText("Sovereign Storm");
+        alliedFilterItem.setText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("alliedFilterItem.text"));
         alliedFilterItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 filterItemActionPerformed(evt);
@@ -340,7 +408,7 @@ public class RosterFrame extends javax.swing.JFrame {
         });
         
         filterMenu.add(alliedFilterItem);
-        friendFilterItem.setText("Veterans Legion");
+        friendFilterItem.setText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("friendFilterItem.text"));
         friendFilterItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 filterItemActionPerformed(evt);
@@ -349,8 +417,9 @@ public class RosterFrame extends javax.swing.JFrame {
         
         filterMenu.add(friendFilterItem);
         filterMenu.add(separator4);
-        newFilterMenu.setText("new Filter");
-        newGuildFilterItem.setText("guild filter ...");
+        newFilterMenu.setText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("newFilterMenu.text"));
+        newGuildFilterItem.setToolTipText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("newGuildFilterItem.tooltip"));
+        newGuildFilterItem.setText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("newGuildFilterItem.text"));
         newGuildFilterItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 newGuildFilterItemActionPerformed(evt);
@@ -358,7 +427,8 @@ public class RosterFrame extends javax.swing.JFrame {
         });
         
         newFilterMenu.add(newGuildFilterItem);
-        levelFilterItem.setText("level filter ...");
+        levelFilterItem.setToolTipText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("levelFilterItem.tooltip"));
+        levelFilterItem.setText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("levelFilterItem.text"));
         levelFilterItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 levelFilterItemActionPerformed(evt);
@@ -366,7 +436,8 @@ public class RosterFrame extends javax.swing.JFrame {
         });
         
         newFilterMenu.add(levelFilterItem);
-        classFilterItem.setText("class filter ...");
+        classFilterItem.setToolTipText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("classFilterItem.tooltip"));
+        classFilterItem.setText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("classFilterItem.text"));
         classFilterItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 classFilterItemActionPerformed(evt);
@@ -374,7 +445,8 @@ public class RosterFrame extends javax.swing.JFrame {
         });
         
         newFilterMenu.add(classFilterItem);
-        cultureFilterItem.setText("culture filter ...");
+        cultureFilterItem.setToolTipText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("cultureFilterItem.tooltip"));
+        cultureFilterItem.setText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("cultureFilterItem.text"));
         cultureFilterItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cultureFilterItemActionPerformed(evt);
@@ -384,56 +456,52 @@ public class RosterFrame extends javax.swing.JFrame {
         newFilterMenu.add(cultureFilterItem);
         filterMenu.add(newFilterMenu);
         menuBar.add(filterMenu);
-        styleMenu.setText("Style");
+        styleMenu.setToolTipText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("styleMenu.tooltip"));
+        styleMenu.setText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("styleMenu.text"));
+        defaultStyleItem.setToolTipText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("defaultStyleItem.tooltip"));
         defaultStyleItem.setSelected(true);
-        defaultStyleItem.setText("default (page)");
-        defaultStyleItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                defaultStyleItemActionPerformed(evt);
-            }
-        });
-        
+        defaultStyleItem.setText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("defaultStyleItem.text"));
         styleMenu.add(defaultStyleItem);
-        mwStyleItem.setText("Mad Wanderer");
-        mwStyleItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                mwStyleItemActionPerformed(evt);
-            }
-        });
-        
-        styleMenu.add(mwStyleItem);
-        ssStyleItem.setText("Sovereign Storm");
-        ssStyleItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ssStyleItemActionPerformed(evt);
-            }
-        });
-        
-        styleMenu.add(ssStyleItem);
-        vlStyleItem.setText("Veterans Legion");
-        vlStyleItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                vlStyleItemActionPerformed(evt);
-            }
-        });
-        
-        styleMenu.add(vlStyleItem);
         styleMenu.add(separator5);
-        newStyleItem.setText("new style ...");
-        newStyleItem.addActionListener(new java.awt.event.ActionListener() {
+        mwStyleItem.setToolTipText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("mwStyleItem.tooltip"));
+        mwStyleItem.setText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("mwStyleItem.text"));
+        styleMenu.add(mwStyleItem);
+        ssStyleItem.setToolTipText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("ssStyleItem.tooltip"));
+        ssStyleItem.setText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("ssStyleItem.text"));
+        styleMenu.add(ssStyleItem);
+        vlStyleItem.setToolTipText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("vlStyleItem.tooltip"));
+        vlStyleItem.setText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("vlStyleItem.text"));
+        styleMenu.add(vlStyleItem);
+        styleMenu.add(separator6);
+        newStyleMenu.setText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("newStyleMenu.text"));
+        styleWizardItem.setToolTipText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("styleWizardItem.tooltip"));
+        styleWizardItem.setText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("styleWizardItem.text"));
+        styleWizardItem.setEnabled(false);
+        newStyleMenu.add(styleWizardItem);
+        styleFileItem.setToolTipText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("styleFileItem.tooltip"));
+        styleFileItem.setText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("styleFileItem.text"));
+        styleFileItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                newStyleItemActionPerformed(evt);
+                styleFileItemActionPerformed(evt);
             }
         });
         
-        styleMenu.add(newStyleItem);
+        newStyleMenu.add(styleFileItem);
+        styleMenu.add(newStyleMenu);
         menuBar.add(styleMenu);
-        optionsMenu.setText("Options");
-        displayHTMLItem.setText("display HTML");
+        optionsMenu.setText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("optionsMenu.text"));
+        displayHTMLItem.setToolTipText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("displayHTMLItem.tooltip"));
+        displayHTMLItem.setText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("displayHTMLItem.text"));
         optionsMenu.add(displayHTMLItem);
         menuBar.add(optionsMenu);
-        helpMenu.setText("Help");
-        aboutItem.setText("About ...");
+        helpMenu.setText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("helpMenu.text"));
+        helpMenu.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                helpMenuActionPerformed(evt);
+            }
+        });
+        
+        aboutItem.setText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("aboutItem.text"));
         aboutItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 aboutItemActionPerformed(evt);
@@ -441,7 +509,7 @@ public class RosterFrame extends javax.swing.JFrame {
         });
         
         helpMenu.add(aboutItem);
-        licenseItem.setText("GNU License");
+        licenseItem.setText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("licenseItem.text"));
         licenseItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 licenseItemActionPerformed(evt);
@@ -449,7 +517,7 @@ public class RosterFrame extends javax.swing.JFrame {
         });
         
         helpMenu.add(licenseItem);
-        xpLicenseItem.setText("XP License");
+        xpLicenseItem.setText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("xpLicenseItem.text"));
         xpLicenseItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 xpLicenseItemActionPerformed(evt);
@@ -457,7 +525,7 @@ public class RosterFrame extends javax.swing.JFrame {
         });
         
         helpMenu.add(xpLicenseItem);
-        xtLicenseItem.setText("XT License");
+        xtLicenseItem.setText(java.util.ResourceBundle.getBundle("de/rennecke/yaelp/YaelpResources").getString("xtLicenseItem.text"));
         xtLicenseItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 xtLicenseItemActionPerformed(evt);
@@ -475,6 +543,7 @@ public class RosterFrame extends javax.swing.JFrame {
             }
         });
         
+        rosterTable.setModel(model);
         rosterTable.setPreferredScrollableViewportSize(new java.awt.Dimension(650, 200));
         tableScroll.setViewportView(rosterTable);
         
@@ -489,6 +558,10 @@ public class RosterFrame extends javax.swing.JFrame {
         setJMenuBar(menuBar);
         pack();
     }//GEN-END:initComponents
+
+    private void helpMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpMenuActionPerformed
+        // Add your handling code here:
+    }//GEN-LAST:event_helpMenuActionPerformed
 
     private void cultureFilterItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cultureFilterItemActionPerformed
         // Add your handling code here:
@@ -526,7 +599,7 @@ public class RosterFrame extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_newGuildFilterItemActionPerformed
 
-    private void newStyleItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newStyleItemActionPerformed
+    private void styleFileItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_styleFileItemActionPerformed
         // Add your handling code here:
         if (chooser == null) {
             chooser = new javax.swing.JFileChooser();
@@ -552,7 +625,7 @@ public class RosterFrame extends javax.swing.JFrame {
         } else {
             fixBackingStore();
         }
-    }//GEN-LAST:event_newStyleItemActionPerformed
+    }//GEN-LAST:event_styleFileItemActionPerformed
 
     private void xtLicenseItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_xtLicenseItemActionPerformed
         // Add your handling code here:
@@ -563,26 +636,6 @@ public class RosterFrame extends javax.swing.JFrame {
         // Add your handling code here:
         doShowDocument("XML Parser License", "copying_xp.txt");
     }//GEN-LAST:event_xpLicenseItemActionPerformed
-
-    private void vlStyleItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_vlStyleItemActionPerformed
-        // Add your handling code here:
-        style = getClass().getResource("roster_vl.xsl");
-    }//GEN-LAST:event_vlStyleItemActionPerformed
-
-    private void ssStyleItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ssStyleItemActionPerformed
-        // Add your handling code here:
-        style = getClass().getResource("roster_ss.xsl");
-    }//GEN-LAST:event_ssStyleItemActionPerformed
-
-    private void mwStyleItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mwStyleItemActionPerformed
-        // Add your handling code here:
-        style = getClass().getResource("roster_mw.xsl");
-    }//GEN-LAST:event_mwStyleItemActionPerformed
-
-    private void defaultStyleItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_defaultStyleItemActionPerformed
-        // Add your handling code here:
-        style = getClass().getResource("roster.xsl");
-    }//GEN-LAST:event_defaultStyleItemActionPerformed
 
     private void filterItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_filterItemActionPerformed
         // Add your handling code here:
@@ -806,40 +859,18 @@ public class RosterFrame extends javax.swing.JFrame {
             }
         }
         
-        if (order != null) {
-            java.util.Arrays.sort(avatars, order);
+        if (model == null) {
+            model = new RosterTableModel(avatars);
+            rosterTable.setModel(model);
+        } else {
+            model.setRoster(avatars);
         }
-        
-        // convert to array form
-        Object data[][] = new Object[avatars.length][7];
-        for (int i = 0; i < avatars.length; i++) {
-            Avatar avatar = avatars[i];
-            data[i][0] = avatar.getName();
-            data[i][1] = avatar.getCulture();
-            data[i][2] = avatar.getClazz();
-            data[i][3] = String.valueOf(avatar.getLevel());
-            data[i][4] = avatar.getGuild();
-            data[i][5] = avatar.getZone();
-            data[i][6] = new java.sql.Date(avatar.getTimestamp());
-        }
-        rosterTable.setModel(new javax.swing.table.DefaultTableModel(data, headers));
-        rosterTable.getTableHeader().addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent ev) {
-                javax.swing.table.TableColumnModel tcm = rosterTable.getColumnModel();
-                int index = tcm.getColumnIndexAtX(ev.getX());
-                if (index >= 0) {
-                    rosterTable.getTableHeader().removeMouseListener(this);
-                    doOrder(tcm.getColumn(index).getIdentifier().toString());
-                    refreshFilter();
-                }
-            }
-        });
-        status.setText(data.length + " characters, " + lines + " lines parsed.");
+        status.setText(model.getRowCount() + " characters, " + lines + " lines parsed.");
     }
     
     protected void doNameOrder() {
         // sort by name
-        order = new java.util.Comparator() {
+        model.setOrder(new java.util.Comparator() {
             public boolean equals(Object other) {
                 return other != null &&
                 other.getClass() == this.getClass();
@@ -848,12 +879,12 @@ public class RosterFrame extends javax.swing.JFrame {
                 return ((Avatar)a).getName().toString()
                 .compareTo(((Avatar)b).getName().toString());
             }
-        };
+        });
     }
     
     protected void doClassOrder() {
         // sort by class
-        order = new java.util.Comparator() {
+        model.setOrder(new java.util.Comparator() {
             public boolean equals(Object other) {
                 return other != null &&
                 other.getClass() == this.getClass();
@@ -862,12 +893,12 @@ public class RosterFrame extends javax.swing.JFrame {
                 return stringValue(((Avatar)a).getClazz())
                 .compareTo(stringValue(((Avatar)b).getClazz()));
             }
-        };
+        });
     }
     
     protected void doCultureOrder() {
         // sort by culture
-        order = new java.util.Comparator() {
+        model.setOrder(new java.util.Comparator() {
             public boolean equals(Object other) {
                 return other != null &&
                 other.getClass() == this.getClass();
@@ -876,12 +907,12 @@ public class RosterFrame extends javax.swing.JFrame {
                 return stringValue(((Avatar)a).getCulture())
                 .compareTo(stringValue(((Avatar)b).getCulture()));
             }
-        };
+        });
     }
     
     protected void doLevelOrder() {
         // sort by level
-        order = new java.util.Comparator() {
+        model.setOrder(new java.util.Comparator() {
             public boolean equals(Object other) {
                 return other != null &&
                 other.getClass() == this.getClass();
@@ -896,12 +927,12 @@ public class RosterFrame extends javax.swing.JFrame {
                     return 0;
                 }
             }
-        };
+        });
     }
     
     protected void doTimeOrder() {
         // sort by time
-        order = new java.util.Comparator() {
+        model.setOrder(new java.util.Comparator() {
             public boolean equals(Object other) {
                 return other != null &&
                 other.getClass() == this.getClass();
@@ -916,7 +947,7 @@ public class RosterFrame extends javax.swing.JFrame {
                     return 0;
                 }
             }
-        };
+        });
     }
     
     protected void doOrder(String order) {
@@ -1039,15 +1070,11 @@ public class RosterFrame extends javax.swing.JFrame {
                 new java.net.URL("file:///"+file.getAbsolutePath());
             javax.swing.JRadioButtonMenuItem menuItem =
                 new javax.swing.JRadioButtonMenuItem(file.getName());
-            menuItem.addActionListener(new java.awt.event.ActionListener() {
-                public void actionPerformed(java.awt.event.ActionEvent evt) {
-                    style = styleURL;
-                }
-            });
+            menuItem.addActionListener(styleSelection);
             styleButtonGroup.add(menuItem);
             styleMenu.insert(menuItem, styleMenu.getItemCount()-1);
             menuItem.setSelected(true);
-            style = styleURL;
+            styleSelection.setSelectedStyle(styleURL);
         } catch (Exception ex) {
             ex.printStackTrace();
             doException(ex);
@@ -1085,9 +1112,6 @@ public class RosterFrame extends javax.swing.JFrame {
             return; // nothing selected, canceled.
         }
         try {
-            if (style == null) {
-                style = getClass().getResource("roster.xsl");
-            }
             if (processor == null) {
                 processor = new XSLProcessorImpl();
                 processor.setParser(new CommentDriver());
@@ -1105,6 +1129,7 @@ public class RosterFrame extends javax.swing.JFrame {
                 handler = new OutputMethodHandlerImpl(processor);
                 processor.setOutputMethodHandler(handler);
             }
+            java.net.URL style = styleSelection.getSelectedStyle();
             if (loadedStyle == null || !loadedStyle.equals(style)) {
                 java.io.InputStream xsl = style.openStream();
                 processor.loadStylesheet(new InputSource(xsl));
@@ -1127,7 +1152,7 @@ public class RosterFrame extends javax.swing.JFrame {
             processor.parse(new InputSource(new java.io.PipedReader(pw)));
             
             if (displayHTMLItem.isSelected()) {
-                doShowDocument("HTML Export",
+                doShowDocument("HTML Export Result",
                     new java.net.URL("file:///"+file.getAbsolutePath()));
             }
         } catch (Exception ex) {
@@ -1203,6 +1228,10 @@ public class RosterFrame extends javax.swing.JFrame {
         fixBackingStore();
     }
     
+    protected static java.net.URL getResource(String name) {
+        return RosterFrame.class.getResource(name);
+    }
+    
     public String getAboutText() {
         if (aboutText == null) try {
             //StringBuffer buffer = new StringBuffer("\n");
@@ -1220,7 +1249,7 @@ public class RosterFrame extends javax.swing.JFrame {
                 }
             }
             aboutText =
-            "YAELP log file parser, $Revision: 1.2 $.\n"+
+            "YAELP log file parser, $Revision: 1.3 $.\n"+
             "Copyright © 2001 Klaus Rennecke.\n"+
             "XML parser Copyright © 1997, 1998 James Clark.\n"+
             "XSL transformation Copyright © 1998, 1999 James Clark.\n"+
@@ -1300,6 +1329,12 @@ public class RosterFrame extends javax.swing.JFrame {
      * @param args the command line arguments
      */
     public static void main(String args[]) {
+        try {
+            javax.swing.UIManager.setLookAndFeel
+                (javax.swing.UIManager.getSystemLookAndFeelClassName());
+        } catch (Exception ex) {
+            // oh well ...
+        }
         RosterFrame frame = new RosterFrame();
         System.setOut(new java.io.PrintStream
         (new DocumentStream(frame.status)));
@@ -1331,11 +1366,14 @@ public class RosterFrame extends javax.swing.JFrame {
     private javax.swing.JMenuItem cultureFilterItem;
     private javax.swing.JMenu styleMenu;
     private javax.swing.JRadioButtonMenuItem defaultStyleItem;
+    private javax.swing.JSeparator separator5;
     private javax.swing.JRadioButtonMenuItem mwStyleItem;
     private javax.swing.JRadioButtonMenuItem ssStyleItem;
     private javax.swing.JRadioButtonMenuItem vlStyleItem;
-    private javax.swing.JSeparator separator5;
-    private javax.swing.JMenuItem newStyleItem;
+    private javax.swing.JSeparator separator6;
+    private javax.swing.JMenu newStyleMenu;
+    private javax.swing.JMenuItem styleWizardItem;
+    private javax.swing.JMenuItem styleFileItem;
     private javax.swing.JMenu optionsMenu;
     private javax.swing.JCheckBoxMenuItem displayHTMLItem;
     private javax.swing.JMenu helpMenu;
