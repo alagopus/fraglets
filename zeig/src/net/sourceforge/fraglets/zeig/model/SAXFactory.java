@@ -7,6 +7,7 @@
 package net.sourceforge.fraglets.zeig.model;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.StringReader;
 import java.sql.SQLException;
@@ -15,6 +16,8 @@ import java.util.Stack;
 import net.sourceforge.fraglets.zeig.cache.SensorCache;
 import net.sourceforge.fraglets.zeig.jdbc.ConnectionFactory;
 
+import org.apache.log4j.Category;
+import org.apache.log4j.Priority;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
@@ -25,7 +28,7 @@ import org.xml.sax.helpers.XMLReaderFactory;
 
 /**
  * @author unknown
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class SAXFactory implements ContentHandler {
     private NodeFactory nf;
@@ -206,6 +209,7 @@ public class SAXFactory implements ContentHandler {
     }
     
     public static void process(XMLReader reader, SAXFactory sf, File file) {
+        Category category = Category.getInstance(SAXFactory.class);
         if (file.isDirectory()) {
             File list[] = file.listFiles();
             for (int i = 0; i < list.length; i++) {
@@ -213,22 +217,28 @@ public class SAXFactory implements ContentHandler {
             }
         } else {
             try {
-                String url = file.toURL().toExternalForm();
-                System.out.print("reading "+file.getName()+" ...");
-                reader.parse(url);
-                int id = sf.getLastResult();
-                VersionFactory.getInstance()
-                    .createVersion(id, sf.nf.pt.getPlainText(url));
-                System.out.println(" OK.");
+                FileInputStream in = new FileInputStream(file);
+                try {
+                    category.debug("reading "+file.getName());
+                    InputSource is = new InputSource(in);
+                    is.setSystemId(file.toString());
+                    reader.parse(is);
+                    int id = sf.getLastResult();
+                    VersionFactory.getInstance()
+                        .createVersion(id, sf.nf.pt.getPlainText(file.toString()));
+                } finally {
+                    try { in.close(); } catch (IOException ex) { }
+                }
             } catch (SAXException ex) {
 //                ex.printStackTrace();
                 if (ex.getException() != null) {
-                    ex.getException().printStackTrace();
+//                    ex.getException().printStackTrace();
+                    category.error(file+": "+ex.getException().toString());
+                } else {
+                    category.error(file+": "+ex.toString());
                 }
-                System.out.println(" "+ex.getMessage());
             } catch (Exception ex) {
-                ex.printStackTrace();
-                System.out.println(" "+ex.getMessage());
+                category.error(file, ex);
             }
         }
     }
@@ -242,11 +252,11 @@ public class SAXFactory implements ContentHandler {
             for (int i = 0; i < args.length; i++) {
                 process(reader, sf, new File(args[i]));
             }
-            int result[] = sf.getResult();
-            for (int i = 0; i < result.length; i++) {
-                System.out.println("result["+i+"]="+result[i]);
-            }
-            SensorCache.printStatistics(System.out);
+//            int result[] = sf.getResult();
+//            for (int i = 0; i < result.length; i++) {
+//                System.out.println("result["+i+"]="+result[i]);
+//            }
+            SensorCache.logStatistics(Priority.INFO);
         } catch (SAXException ex) {
             ex.printStackTrace();
             if (ex.getException() != null) {
