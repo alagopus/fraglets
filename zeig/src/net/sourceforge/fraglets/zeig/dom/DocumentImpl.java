@@ -6,6 +6,8 @@
  */
 package net.sourceforge.fraglets.zeig.dom;
 
+import java.io.IOException;
+import java.io.StringWriter;
 import java.sql.SQLException;
 
 import net.sourceforge.fraglets.zeig.model.NodeBuffer;
@@ -32,7 +34,7 @@ import org.w3c.dom.Text;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class DocumentImpl extends NodeImpl implements Document {
     public static final int ROOT;
@@ -224,6 +226,19 @@ public class DocumentImpl extends NodeImpl implements Document {
             }
         } catch (Exception ex) {
             ex.printStackTrace();
+        }
+    }
+    
+    public String toString() {
+        try {
+            OutputFormat of = new OutputFormat();
+            of.setIndent(1);
+            StringWriter out = new StringWriter();
+            XMLSerializer handler = new XMLSerializer(out, of);
+            handler.serialize(this);
+            return out.toString();
+        } catch (IOException ex) {
+            return super.toString() + ":" + ex.toString();
         }
     }
 
