@@ -27,7 +27,7 @@ import java.util.Iterator;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author  Klaus Rennecke
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class Recognizer {
     /** Known avatars. */
@@ -290,7 +290,7 @@ public class Recognizer {
         public Guild parseGuild() {
             parseCharacter('<');
             int start = position;
-            while (Character.isLetter(input[position]) || input[position] == ' ')
+            while (input[position] != '>')
                 position++;
             parseCharacter('>');
             return Guild.create(new String(input, start, position-start-1));
