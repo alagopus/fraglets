@@ -28,7 +28,7 @@ import org.xml.sax.SAXException;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class NodeFactory implements NodeTags {
     protected ConnectionFactory cf;
@@ -56,8 +56,6 @@ public class NodeFactory implements NodeTags {
     private NodeFactory() {
         this.nameCache = new SensorCache("node.name");
     }
-    
-    private static NodeFactory instance;
     
     public int getNamespace(String uri) throws SQLException {
         int id = pt.getPlainText(uri);

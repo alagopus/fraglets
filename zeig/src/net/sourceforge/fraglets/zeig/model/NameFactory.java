@@ -15,7 +15,7 @@ import net.sourceforge.fraglets.zeig.jdbc.ConnectionFactory;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class NameFactory {
     private ConnectionFactory cf;
@@ -23,8 +23,6 @@ public class NameFactory {
     public NameFactory(ConnectionFactory cf) {
         this.cf = cf;
     }
-    
-    private static NameFactory instance;
     
     public int getName(int ns, int value) throws SQLException {
         try {

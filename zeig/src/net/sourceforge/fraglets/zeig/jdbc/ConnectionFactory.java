@@ -21,14 +21,12 @@ import org.apache.log4j.Category;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class ConnectionFactory {
     
     public static final String RESOURCE_CONNECTION_URL =
         "net.sourceforge.fraglets.zeig.jdbc.connectionUrl";
-    
-    protected static ConnectionFactory instance;
     
     private Connection connection;
     

@@ -16,7 +16,7 @@ import net.sourceforge.fraglets.zeig.jdbc.ConnectionFactory;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class XMLTextFactory {
     private ConnectionFactory cf;
@@ -24,8 +24,6 @@ public class XMLTextFactory {
     public XMLTextFactory(ConnectionFactory cf) {
         this.cf = cf;
     }
-    
-    private static XMLTextFactory instance;
     
     public int getXMLText(int nm, int node[]) throws SQLException {
         int hc = OTPHash.chain(nm, OTPHash.hash(node));

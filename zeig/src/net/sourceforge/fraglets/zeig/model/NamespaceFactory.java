@@ -15,7 +15,7 @@ import net.sourceforge.fraglets.zeig.jdbc.ConnectionFactory;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class NamespaceFactory {
     private ConnectionFactory connectionFactory;
@@ -23,8 +23,6 @@ public class NamespaceFactory {
     public NamespaceFactory(ConnectionFactory connectionFactory) {
         this.connectionFactory = connectionFactory;
     }
-    
-    private static NamespaceFactory instance;
     
     public int getNamespace(int uri, int value) throws SQLException {
         try {
