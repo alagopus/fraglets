@@ -3,7 +3,12 @@ Changes for version 1.24:
     - Fixed file headers on UpdateWizard and UpdateApplet
     - Separated about text generation to utility class
     - Added about button and text to UpdateWizard
+    - Added editing functions to UpdateWizard
+    - Added synthetic property EX for the previous guild
+    - Instanciate known character classes
     - Fix broken example link
+    - Fix EqXMLParser overriding guild timestamp with avatar timestamp
+    - Minor layout enhancements for UpdateWizard
 
 Changes for version 1.23:
     - Completed level 65 class titles
