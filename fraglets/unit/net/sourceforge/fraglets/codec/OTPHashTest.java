@@ -80,4 +80,66 @@ public class OTPHashTest extends STDHashTest {
 //			fail("unexpected: "+ex);
 //		}
 	}
+    
+    /** Repeat count for array portion tests. */
+    public static final int REPEAT_PORTION = 20;
+    
+    /** Key length for array portion tests. */
+    public static final int REPEAT_LENGTH = 64;
+    
+    public void testHashBArray() {
+        Random random = new Random("testHashBArray".hashCode());
+        byte key[] = new byte[REPEAT_LENGTH];
+        int repeat = REPEAT_PORTION;
+        while (--repeat >= 0) {
+            random.nextBytes(key);
+            byte portion[] = new byte[random.nextInt(key.length)];
+            int offset = random.nextInt(key.length - portion.length);
+            System.arraycopy(key, offset, portion, 0, portion.length);
+            assertEquals(
+                "byte array portion hash equal",
+                OTPHash.hash(portion),
+                OTPHash.hash(key, offset, portion.length));
+        }
+    }
+
+    public void testHashCArray() {
+        Random random = new Random("testHashCArray".hashCode());
+        char key[];
+        byte buffer[] = new byte[REPEAT_LENGTH * 2];
+        int repeat = REPEAT_PORTION;
+        try {
+            while (--repeat >= 0) {
+                random.nextBytes(buffer);
+                key = new String(buffer, "UTF-16BE").toCharArray();
+                char portion[] = new char[random.nextInt(key.length)];
+                int offset = random.nextInt(key.length - portion.length);
+                System.arraycopy(key, offset, portion, 0, portion.length);
+                assertEquals(
+                    "char array portion hash equal",
+                    OTPHash.hash(portion),
+                    OTPHash.hash(key, offset, portion.length));
+            }
+        } catch (UnsupportedEncodingException ex) {
+            fail("unexpected: "+ex);
+        }
+    }
+
+    public void testHashIArray() {
+        Random random = new Random("testHashIArray".hashCode());
+        int key[] = new int[REPEAT_LENGTH];
+        int repeat = REPEAT_PORTION;
+        while (--repeat >= 0) {
+            for (int i = 0; i < key.length; i++) {
+                key[i] = random.nextInt();
+            }
+            int portion[] = new int[random.nextInt(key.length)];
+            int offset = random.nextInt(key.length - portion.length);
+            System.arraycopy(key, offset, portion, 0, portion.length);
+            assertEquals(
+                "int array portion hash equal",
+                OTPHash.hash(portion),
+                OTPHash.hash(key, offset, portion.length));
+        }
+    }
 }
