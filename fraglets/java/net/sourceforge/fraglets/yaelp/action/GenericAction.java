@@ -12,9 +12,11 @@ import java.text.MessageFormat;
 import javax.swing.AbstractAction;
 import javax.swing.JComponent;
 import javax.swing.JPopupMenu;
+import javax.swing.JOptionPane;
 import javax.swing.JRootPane;
 import javax.swing.RootPaneContainer;
 import javax.swing.SwingUtilities;
+import org.xml.sax.SAXParseException;
 
 /**
  * Generic abstract action within an action context.
@@ -72,4 +74,19 @@ public abstract class GenericAction extends AbstractAction {
         }
         return MessageFormat.format(ac.getResourceString(key), (Object[])args);
     }
+
+    protected void showException(ActionEvent e, Throwable ex) {
+        String message = ex.getLocalizedMessage();
+        if (message == null) {
+            message = ex.toString();
+        }
+        if (ex instanceof SAXParseException) {
+            SAXParseException spe = (SAXParseException)ex;
+            message += "(" + spe.getSystemId()
+                + " line " + spe.getLineNumber() + ")";
+        }
+        JOptionPane.showMessageDialog
+        (getRootPane(e), message, "Exception", javax.swing.JOptionPane.ERROR_MESSAGE);
+    }
+    
 }

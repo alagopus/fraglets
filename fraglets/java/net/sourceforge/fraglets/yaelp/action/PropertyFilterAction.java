@@ -1,5 +1,5 @@
 /*
- * AfterFilterAction.java
+ * PropertyFilterAction.java
  * Copyright (C) 2001, 2002 Klaus Rennecke.
  * Created on November 6, 2002, 10:04 AM
  */
@@ -9,11 +9,12 @@ package net.sourceforge.fraglets.yaelp.action;
 import java.awt.event.ActionEvent;
 import javax.swing.JOptionPane;
 import net.sourceforge.fraglets.yaelp.bean.DateInput;
+import net.sourceforge.fraglets.yaelp.bean.PropertyInput;
 import net.sourceforge.fraglets.yaelp.model.Avatar;
 import net.sourceforge.fraglets.yaelp.model.AvatarFilter;
 
 /**
- * Action to create a timestamp filter.
+ * Action to create a property filter.
  *
  * <p>This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,10 +32,10 @@ import net.sourceforge.fraglets.yaelp.model.AvatarFilter;
  *
  * @author  marion@users.sourceforge.net
  */
-public class AfterFilterAction extends GenericAction {
-    public static final String ACTION_COMMAND = "afterFilter";
+public class PropertyFilterAction extends GenericAction {
+    public static final String ACTION_COMMAND = "propertyFilter";
     
-    public AfterFilterAction() {
+    public PropertyFilterAction() {
         putValue(ACTION_COMMAND_KEY, ACTION_COMMAND);
     }
     
@@ -42,23 +43,21 @@ public class AfterFilterAction extends GenericAction {
      * Pops up an option pane containing the about application text.
      */
     public void actionPerformed(ActionEvent e) {
-        DateInput input;
         ActionContext ac = getActionContext(e);
-        Object selection = ac.getCurrentSelection();
-        if (selection instanceof Avatar) {
-            input = new DateInput(((Avatar)selection).getTimestamp());
-        } else {
-            input = new DateInput();
-        }
-        input.setLabel(ac.getResourceString("afterFilterInput.label"));
-        int result = JOptionPane.showConfirmDialog
-            (getRootPane(e), input, ac.getResourceString("afterFilterInput.title"),
-             JOptionPane.OK_CANCEL_OPTION,
-             JOptionPane.QUESTION_MESSAGE);
-        if (result == JOptionPane.OK_OPTION) {
-            AvatarFilter filter =
-                new AvatarFilter.Time(input.getTime(), false);
-            ac.appendFilter(filter.toString(), filter);
+        PropertyInput input = new PropertyInput();
+        input.setModal(true);
+        input.setTitle(ac.getResourceString("propertyFilterInput.title"));
+        int result = input.showDialog(getRootPane(e));
+        if (result == input.OK_OPTION) {
+            String name = input.getPropertyName();
+            if (name != null && name.length() > 0) {
+                String value = input.getPropertyValue();
+                if (value != null && value.length() == 0) {
+                    value = null;
+                }
+                AvatarFilter filter = new AvatarFilter.Property(name, value);
+                ac.appendFilter(filter.toString(), filter);
+            }
         }
     }
     

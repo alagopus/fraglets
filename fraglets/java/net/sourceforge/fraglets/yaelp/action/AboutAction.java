@@ -34,6 +34,7 @@ public class AboutAction extends GenericAction {
     public AboutAction() {
         putValue(ACTION_COMMAND_KEY, ACTION_COMMAND);
     }
+    
     /** Invoked when an action occurs.
      * Pops up an option pane containing the about application text.
      */

@@ -7,6 +7,7 @@
 package net.sourceforge.fraglets.yaelp.action;
 
 import java.net.URL;
+import net.sourceforge.fraglets.yaelp.model.AvatarFilter;
 
 /**
  * Action context -- the interface of the application to the actions.
@@ -33,4 +34,5 @@ public interface ActionContext {
     public String getApplicationName();
     public String getVersion();
     public Object getCurrentSelection();
+    public void appendFilter(String name, AvatarFilter filter);
 }
