@@ -65,7 +65,7 @@ import thinlet.Thinlet;
  * </ul> 
  * 
  * @author Klaus Rennecke
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class Main extends Thinlet implements Comparator {
     
@@ -241,6 +241,7 @@ public class Main extends Thinlet implements Comparator {
 
     public void actionAbout() {
         add("about.xml");
+        setString(find("revisionLabel"), "text", "$Revision: 1.5 $");
     }
     
     public void actionHelp() {
