@@ -16,7 +16,7 @@
     
     <target name="init">
         <property name="package" value="net/sourceforge/fraglets/yaelp"/>
-        <property name="version" value="1.14"/>
+        <property name="version" value="1.15"/>
     </target>
     
     <target depends="jars" name="release">

@@ -68,7 +68,7 @@ import javax.swing.RepaintManager;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.17 $
+ * @version $Revision: 1.18 $
  */
 public class RosterFrame extends javax.swing.JFrame {
     /** The file chooser map used to select files to parse and export.
@@ -165,6 +165,7 @@ public class RosterFrame extends javax.swing.JFrame {
         rosterTable.setSelectionMode
             (javax.swing.ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         rosterTable.setDefaultRenderer(Object.class, new AvatarCellRenderer());
+        TransferableTableSelection.createTableGestureListener(rosterTable);
         
         // make this filter item bold to match element rendering
         mainFilterItem.setFont(mainFilterItem.getFont().deriveFont(Font.BOLD));
@@ -1859,7 +1860,7 @@ public class RosterFrame extends javax.swing.JFrame {
                 }
             }
             aboutText =
-            "YAELP log file parser, version 1.14.\n"+
+            "YAELP log file parser, version 1.15.\n"+
             "Copyright © 2001, 2002 Klaus Rennecke.\n"+
             "XML parser Copyright © 1997, 1998 James Clark.\n"+
             "XSL transformation Copyright © 1998, 1999 James Clark.\n"+
