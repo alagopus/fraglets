@@ -19,6 +19,9 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import java.util.HashMap;
 import javax.swing.JFileChooser;
+import java.util.Properties;
+import java.util.Iterator;
+import java.util.Map;
 
 /** This class implements a simple GUI to invoke the log recognizer and
  * display the results.
@@ -38,7 +41,7 @@ import javax.swing.JFileChooser;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author Klaus Rennecke
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public class RosterFrame extends javax.swing.JFrame {
     /** The file chooser map used to select files to parse and export.
@@ -1272,6 +1275,7 @@ public class RosterFrame extends javax.swing.JFrame {
         pw.println("<roster title=\"Roster\">"); // FIXME: allow setting title
         // create tag names
         javax.swing.table.TableColumnModel header = rosterTable.getColumnModel();
+        RosterTableModel model = (RosterTableModel)rosterTable.getModel();
         int cols = header.getColumnCount();
         String tags[] = new String[cols];
         pw.println(" <heading>");
@@ -1304,6 +1308,21 @@ public class RosterFrame extends javax.swing.JFrame {
                     pw.println(">");
                 } else {
                     pw.println("/>");
+                }
+            }
+            Iterator i = model.getAvatar(j).getProperties();
+            if (i != null) {
+                while (i.hasNext()) {
+                    Map.Entry entry = (Map.Entry)i.next();
+                    Avatar.TimestampEntry value =
+                        (Avatar.TimestampEntry)entry.getValue();
+                    pw.print("  <property name=\"");
+                    pw.print(entry.getKey());
+                    pw.print("\" value=\"");
+                    pw.print(quote(value.toString(), "&<>\""));
+                    pw.print("\" time=\"");
+                    pw.print(new java.sql.Date(value.timestamp));
+                    pw.println("\"/>");
                 }
             }
             pw.println(" </avatar>");
@@ -1395,7 +1414,7 @@ public class RosterFrame extends javax.swing.JFrame {
                 }
             }
             aboutText =
-            "YAELP log file parser, $Revision: 1.10 $.\n"+
+            "YAELP log file parser, $Revision: 1.11 $.\n"+
             "Copyright © 2001 Klaus Rennecke.\n"+
             "XML parser Copyright © 1997, 1998 James Clark.\n"+
             "XSL transformation Copyright © 1998, 1999 James Clark.\n"+
@@ -1438,8 +1457,17 @@ public class RosterFrame extends javax.swing.JFrame {
      * @return the quoted string
      */
     public static String pcdata(String str) {
+        return quote(str, "&<>");
+    }
+    
+    /** Quote a string, ready to use in a #PCDATA section of XML
+     * @param str the string to quote
+     * @param delim the delimiters to quote in the string
+     * @return the quoted string
+     */
+    public static String quote(String str, String delim) {
         StringBuffer buffer = new StringBuffer();
-        java.util.StringTokenizer tok = new java.util.StringTokenizer(str, "&<>", true);
+        java.util.StringTokenizer tok = new java.util.StringTokenizer(str, delim, true);
         while (tok.hasMoreTokens()) {
             String token = tok.nextToken();
             if (token.length() == 1) {
@@ -1452,6 +1480,9 @@ public class RosterFrame extends javax.swing.JFrame {
                         break;
                     case '&':
                         buffer.append("&amp;");
+                        break;
+                    case '"':
+                        buffer.append("&quot;");
                         break;
                     default:
                         buffer.append(token);

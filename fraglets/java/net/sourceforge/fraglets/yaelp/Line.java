@@ -28,7 +28,7 @@ import java.util.Locale;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author  kre
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class Line {
     /** Temporary time stamp specification until first parse. */
@@ -117,11 +117,87 @@ public class Line {
         return chars;
     }
     
+    public int getLength() {
+        return chars.length;
+    }
+    
     /** Indexed getter for property char.
      * @param index Index of the property.
      * @return Value of the property at <CODE>index</CODE>.
      */
     public char getChar(int index) {
         return chars[index];
+    }
+    
+    /** Check whether this line starts with the characters
+     * in <var>other</var>.
+     * @param other the characters to compare to
+     * @return true if <var>other</var> characters compare equal */    
+    public boolean startsWith(char[] other) {
+        if (chars.length >= other.length) {
+            return compareTo(0, other, 0, other.length);
+        } else {
+            return false;
+        }
+    }
+    
+    /** Check whether this line ends with the characters
+     * in <var>other</var>.
+     * @param other the characters to compare to
+     * @return true if <var>other</var> characters compare equal */    
+    public boolean endsWith(char[] other) {
+        int lineOff = chars.length - other.length;
+        if (lineOff >= 0) {
+            return compareTo(lineOff, other, 0, other.length);
+        } else {
+            return false;
+        }
+    }
+    
+    /** Compare a portion of this line to the <var>other</var>
+     * characters. Comparision starts at <var>lineOff</var> in
+     * the line and at <var>otherOff</var> in the other characters.
+     * Only <var>len</var> characters are compared at most.
+     * @param lineOff offset into this line
+     * @param other other characters to compare to
+     * @param otherOff offset into other characters
+     * @param len length of consecutive characters to compare
+     * @return true if all characters in <var>len</var> compare equal */
+    public boolean compareTo(int lineOff, char other[], int otherOff, int len) {
+        char chars[] = this.chars;
+        while (--len >= 0) {
+            if (chars[lineOff++] != other[otherOff++]) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    public int indexOf(int start, char ch) {
+        char chars[] = this.chars;
+        int end = chars.length;
+        while (start < end) {
+            if (chars[start] == ch) {
+                return start;
+            } else {
+                start += 1;
+            }
+        }
+        return -1;
+    }
+    
+    /** Create a String as a substring of this line.
+     * @param off starting offset for the desired string
+     * @param len length of the desired string
+     * @return the created String */
+    public String substring(int off, int len) {
+        return new String(chars, off, len);
+    }
+    
+    /** Create a String as a substring of this line.
+     * @param off starting offset for the desired string
+     * @return the created String */
+    public String substring(int off) {
+        return new String(chars, off, chars.length - off);
     }
 }

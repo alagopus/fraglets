@@ -35,7 +35,7 @@ import java.util.zip.GZIPInputStream;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author  kre
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class EqlogParser {
     public static final String PREFIX = "[Sun Apr 01 16:38:57 2001] ";
@@ -98,8 +98,7 @@ public class EqlogParser {
                 line = parser.readLine();
                 if (line == null) {
                     // end
-                } else if (recognizer.isWhoLine(line)) {
-                    recognizer.parseWhoLine(line);
+                } else if (recognizer.parse(line)) {
                     n++;
                 } else {
                     n++;

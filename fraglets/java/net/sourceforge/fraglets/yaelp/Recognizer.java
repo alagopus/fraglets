@@ -27,7 +27,7 @@ import java.util.Iterator;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author  Klaus Rennecke
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class Recognizer {
     /** Known avatars. */
@@ -36,6 +36,15 @@ public class Recognizer {
     protected int lines;
     /** THe who line parser. */
     protected WhoLine whoLine = new WhoLine();
+    /** The currenly played avatar. */
+    protected Avatar active = null;
+    
+    /** Pattern for special lines. */
+    protected static final char[] PATTERN__SAVED_ = 
+        " saved.".toCharArray();
+    /** Pattern for special lines. */
+    protected static final char[] PATTERN_YOU_HAVE_BECOME_BETTER_AT_ =
+        "You have become better at ".toCharArray();
     
     /** Creates new Recognizer */
     public Recognizer() {
@@ -55,17 +64,19 @@ public class Recognizer {
                     return true;
             }
             return false;
-            // does not work....            
-//            if (line.getWord(line.getLength()-2) == W_ZONE) {
-//                return isNumeric(line, 0);
-//            } else if (line.getWord(0) == W_ANONYMOUS) {
-//                return line.getLength() > 1;
-//            } else {
-//                return false;
-//            }
         } catch (ArrayIndexOutOfBoundsException ex) {
             return false;
         }
+    }
+    
+    public static boolean isAvatarName(String name) {
+        int scan = name.length();
+        while (--scan > 0) {
+            if (!Character.isLowerCase(name.charAt(scan))) {
+                return false;
+            }
+        }
+        return scan == 0 && Character.isUpperCase(name.charAt(0));
     }
     
     /** Update or create an avatar with the specified information.
@@ -112,18 +123,48 @@ public class Recognizer {
     /** Parse a given who line and update or create an avatar based
      * on the information found.
      * @param line line to parse
-     * @return an updated or created avatar, or null
+     * @return true iff parsed something.
      */    
-    public Avatar parseWhoLine(Line line) {
+    public boolean parse(Line line) {
         lines += 1;
         try {
-            return whoLine.parse(line);
+            if (isWhoLine(line)) {
+                return whoLine.parse(line) != null;
+            } else if (line.endsWith(PATTERN__SAVED_)) {
+                String name = line.substring(0,
+                    line.getLength() - PATTERN__SAVED_.length);
+                if (isAvatarName(name)) {
+                    active = updateAvatar(line.getTimestamp(), name,
+                        -1, null, null, null, null);
+                    return true;
+                } else {
+                    return false;
+                }
+            } else if (active != null &&
+                line.startsWith(PATTERN_YOU_HAVE_BECOME_BETTER_AT_)) {
+                int start = PATTERN_YOU_HAVE_BECOME_BETTER_AT_.length;
+                int mark = line.indexOf(start, '!');
+                int end = line.getLength();
+                if (mark == -1 || end <= mark + 4 ||
+                    line.getChar(mark + 1) != ' ' ||
+                    line.getChar(mark + 2) != '(' ||
+                    line.getChar(end - 1) != ')') {
+                    return false;
+                }
+                String name = line.substring(start, mark - start);
+                String value = line.substring(mark + 3, end - mark - 4);
+                active.setProperty(name, value, line.getTimestamp());
+                return true;
+            } else {
+                return false;
+            }
         } catch (SyntaxError err) {
             System.err.println("syntax error in line: "+line);
             err.printStackTrace();
-            return null;
+            return false;
         }
     }
+    
     public static class SyntaxError extends Error {
         public SyntaxError(String message) {
             super(message);
