@@ -21,6 +21,18 @@ package net.sourceforge.fraglets.mtgo.trader;
 
 import javax.swing.table.TableModel;
 import javax.swing.JTable;
+import net.sourceforge.fraglets.swing.SortedTableProxy;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import javax.swing.table.JTableHeader;
+import net.sourceforge.fraglets.swing.SortedTableModel;
+import java.awt.Component;
+import javax.swing.Icon;
+import java.awt.Graphics;
+import javax.swing.table.DefaultTableCellRenderer;
+import java.awt.Point;
+import javax.swing.SwingUtilities;
+import javax.swing.JLabel;
 
 /**
  * Simple table display to show card prices.
@@ -46,14 +58,31 @@ public class PriceTable extends javax.swing.JPanel {
         setLayout(new java.awt.BorderLayout());
 
         tableScroll.setVerticalScrollBarPolicy(javax.swing.JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        tableScroll.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+            public void propertyChange(java.beans.PropertyChangeEvent evt) {
+                tableScrollPropertyChange(evt);
+            }
+        });
+
         priceTable.setCellEditor(null);
         tableScroll.setViewportView(priceTable);
 
         add(tableScroll, java.awt.BorderLayout.CENTER);
 
     }//GEN-END:initComponents
+
+    private void tableScrollPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_tableScrollPropertyChange
+        if (evt.getPropertyName().equals("columnHeader")) {
+            JTableHeader header = priceTable.getTableHeader();
+            ((JLabel)header.getDefaultRenderer()).setIcon(new HeaderArrowIcon());
+            header.addMouseListener(new HeaderMouseListener());
+        }
+    }//GEN-LAST:event_tableScrollPropertyChange
     
     public void setModel(TableModel model) {
+        if (!(model instanceof SortedTableModel)) {
+            model = new SortedTableProxy(model);
+        }
         priceTable.setModel(model);
     }
     
@@ -65,9 +94,60 @@ public class PriceTable extends javax.swing.JPanel {
         return priceTable;
     }
     
+    public static class HeaderMouseListener extends MouseAdapter {
+        int lastColumn = -1;
+        boolean ascending = true;
+        public void mouseClicked(MouseEvent ev) {
+            JTableHeader header = (JTableHeader)ev.getSource();
+            int col = header.columnAtPoint(ev.getPoint());
+            col = header.getColumnModel().getColumn(col).getModelIndex();
+            SortedTableModel model = (SortedTableModel)header.getTable().getModel();
+            if (lastColumn == col) {
+                ascending = !ascending;
+            } else {
+                ascending = true;
+            }
+            model.sortColumn(col, ascending);
+            lastColumn = col;
+        }
+    }
+    
+    public static class HeaderArrowIcon implements Icon {
+        
+        public void paintIcon(Component c, Graphics g, int x, int y) {
+            JTableHeader h = (JTableHeader)c.getParent().getParent();
+            SortedTableProxy model = (SortedTableProxy)h.getTable().getModel();
+            if (h.getColumnModel().getColumn(h.columnAtPoint
+                (SwingUtilities.convertPoint(c, x, y, h)))
+                .getModelIndex() != model.getSortedColumn())
+                return; // not sorted...
+            
+            g.translate( x, y );
+            g.setColor( h.getForeground() );
+            if( model.isAscending() ) {
+                g.drawLine( 0, 0, 0, 7 );
+                g.drawLine( 1, 1, 1, 6 );
+                g.drawLine( 2, 2, 2, 5 );
+                g.drawLine( 3, 3, 3, 4 );
+            } else {
+                g.drawLine( 4, 0, 4, 7 );
+                g.drawLine( 3, 1, 3, 6 );
+                g.drawLine( 2, 2, 2, 5 );
+                g.drawLine( 1, 3, 1, 4 );
+            }
+            g.translate( -x, -y );
+        }
+        
+        public int getIconWidth() { return 4; }
+        
+        public int getIconHeight() { return 8; }
+        
+    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JScrollPane tableScroll;
     private javax.swing.JTable priceTable;
     // End of variables declaration//GEN-END:variables
     
 }
+
+
