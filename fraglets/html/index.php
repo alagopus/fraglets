@@ -107,7 +107,7 @@ files from the past half year in under one minute. You can use the
 >MTGO Trader</a> is an unfinished attempt at creating a tool to organize
 trading cards, geared toward the late online version. You can use the
 <a href="http://sourceforge.net/project/showfiles.php?group_id=5068"
->pre-compiled jars</p> from the files section to have a look at what
+>pre-compiled jars</a> from the files section to have a look at what
 it does so far.</p>
 
 <h2>Shell scripts</h2>
@@ -123,6 +123,6 @@ files. It is sort of obscure in its implementation, does depend on standard
 *NIX tools and a ready installation of the GNU C++ preprocessor, but is
 really fast compared to all other solutions I have seen so far.
 
-<hr noshade><p align="right">$Id: index.php,v 1.7 2002-06-09 14:11:11 marion Exp $</p>
+<hr noshade><p align="right">$Id: index.php,v 1.8 2002-06-09 14:13:38 marion Exp $</p>
 </BODY>
 </HTML>
