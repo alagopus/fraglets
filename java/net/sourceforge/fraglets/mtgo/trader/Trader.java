@@ -43,6 +43,7 @@ import javax.swing.JList;
 import java.util.Iterator;
 import java.net.URLConnection;
 import java.beans.PropertyVetoException;
+import javax.swing.UIManager;
 
 /**
  *
@@ -117,6 +118,7 @@ public class Trader extends JFrame {
 
         getContentPane().add(desktopPane, java.awt.BorderLayout.CENTER);
 
+        propertyPanel.setBorder(new javax.swing.border.TitledBorder("Card Information"));
         cardPanel.setMaximumSize(new java.awt.Dimension(200, 285));
         cardPanel.setMinimumSize(new java.awt.Dimension(200, 285));
         cardPanel.setPreferredSize(new java.awt.Dimension(200, 285));
@@ -296,7 +298,7 @@ public class Trader extends JFrame {
         System.exit(0);
     }//GEN-LAST:event_exitForm
     
-    protected void openTable(String name, final TableModel model) {
+    protected void openTable(String name, TableModel model) {
         final PriceTable table = new PriceTable(model);
         JInternalFrame frame = new JInternalFrame(name, true, true, true, true);
         frame.getContentPane().setLayout(new BorderLayout());
@@ -315,6 +317,7 @@ public class Trader extends JFrame {
             .addListSelectionListener(new ListSelectionListener() {
                 public void valueChanged(ListSelectionEvent e) {
                     if (!e.getValueIsAdjusting()) {
+                        TableModel model = table.getModel();
                         int index = table.getTable().getSelectedRow();
                         if (index < 0) {
                             ((CardPanel)cardPanel).setImage(null);
@@ -378,6 +381,11 @@ public class Trader extends JFrame {
      * @param args the command line arguments
      */
     public static void main(String args[]) {
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (Exception ex) {
+            // ignore
+        }
         new Trader().show();
     }
     
