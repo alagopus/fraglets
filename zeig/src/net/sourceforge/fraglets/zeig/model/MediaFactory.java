@@ -19,7 +19,7 @@ import net.sourceforge.fraglets.zeig.jdbc.ConnectionFactory;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class MediaFactory {
     private ConnectionFactory cf;
@@ -66,6 +66,25 @@ public class MediaFactory {
         } else {
             throw new NoSuchElementException
                 ("media with id: "+id);
+        }
+    }
+    
+    public String getType(int id) throws SQLException {
+        PreparedStatement ps = cf
+            .prepareStatement("select t from me where id=?");
+        
+        ps.setInt(1, id);
+        
+        ResultSet rs = ps.executeQuery();
+        try {
+            if (rs.next()) {
+                return rs.getString(1);
+            } else {
+                throw new NoSuchElementException
+                    ("media with id: "+id);
+            }
+        } finally {
+            rs.close();
         }
     }
     
