@@ -76,7 +76,21 @@ public class UTF8Decoder {
             off = 0; // ignored
         }
         while (--len >= 0) {
-            buffer[off++] = (char)decodeUCS4();
+            int value = decodeUCS4(); // never less than zero
+            if (value <= 0xffff) {
+                buffer[off++] = (char)value;
+            } else if (value <= 0x10ffff) {
+                if (--len < 0) {
+                    throw new IllegalStateException
+                        ("no room for UTF-16 encoded character: "+value);
+                }
+                value -= 0x10000;
+                buffer[off++] = (char)(0xd800 | (value >> 10));
+                buffer[off++] = (char)(0xdc00 | (value & 0x3ff));
+            } else {
+                throw new IllegalArgumentException
+                    ("character value out of range: "+value);
+            }
         }
         return buffer;
     }
