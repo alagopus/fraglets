@@ -28,7 +28,7 @@ import java.util.Map;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class PropertyTableModel extends javax.swing.table.AbstractTableModel implements PropertyChangeListener {
     /** The avatar instance we'return representing. */
@@ -59,7 +59,7 @@ public class PropertyTableModel extends javax.swing.table.AbstractTableModel imp
     }
     
     public int getColumnCount() {
-        return 2;
+        return 3;
     }
     
     public int getRowCount() {
@@ -73,6 +73,8 @@ public class PropertyTableModel extends javax.swing.table.AbstractTableModel imp
                 return getName(row);
             case 1:
                 return avatar.getProperty(getName(row));
+            case 2:
+                return new java.sql.Timestamp(avatar.getTimestamp(getName(row)));
             default:
                 throw new IllegalArgumentException("invalid column: "+col);
         }
@@ -82,6 +84,7 @@ public class PropertyTableModel extends javax.swing.table.AbstractTableModel imp
         switch (col) {
             case 0: return "Name";
             case 1: return "Value";
+            case 2: return "Timestamp";
             default:
                 throw new IllegalArgumentException("invalid column: "+col);
         }

@@ -21,6 +21,19 @@ import javax.swing.JFileChooser;
 import java.util.Properties;
 import java.util.Iterator;
 import java.util.Map;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import java.util.Arrays;
+import javax.swing.JMenuItem;
+import javax.swing.filechooser.FileFilter;
+import java.io.File;
+import javax.swing.JComboBox;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.table.TableCellEditor;
+import javax.swing.DefaultCellEditor;
+import javax.swing.border.LineBorder;
+import java.awt.Color;
+import java.awt.Font;
 
 /** This class implements a simple GUI to invoke the log recognizer and
  * display the results.
@@ -40,7 +53,7 @@ import java.util.Map;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.13 $
+ * @version $Revision: 1.14 $
  */
 public class RosterFrame extends javax.swing.JFrame {
     /** The file chooser map used to select files to parse and export.
@@ -56,8 +69,6 @@ public class RosterFrame extends javax.swing.JFrame {
     /** The current avatar filter, if any.
      */    
     protected AvatarFilter avatarFilter;
-    /** The property editor. */
-    protected PropertyEditor propertyEditor;
     
     protected String aboutText;
     
@@ -117,6 +128,9 @@ public class RosterFrame extends javax.swing.JFrame {
         rosterTable.setSelectionMode
             (javax.swing.ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         rosterTable.setDefaultRenderer(Object.class, new AvatarCellRenderer());
+        
+        // make this filter item bold to match element rendering
+        mainFilterItem.setFont(mainFilterItem.getFont().deriveFont(Font.BOLD));
 
         // attach filters
         mainFilterItem.putClientProperty(FILTER_PROPERTY,
@@ -129,6 +143,10 @@ public class RosterFrame extends javax.swing.JFrame {
             new AvatarFilter.Guild("Sovereign Storm"));
         friendFilterItem.putClientProperty(FILTER_PROPERTY,
             new AvatarFilter.Guild("Veterans Legion"));
+        memberFilterItem.putClientProperty(FILTER_PROPERTY,
+            new AvatarFilter.Property("Rank", "a regular member"));
+        officerFilterItem.putClientProperty(FILTER_PROPERTY,
+            new AvatarFilter.Property("Rank", "an officer"));
         
         // attach styles
         defaultStyleItem.putClientProperty(STYLE_PROPERTY,
@@ -156,9 +174,7 @@ public class RosterFrame extends javax.swing.JFrame {
         // set editors
         Avatar.CHANGE.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
             public void propertyChange(java.beans.PropertyChangeEvent ev) {
-                if (ev.getPropertyName().equals(Avatar.class.getName())) {
-                    updateEditor(ev.getNewValue());
-                }
+                updateEditor(ev.getNewValue());
             }
         });
         initEditors();
@@ -179,6 +195,8 @@ public class RosterFrame extends javax.swing.JFrame {
         jSeparator1 = new javax.swing.JSeparator();
         dingMenuItem = new javax.swing.JMenuItem();
         dohMenuItem = new javax.swing.JMenuItem();
+        propertyInput = new net.sourceforge.fraglets.yaelp.PropertyInput();
+        propertyEditor = new net.sourceforge.fraglets.yaelp.PropertyEditor();
         tableScroll = new javax.swing.JScrollPane();
         rosterTable = new javax.swing.JTable();
         status = new javax.swing.JTextField();
@@ -200,10 +218,14 @@ public class RosterFrame extends javax.swing.JFrame {
         defaultFilterItem = new javax.swing.JCheckBoxMenuItem();
         alliedFilterItem = new javax.swing.JCheckBoxMenuItem();
         friendFilterItem = new javax.swing.JCheckBoxMenuItem();
+        jSeparator4 = new javax.swing.JSeparator();
+        memberFilterItem = new javax.swing.JCheckBoxMenuItem();
+        officerFilterItem = new javax.swing.JCheckBoxMenuItem();
         separator4 = new javax.swing.JSeparator();
         newFilterMenu = new javax.swing.JMenu();
         newGuildFilterItem = new javax.swing.JMenuItem();
         levelFilterItem = new javax.swing.JMenuItem();
+        propertyFilterItem = new javax.swing.JMenuItem();
         classFilterItem = new javax.swing.JMenuItem();
         cultureFilterItem = new javax.swing.JMenuItem();
         afterFilterItem = new javax.swing.JMenuItem();
@@ -272,6 +294,7 @@ public class RosterFrame extends javax.swing.JFrame {
         });
 
         contextMenu.add(dohMenuItem);
+        propertyEditor.setModal(true);
 
         setTitle("YAELP log file parser");
         setIconImage(getToolkit().getImage(getClass().getResource("logo.gif")));
@@ -403,6 +426,25 @@ public class RosterFrame extends javax.swing.JFrame {
         });
 
         filterMenu.add(friendFilterItem);
+        filterMenu.add(jSeparator4);
+        memberFilterItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("memberFilterItem.text"));
+        memberFilterItem.setToolTipText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("memberFilterItem.tooltip"));
+        memberFilterItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                filterItemActionPerformed(evt);
+            }
+        });
+
+        filterMenu.add(memberFilterItem);
+        officerFilterItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("officerFilterItem.text"));
+        officerFilterItem.setToolTipText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("officerFilterItem.tooltip"));
+        officerFilterItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                filterItemActionPerformed(evt);
+            }
+        });
+
+        filterMenu.add(officerFilterItem);
         filterMenu.add(separator4);
         newFilterMenu.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("newFilterMenu.text"));
         newGuildFilterItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("newGuildFilterItem.text"));
@@ -423,6 +465,15 @@ public class RosterFrame extends javax.swing.JFrame {
         });
 
         newFilterMenu.add(levelFilterItem);
+        propertyFilterItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("propertyFilterItem.text"));
+        propertyFilterItem.setToolTipText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("propertyFilterItem.tooltip"));
+        propertyFilterItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                propertyFilterItemActionPerformed(evt);
+            }
+        });
+
+        newFilterMenu.add(propertyFilterItem);
         classFilterItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("classFilterItem.text"));
         classFilterItem.setToolTipText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("classFilterItem.tooltip"));
         classFilterItem.addActionListener(new java.awt.event.ActionListener() {
@@ -529,17 +580,33 @@ public class RosterFrame extends javax.swing.JFrame {
         pack();
     }//GEN-END:initComponents
 
+    private void propertyFilterItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_propertyFilterItemActionPerformed
+        // Add your handling code here:
+        PropertyInput input = new PropertyInput();
+        input.setModal(true);
+        input.setTitle("New Property Filter");
+        int result = input.showDialog(this);
+        if (result == input.OK_OPTION) {
+            String name = input.getPropertyName();
+            if (name != null && name.length() > 0) {
+                String value = input.getPropertyValue();
+                if (value != null && value.length() == 0) {
+                    value = null;
+                }
+                AvatarFilter filter =  new AvatarFilter.Property(name, value);
+                doNewFilter(filter.toString(), filter);
+            }
+        }
+    }//GEN-LAST:event_propertyFilterItemActionPerformed
+
     private void propertyMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_propertyMenuItemActionPerformed
         // Add your handling code here:
         int row = rosterTable.getSelectedRow();
         if (row < 0) {
             return; // nothing selected
         }
-        if (propertyEditor == null) {
-            propertyEditor = new PropertyEditor(this, true);
-        }
         propertyEditor.setAvatar(model.getAvatar(row));
-        propertyEditor.show();
+        propertyEditor.showDialog(this);
     }//GEN-LAST:event_propertyMenuItemActionPerformed
 
     private void dohMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dohMenuItemActionPerformed
@@ -575,11 +642,11 @@ public class RosterFrame extends javax.swing.JFrame {
             input = new DateInput();
         }
         input.setLabel("After Date: ");
-        int result = javax.swing.JOptionPane.showConfirmDialog
+        int result = JOptionPane.showConfirmDialog
             (this, input, "New Timestamp Filter",
-             javax.swing.JOptionPane.OK_CANCEL_OPTION,
-             javax.swing.JOptionPane.QUESTION_MESSAGE);
-        if (result == javax.swing.JOptionPane.OK_OPTION) {
+             JOptionPane.OK_CANCEL_OPTION,
+             JOptionPane.QUESTION_MESSAGE);
+        if (result == JOptionPane.OK_OPTION) {
             AvatarFilter filter =
                 new AvatarFilter.Time(input.getTime(), false);
             doNewFilter(filter.toString(), filter);
@@ -589,7 +656,7 @@ public class RosterFrame extends javax.swing.JFrame {
     private void noFilterItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_noFilterItemActionPerformed
         int scan = filterMenu.getItemCount();
         while (--scan >= 0) {
-            javax.swing.JMenuItem item = filterMenu.getItem(scan);
+            JMenuItem item = filterMenu.getItem(scan);
             if (item != null && item.isSelected()) {
                 item.setSelected(false);
             }
@@ -598,18 +665,18 @@ public class RosterFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_noFilterItemActionPerformed
 
     private void newEntryItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newEntryItemActionPerformed
-        String name = javax.swing.JOptionPane.showInputDialog
+        String name = JOptionPane.showInputDialog
             (this, "Character name", "New Entry",
-             javax.swing.JOptionPane.QUESTION_MESSAGE);
+             JOptionPane.QUESTION_MESSAGE);
         fixBackingStore();
         if (name != null && name.length() > 0) {
             Avatar avatar = recognizer.updateAvatar
                 (0, name, 0, null, null, null, null);
             if (avatarFilter != null && !avatarFilter.accept(avatar)) {
                 // hidden by filter
-                javax.swing.JOptionPane.showMessageDialog
+                JOptionPane.showMessageDialog
                     (this, "New entry is hidden, disabling all filters.",
-                     "New Entry", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+                     "New Entry", JOptionPane.INFORMATION_MESSAGE);
                 noFilterItemActionPerformed(evt);
             } else if (avatar.getTimestamp() == 0) {
                 // really a new entry, will have to refresh roster
@@ -618,8 +685,7 @@ public class RosterFrame extends javax.swing.JFrame {
             }
             // search position in current roster
             Avatar roster[] = model.getRoster();
-            int index = java.util.Arrays
-                .binarySearch(roster, avatar, model.getOrder());
+            int index = Arrays.binarySearch(roster, avatar, model.getOrder());
             if (index < 0) {
                 doException(new RuntimeException("new entry not ound in roster"));
             } else {
@@ -632,7 +698,7 @@ public class RosterFrame extends javax.swing.JFrame {
     private void hideMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hideMenuItemActionPerformed
         // find the set filter menu entry
         AvatarFilter.Set setFilter = null;
-        javax.swing.JMenuItem filterItem = null;
+        JMenuItem filterItem = null;
         int scan = filterMenu.getItemCount();
         while (--scan >= 0) {
             javax.swing.JMenuItem item = filterMenu.getItem(scan);
@@ -679,8 +745,8 @@ public class RosterFrame extends javax.swing.JFrame {
     private void cultureFilterItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cultureFilterItemActionPerformed
         Object values[] = Avatar.Culture.getValues().toArray();
         java.util.Arrays.sort(values, Avatar.Culture.getComparator());
-        Object input = javax.swing.JOptionPane.showInputDialog
-            (this, "Culture", "New Culture Filter", javax.swing.JOptionPane.QUESTION_MESSAGE,
+        Object input = JOptionPane.showInputDialog
+            (this, "Culture", "New Culture Filter", JOptionPane.QUESTION_MESSAGE,
              null, values, null);
         if (input != null) {
             Avatar.Culture culture = (Avatar.Culture)input;
@@ -690,9 +756,9 @@ public class RosterFrame extends javax.swing.JFrame {
 
     private void classFilterItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_classFilterItemActionPerformed
         Object values[] = Avatar.Class.getValues().toArray();
-        java.util.Arrays.sort(values, Avatar.Class.getComparator());
-        Object input = javax.swing.JOptionPane.showInputDialog
-            (this, "Class", "New Class Filter", javax.swing.JOptionPane.QUESTION_MESSAGE,
+        Arrays.sort(values, Avatar.Class.getComparator());
+        Object input = JOptionPane.showInputDialog
+            (this, "Class", "New Class Filter", JOptionPane.QUESTION_MESSAGE,
              null, values, null);
         if (input != null) {
             Avatar.Class clazz = (Avatar.Class)input;
@@ -701,21 +767,45 @@ public class RosterFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_classFilterItemActionPerformed
 
     private void levelFilterItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_levelFilterItemActionPerformed
-        String input = javax.swing.JOptionPane.showInputDialog(this, "Minimum Level");
-        if (input != null) try {
-            int level = Integer.parseInt(input);
-            doNewFilter("min level "+level, new AvatarFilter.Level(level));
-        } catch (NumberFormatException ex) {
-            ex.printStackTrace();
-            doException(new NumberFormatException("invalid number: "+ex.getMessage()));
+        LevelSlider minLevelSlider = new LevelSlider(0, 61, 0);
+        LevelSlider maxLevelSlider = new LevelSlider(0, 61, 61);
+        Object stuff[] = new Object[] {
+            new LevelLabel("Minimum: ", minLevelSlider),
+            minLevelSlider,
+            new LevelLabel("Maximum: ", maxLevelSlider),
+            maxLevelSlider,
+        };
+        int result = JOptionPane.showConfirmDialog(this, stuff,
+            "Level Range", JOptionPane.OK_CANCEL_OPTION);
+        if (result == JOptionPane.OK_OPTION) {
+            int min = minLevelSlider.getValue();
+            int max = maxLevelSlider.getValue();
+            StringBuffer buffer = new StringBuffer();
+            if (min > 0) {
+                buffer.append("min level "+min);
+            } else {
+                min = Integer.MIN_VALUE;
+            }
+            if (max < 61) {
+                if (buffer.length() > 0) buffer.append(", ");
+                buffer.append("max level "+max);
+            } else {
+                max = Integer.MAX_VALUE;
+            }
+            if (buffer.length() > 0) {
+                doNewFilter(buffer.toString(), new AvatarFilter.Level(min, max));
+            } else {
+                JOptionPane.showMessageDialog(this, "No level limit specified",
+                    "Level Filter", JOptionPane.WARNING_MESSAGE);
+            }
         }
     }//GEN-LAST:event_levelFilterItemActionPerformed
 
     private void newGuildFilterItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newGuildFilterItemActionPerformed
         Object values[] = Avatar.Guild.getValues().toArray();
-        java.util.Arrays.sort(values, Avatar.Guild.getComparator());
-        Object input = javax.swing.JOptionPane.showInputDialog
-            (this, "Guild", "New Guild Filter", javax.swing.JOptionPane.QUESTION_MESSAGE,
+        Arrays.sort(values, Avatar.Guild.getComparator());
+        Object input = JOptionPane.showInputDialog
+            (this, "Guild", "New Guild Filter", JOptionPane.QUESTION_MESSAGE,
              null, values, null);
         if (input != null) {
             Avatar.Guild guild = (Avatar.Guild)input;
@@ -731,8 +821,8 @@ public class RosterFrame extends javax.swing.JFrame {
         chooser.setMultiSelectionEnabled(false);
         chooser.setSelectedFile(null);
         chooser.resetChoosableFileFilters();
-        chooser.addChoosableFileFilter(new javax.swing.filechooser.FileFilter() {
-            public boolean accept(java.io.File file) {
+        chooser.addChoosableFileFilter(new FileFilter() {
+            public boolean accept(File file) {
                 return file.isDirectory() ||
                     file.getName().endsWith(".xsl");
             }
@@ -768,8 +858,8 @@ public class RosterFrame extends javax.swing.JFrame {
         chooser.setMultiSelectionEnabled(false);
         chooser.setSelectedFile(null);
         chooser.resetChoosableFileFilters();
-        chooser.addChoosableFileFilter(new javax.swing.filechooser.FileFilter() {
-            public boolean accept(java.io.File file) {
+        chooser.addChoosableFileFilter(new FileFilter() {
+            public boolean accept(File file) {
                 return file.isDirectory() || file.getName().endsWith(".html");
             }
             public String getDescription() {
@@ -792,8 +882,8 @@ public class RosterFrame extends javax.swing.JFrame {
         chooser.setMultiSelectionEnabled(false);
         chooser.setSelectedFile(null);
         chooser.resetChoosableFileFilters();
-        chooser.addChoosableFileFilter(new javax.swing.filechooser.FileFilter() {
-            public boolean accept(java.io.File file) {
+        chooser.addChoosableFileFilter(new FileFilter() {
+            public boolean accept(File file) {
                 return file.isDirectory() || file.getName().endsWith(".xml");
             }
             public String getDescription() {
@@ -814,8 +904,8 @@ public class RosterFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_licenseItemActionPerformed
 
     private void aboutItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutItemActionPerformed
-        javax.swing.JOptionPane.showMessageDialog
-            (RosterFrame.this, getAboutText(), "About YAELP", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(RosterFrame.this, getAboutText(),
+            "About YAELP", JOptionPane.INFORMATION_MESSAGE);
         fixBackingStore();
     }//GEN-LAST:event_aboutItemActionPerformed
 
@@ -827,8 +917,8 @@ public class RosterFrame extends javax.swing.JFrame {
         chooser.setMultiSelectionEnabled(false);
         chooser.setSelectedFile(null);
         chooser.resetChoosableFileFilters();
-        chooser.addChoosableFileFilter(new javax.swing.filechooser.FileFilter() {
-            public boolean accept(java.io.File file) {
+        chooser.addChoosableFileFilter(new FileFilter() {
+            public boolean accept(File file) {
                 return file.isDirectory() ||
                     file.getName().endsWith(".csv") ||
                     file.getName().endsWith(".txt");
@@ -857,14 +947,22 @@ public class RosterFrame extends javax.swing.JFrame {
         chooser.setMultiSelectionEnabled(true);
         chooser.setSelectedFile(null);
         chooser.resetChoosableFileFilters();
-        chooser.addChoosableFileFilter(new javax.swing.filechooser.FileFilter() {
-            public boolean accept(java.io.File file) {
-                return file.isDirectory() ||
-                    file.getName().endsWith(".txt") ||
-                    file.getName().endsWith(".txt.gz");
+        chooser.addChoosableFileFilter(new FileFilter() {
+            public boolean accept(File file) {
+                if (file.isDirectory()) {
+                    return true;
+                } else {
+                    String name = file.getName();
+                    if (name.startsWith("eqlog_")) {
+                        return name.endsWith(".txt") ||
+                            name.endsWith(".txt.gz");
+                    } else {
+                        return false;
+                    }
+                }
             }
             public String getDescription() {
-                return "Log Files (*.txt, *.txt.gz)";
+                return "Log Files (eqlog_*.txt, eqlog_*.txt.gz)";
             }
         });
         if (chooser.showOpenDialog(this) == chooser.APPROVE_OPTION) {
@@ -890,6 +988,7 @@ public class RosterFrame extends javax.swing.JFrame {
         AvatarFilter guildFilter = null;
         AvatarFilter classFilter = null;
         AvatarFilter cultureFilter = null;
+        HashMap propertyFilters = null;
         scan = filterMenu.getItemCount();
         while (--scan >= 0) {
             javax.swing.JMenuItem item = filterMenu.getItem(scan);
@@ -901,6 +1000,8 @@ public class RosterFrame extends javax.swing.JFrame {
                     classFilter = appendFilterOr(classFilter, (AvatarFilter.Class)filter);
                 } else if (filter instanceof AvatarFilter.Culture) {
                     cultureFilter = appendFilterOr(cultureFilter, (AvatarFilter.Culture)filter);
+                } else if (filter instanceof AvatarFilter.Property) {
+                    propertyFilters = appendFilterOr(propertyFilters, (AvatarFilter.Property)filter);
                 } else if (filter instanceof AvatarFilter) {
                     avatarFilter = appendFilterAnd(avatarFilter, (AvatarFilter)filter);
                 } else {
@@ -912,13 +1013,13 @@ public class RosterFrame extends javax.swing.JFrame {
         avatarFilter = appendFilterAnd(avatarFilter, guildFilter);
         avatarFilter = appendFilterAnd(avatarFilter, classFilter);
         avatarFilter = appendFilterAnd(avatarFilter, cultureFilter);
+        avatarFilter = appendFilterAnd(avatarFilter, propertyFilters);
         setRoster(recognizer.getAvatars(), recognizer.getLines());
     }
     
     /** Initialize editors for enumerated values. */
     protected void initEditors() {
-        javax.swing.border.LineBorder blackBorder =
-            new javax.swing.border.LineBorder(java.awt.Color.black);
+        LineBorder blackBorder = new LineBorder(Color.black);
         Class editingClass[] = {
             Avatar.Class.class,
             Avatar.Culture.class,
@@ -927,23 +1028,26 @@ public class RosterFrame extends javax.swing.JFrame {
         };
         
         for (int i = 0; i < editingClass.length; i++) {
-            javax.swing.JComboBox selection = new javax.swing.JComboBox();
+            JComboBox selection = new JComboBox();
             selection.setBorder(blackBorder);
             selection.setEditable(true);
+            selection.setFont(rosterTable.getFont());
             rosterTable.setDefaultEditor(editingClass[i],
-                new javax.swing.DefaultCellEditor(selection));
+                new DefaultCellEditor(selection));
         }
     }
     
     /** Update the editor for the new instance. */
     protected void updateEditor(Object newInstance) {
-        javax.swing.table.TableCellEditor editor = rosterTable
+        TableCellEditor editor = rosterTable
             .getDefaultEditor(newInstance.getClass());
         java.awt.Component editorComponent = editor
             .getTableCellEditorComponent(rosterTable, newInstance, false, 0, 0);
-        javax.swing.DefaultComboBoxModel editorModel =
-            (javax.swing.DefaultComboBoxModel)
-            ((javax.swing.JComboBox)editorComponent).getModel();
+        if (!(editorComponent instanceof JComboBox)) {
+            return;
+        }
+        DefaultComboBoxModel editorModel = (DefaultComboBoxModel)
+            ((JComboBox)editorComponent).getModel();
         if (newInstance instanceof Comparable) {
             Comparable c = (Comparable)newInstance;
             int end = editorModel.getSize();
@@ -966,6 +1070,25 @@ public class RosterFrame extends javax.swing.JFrame {
         }
     }
     
+    protected static HashMap appendFilterOr(HashMap map, AvatarFilter.Property filter) {
+        if (filter == null) {
+            return map;
+        } else if (map == null) {
+            map = new HashMap();
+            map.put(filter.getName(), filter);
+        } else {
+            String key = filter.getName();
+            AvatarFilter list = (AvatarFilter)map.get(key);
+            if (list == null) {
+                list = filter;
+            } else {
+                list = new AvatarFilter.Or(list, filter);
+            }
+            map.put(key, list);
+        }
+        return map;
+    }
+    
     protected static AvatarFilter appendFilterAnd(AvatarFilter list, AvatarFilter filter) {
         if (list == null) {
             return filter;
@@ -973,6 +1096,23 @@ public class RosterFrame extends javax.swing.JFrame {
             return list;
         } else {
             return new AvatarFilter.And(list, filter);
+        }
+    }
+    
+    protected static AvatarFilter appendFilterAnd(AvatarFilter list, HashMap map) {
+        if (map == null) {
+            return list;
+        } else {
+            Iterator i = map.values().iterator();
+            while (i.hasNext()) {
+                AvatarFilter filter = (AvatarFilter)i.next();
+                if (list == null) {
+                    list = filter;
+                } else {
+                    list = new AvatarFilter.And(list, filter);
+                }
+            }
+            return list;
         }
     }
     
@@ -1123,6 +1263,7 @@ public class RosterFrame extends javax.swing.JFrame {
     protected void doParse(java.io.File files[]) {
         try {
             for (int i = 0; i < files.length; i++) {
+                recognizer.nextFile();
                 EqlogParser.parseFile(files[i], recognizer);
             }
             setRoster(recognizer.getAvatars(), recognizer.getLines());
@@ -1460,8 +1601,8 @@ public class RosterFrame extends javax.swing.JFrame {
                 }
             }
             aboutText =
-            "YAELP log file parser, version 1.11.\n"+
-            "Copyright © 2001 Klaus Rennecke.\n"+
+            "YAELP log file parser, version 1.12.\n"+
+            "Copyright © 2001, 2002 Klaus Rennecke.\n"+
             "XML parser Copyright © 1997, 1998 James Clark.\n"+
             "XSL transformation Copyright © 1998, 1999 James Clark.\n"+
             "\n"+
@@ -1568,14 +1709,16 @@ public class RosterFrame extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup styleButtonGroup;
     private javax.swing.JMenu fileMenu;
+    private javax.swing.JSeparator jSeparator4;
     private javax.swing.JMenuItem cultureFilterItem;
     private javax.swing.JSeparator jSeparator3;
     private javax.swing.JMenu filterMenu;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JMenuItem exportXMLItem;
-    private javax.swing.JMenuItem hideMenuItem;
+    private net.sourceforge.fraglets.yaelp.PropertyInput propertyInput;
     private javax.swing.JMenuItem licenseItem;
+    private javax.swing.JMenuItem hideMenuItem;
     private javax.swing.JTextField status;
     private javax.swing.JSeparator separator6;
     private javax.swing.JSeparator separator5;
@@ -1586,8 +1729,10 @@ public class RosterFrame extends javax.swing.JFrame {
     private javax.swing.JSeparator separator2;
     private javax.swing.JSeparator separator1;
     private javax.swing.JCheckBoxMenuItem friendFilterItem;
+    private javax.swing.JCheckBoxMenuItem memberFilterItem;
     private javax.swing.JMenuItem newEntryItem;
     private javax.swing.JRadioButtonMenuItem ssStyleItem;
+    private javax.swing.JMenuItem propertyFilterItem;
     private javax.swing.JMenuItem xpLicenseItem;
     private javax.swing.JRadioButtonMenuItem mwStyleItem;
     private javax.swing.JMenuItem xtLicenseItem;
@@ -1597,8 +1742,8 @@ public class RosterFrame extends javax.swing.JFrame {
     private javax.swing.JCheckBoxMenuItem defaultFilterItem;
     private javax.swing.JCheckBoxMenuItem mainFilterItem;
     private javax.swing.JMenuItem classFilterItem;
-    private javax.swing.JMenu helpMenu;
     private javax.swing.JMenuItem aboutItem;
+    private javax.swing.JMenu helpMenu;
     private javax.swing.JMenuItem newGuildFilterItem;
     private javax.swing.JScrollPane tableScroll;
     private javax.swing.JCheckBoxMenuItem level1FilterItem;
@@ -1611,6 +1756,7 @@ public class RosterFrame extends javax.swing.JFrame {
     private javax.swing.JMenuItem exportTableItem;
     private javax.swing.JMenuItem afterFilterItem;
     private javax.swing.JRadioButtonMenuItem defaultStyleItem;
+    private net.sourceforge.fraglets.yaelp.PropertyEditor propertyEditor;
     private javax.swing.JCheckBoxMenuItem displayHTMLItem;
     private javax.swing.JMenu optionsMenu;
     private javax.swing.JMenuItem exportHTMLItem;
@@ -1619,6 +1765,7 @@ public class RosterFrame extends javax.swing.JFrame {
     private javax.swing.JTable rosterTable;
     private javax.swing.JMenuItem parseFileItem;
     private javax.swing.JMenuItem quitItem;
+    private javax.swing.JCheckBoxMenuItem officerFilterItem;
     private javax.swing.JMenuItem styleFileItem;
     // End of variables declaration//GEN-END:variables
 

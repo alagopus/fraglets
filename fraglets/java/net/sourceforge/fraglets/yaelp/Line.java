@@ -27,7 +27,7 @@ import java.util.Locale;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class Line {
     /** Temporary time stamp specification until first parse. */
@@ -164,6 +164,9 @@ public class Line {
      * @return true if all characters in <var>len</var> compare equal */
     public boolean compareTo(int lineOff, char other[], int otherOff, int len) {
         char chars[] = this.chars;
+        if (lineOff + len > chars.length) {
+            return false;
+        }
         while (--len >= 0) {
             if (chars[lineOff++] != other[otherOff++]) {
                 return false;
@@ -190,7 +193,7 @@ public class Line {
      * @param len length of the desired string
      * @return the created String */
     public String substring(int off, int len) {
-        return new String(chars, off, len);
+        return new String(chars, off, len - off);
     }
     
     /** Create a String as a substring of this line.

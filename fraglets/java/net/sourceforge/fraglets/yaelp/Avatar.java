@@ -35,7 +35,7 @@ import java.util.Collections;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class Avatar {
     public static final PropertyChangeSupport CHANGE =
@@ -64,6 +64,9 @@ public class Avatar {
     
     /** Optional properties. */
     private HashMap properties;
+    
+    /** Holds value of property guildTimestamp. */
+    private long guildTimestamp;
     
     /** Creates new Avatar
      * @param timestamp time stamp of log line where the character was seen.
@@ -95,6 +98,11 @@ public class Avatar {
         }
     }
     
+    public long getTimestamp(String name) {
+        TimestampEntry value = (TimestampEntry)properties.get(name);
+        return value == null ? 0L : value.timestamp;
+    }
+    
     public void setProperty(String name, String value, long timestamp) {
         if (name.equals("class")) {
             if (timestamp >= this.timestamp) {
@@ -107,10 +115,7 @@ public class Avatar {
                 this.timestamp = timestamp;
             }
         } else if (name.equals("guild")) {
-            if (timestamp >= this.timestamp) {
-                setGuild(Avatar.Guild.create(value));
-                this.timestamp = timestamp;
-            }
+            setGuild(Avatar.Guild.create(value), timestamp);
         } else if (name.equals("level")) {
             if (timestamp >= this.timestamp) {
                 setLevel(Integer.parseInt(value));
@@ -207,8 +212,18 @@ public class Avatar {
     /** Setter for property guild.
      * @param guild New value of property guild.
      */
-    public void setGuild(Guild guild) {
-        this.guild = guild;
+    public void setGuild(Guild guild, long timestamp) {
+        if (timestamp >= this.guildTimestamp) {
+            if (guild != this.guild) {
+                this.guild = guild;
+                if (guild == null || "-".equals(guild.getName())) {
+                    if (properties != null) {
+                        properties.remove("Rank"); // unguilded
+                    }
+                }
+            }
+            this.guildTimestamp = timestamp;
+        }
     }
     
     /** Getter for property zone.
@@ -297,6 +312,13 @@ public class Avatar {
         return name;
     }
 
+    /** Getter for property guildTimestamp.
+     * @return Value of property guildTimestamp.
+     */
+    public long getGuildTimestamp() {
+        return this.guildTimestamp;
+    }
+    
     /** This class implements the object model of a guild. */
     public static class Guild implements Comparable {
         /** Holds value of property name. */
@@ -368,7 +390,6 @@ public class Avatar {
         public int compareTo(Object obj) {
             return comparator.compare(this, obj);
         }
-        
     }
     
     public static class TimestampEntry {
