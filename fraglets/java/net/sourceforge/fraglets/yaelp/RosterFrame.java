@@ -68,7 +68,7 @@ import javax.swing.RepaintManager;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.24 $
+ * @version $Revision: 1.25 $
  */
 public class RosterFrame extends javax.swing.JFrame {
     /** The file chooser map used to select files to parse and export.
@@ -265,6 +265,7 @@ public class RosterFrame extends javax.swing.JFrame {
         quitItem = new javax.swing.JMenuItem();
         filterMenu = new javax.swing.JMenu();
         noFilterItem = new javax.swing.JMenuItem();
+        invertFilterItem = new javax.swing.JMenuItem();
         jSeparator2 = new javax.swing.JSeparator();
         mainFilterItem = new javax.swing.JCheckBoxMenuItem();
         level1FilterItem = new javax.swing.JCheckBoxMenuItem();
@@ -477,6 +478,15 @@ public class RosterFrame extends javax.swing.JFrame {
         });
 
         filterMenu.add(noFilterItem);
+        invertFilterItem.setText("invert filter");
+        invertFilterItem.setToolTipText("Invert all selected filter items.");
+        invertFilterItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                invertFilterItemActionPerformed(evt);
+            }
+        });
+
+        filterMenu.add(invertFilterItem);
         filterMenu.add(jSeparator2);
         mainFilterItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("mainFilterItem.text"));
         mainFilterItem.setToolTipText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("mainFilterItem.tooltip"));
@@ -680,6 +690,11 @@ public class RosterFrame extends javax.swing.JFrame {
 
         pack();
     }//GEN-END:initComponents
+
+    private void invertFilterItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_invertFilterItemActionPerformed
+        // Add your handling code here:
+        invertFilter();
+    }//GEN-LAST:event_invertFilterItemActionPerformed
 
     private void loadFileItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadFileItemActionPerformed
         // Add your handling code here:
@@ -904,7 +919,11 @@ public class RosterFrame extends javax.swing.JFrame {
              null, values, null);
         if (input != null) {
             Avatar.Culture culture = (Avatar.Culture)input;
-            doNewFilter(culture.getName(), new AvatarFilter.Culture(culture));
+            String name = culture.getName();
+            if (name == null || name.length() == 0) {
+                name = "Unknown culture";
+            }
+            doNewFilter(name, new AvatarFilter.Culture(culture));
         }
     }//GEN-LAST:event_cultureFilterItemActionPerformed
 
@@ -916,7 +935,11 @@ public class RosterFrame extends javax.swing.JFrame {
              null, values, null);
         if (input != null) {
             Avatar.Class clazz = (Avatar.Class)input;
-            doNewFilter(clazz.getName(), new AvatarFilter.Class(clazz));
+            String name = clazz.getName();
+            if (name == null || name.length() == 0) {
+                name = "Unknown class";
+            }
+            doNewFilter(name, new AvatarFilter.Class(clazz));
         }
     }//GEN-LAST:event_classFilterItemActionPerformed
 
@@ -1127,6 +1150,43 @@ public class RosterFrame extends javax.swing.JFrame {
         avatarFilter = appendFilterAnd(avatarFilter, cultureFilter);
         avatarFilter = appendFilterAnd(avatarFilter, propertyFilters);
         setRoster(recognizer.getAvatars(), recognizer.getLines());
+    }
+    
+    /** Invert the selected filters. */    
+    protected void invertFilter() {
+        int scan;
+        scan = filterMenu.getItemCount();
+        while (--scan >= 0) {
+            javax.swing.JMenuItem item = filterMenu.getItem(scan);
+            if (item != null && item.isSelected()) {
+                Object filter = item.getClientProperty(FILTER_PROPERTY);
+                String name = item.getText();
+                if (filter instanceof AvatarFilter.Not) {
+                    filter = ((AvatarFilter.Not)filter).getFilter();
+                    if (name.startsWith("Not ")) {
+                        name = name.substring(4);
+                    } else if (name.startsWith("hide ")) {
+                        name = "show "+name.substring(5);
+                    } else {
+                        name = "Not "+name;
+                    }
+                } else if (filter instanceof AvatarFilter) {
+                    filter = new AvatarFilter.Not((AvatarFilter)filter);
+                    if (name.startsWith("Not ")) {
+                        name = name.substring(4);
+                    } else if (name.startsWith("show ")) {
+                        name = "hide "+name.substring(5);
+                    } else {
+                        name = "Not "+name;
+                    }
+                } else {
+                    System.err.println("unrecognized filter: "+filter);
+                }
+                item.setText(name);
+                item.putClientProperty(FILTER_PROPERTY, filter);
+            }
+        }
+        refreshFilter();
     }
     
     /** Initialize editors for enumerated values. */
@@ -1637,13 +1697,14 @@ public class RosterFrame extends javax.swing.JFrame {
             java.net.URL style = styleSelection.getSelectedStyle();
             if (loadedStyle == null || !loadedStyle.equals(style) ||
                 style.getProtocol().equals("file")) {
-                java.net.URLConnection connection = style.openConnection();
-                connection.setUseCaches(false);
-                java.io.InputStream xsl = connection.getInputStream();
+//                java.net.URLConnection connection = style.openConnection();
+//                connection.setUseCaches(false);
+//                java.io.InputStream xsl = connection.getInputStream();
                 try {
-                    processor.loadStylesheet(new InputSource(xsl));
+//                    processor.loadStylesheet(new InputSource(xsl));
+                    processor.loadStylesheet(new InputSource(style.toExternalForm()));
                 } finally {
-                    xsl.close();
+//                    xsl.close();
                 }
                 loadedStyle = style;
             }
@@ -1683,6 +1744,7 @@ public class RosterFrame extends javax.swing.JFrame {
                 }
             }
         } catch (Exception ex) {
+            processor = null; // reset processor
             ex.printStackTrace();
             doException(ex);
         }
@@ -1916,7 +1978,7 @@ public class RosterFrame extends javax.swing.JFrame {
                 }
             }
             aboutText =
-            "YAELP log file parser, version 1.19.\n"+
+            "YAELP log file parser, version 1.20.\n"+
             "Copyright © 2001, 2002 Klaus Rennecke.\n"+
             "XML parser Copyright © 1997, 1998 James Clark.\n"+
             "XSL transformation Copyright © 1998, 1999 James Clark.\n"+
@@ -2120,6 +2182,7 @@ public class RosterFrame extends javax.swing.JFrame {
     private javax.swing.JMenuItem afterFilterItem;
     private javax.swing.JRadioButtonMenuItem defaultStyleItem;
     private net.sourceforge.fraglets.yaelp.PropertyEditor propertyEditor;
+    private javax.swing.JMenuItem invertFilterItem;
     private javax.swing.JCheckBoxMenuItem displayHTMLItem;
     private javax.swing.JMenu optionsMenu;
     private javax.swing.JMenuItem exportHTMLItem;
