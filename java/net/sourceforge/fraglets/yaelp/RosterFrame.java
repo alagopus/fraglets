@@ -33,7 +33,13 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.DefaultCellEditor;
 import javax.swing.border.LineBorder;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.Point;
+import java.awt.image.BufferedImage;
+import java.awt.image.ImageProducer;
 import java.io.OutputStreamWriter;
 import java.io.FileOutputStream;
 import java.util.zip.GZIPOutputStream;
@@ -50,6 +56,8 @@ import javax.swing.JEditorPane;
 import java.io.StringWriter;
 import java.net.URL;
 import javax.swing.RepaintManager;
+import javax.swing.SwingUtilities;
+import net.sourceforge.fraglets.targa.TGADecoder;
 import net.sourceforge.fraglets.yaelp.action.AboutAction;
 import net.sourceforge.fraglets.yaelp.action.ActionContext;
 import net.sourceforge.fraglets.yaelp.action.AfterFilterAction;
@@ -74,6 +82,7 @@ import net.sourceforge.fraglets.yaelp.model.AvatarFilter;
 import net.sourceforge.fraglets.yaelp.model.EqXMLParser;
 import net.sourceforge.fraglets.yaelp.model.EqlogParser;
 import net.sourceforge.fraglets.yaelp.model.Recognizer;
+import net.sourceforge.fraglets.yaelp.model.Tricks;
 
 /** This class implements a simple GUI to invoke the log recognizer and
  * display the results.
@@ -93,7 +102,7 @@ import net.sourceforge.fraglets.yaelp.model.Recognizer;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.32 $
+ * @version $Revision: 1.33 $
  */
 public class RosterFrame extends javax.swing.JFrame implements ActionContext {
     /** The file chooser map used to select files to parse and export.
@@ -1719,16 +1728,9 @@ public class RosterFrame extends javax.swing.JFrame implements ActionContext {
             chooser = new javax.swing.JFileChooser();
             chooserMap.put(category, chooser);
             if (category.equals("txt")) {
-                String alternatives[] = {
-                    "C:/Program Files/EverQuest",
-                    "C:/Programme/EverQuest",
-                };
-                for (int i = 0; i < alternatives.length; i++) {
-                    java.io.File eq = new java.io.File(alternatives[i]);
-                    if (eq.exists() && eq.isDirectory()) {
-                        chooser.setCurrentDirectory(eq);
-                        break;
-                    }
+                File installation = Tricks.findInstallation();
+                if (installation != null) {
+                    chooser.setCurrentDirectory(installation);
                 }
             } else if (lastChooser != null) {
                 chooser.setCurrentDirectory(((JFileChooser)chooserMap
@@ -1943,6 +1945,7 @@ public class RosterFrame extends javax.swing.JFrame implements ActionContext {
         for (int i = 0; i < args.length; i++) {
             frame.doImport(new File(args[i]), i == 0);
         }
+        
     }
     
     /** Getter for property changed.
