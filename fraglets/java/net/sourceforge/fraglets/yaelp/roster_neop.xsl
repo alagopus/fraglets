@@ -106,6 +106,7 @@
         <xsl:choose>
             <xsl:when test="$rank = 'an officer'">&#xa0;<SPAN STYLE="color: {$rank-color}">(officer)</SPAN></xsl:when>
             <xsl:when test="$rank = 'leader'">&#xa0;<SPAN STYLE="color: {$rank-color}"><b>(leader)</b></SPAN></xsl:when>
+            <xsl:when test="$rank = 'retired'">&#xa0;(retired)</xsl:when>
         </xsl:choose>
     </TD>
 </xsl:template>
