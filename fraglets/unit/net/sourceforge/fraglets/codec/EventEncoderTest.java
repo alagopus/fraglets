@@ -3,12 +3,8 @@ package net.sourceforge.fraglets.codec;
 import junit.framework.TestCase;
 
 /**
- * @author kre
- *
- * To change this generated comment edit the template variable "typecomment":
- * Window>Preferences>Java>Templates.
- * To enable and disable the creation of type comments go to
- * Window>Preferences>Java>Code Generation.
+ * @author marion@users.sourceforge.net
+ * @version $Revision$
  */
 public class EventEncoderTest extends TestCase {
 
@@ -90,6 +86,19 @@ public class EventEncoderTest extends TestCase {
 	}
 
 	public void testNextPrime() {
+		assertEquals("first prime", 2, getEventEncoder().nextPrime(0));
+		assertEquals("next prime 3", 3, getEventEncoder().nextPrime(3));
+		assertEquals("next prime 4", 5, getEventEncoder().nextPrime(4));
+		assertEquals("next prime 5", 5, getEventEncoder().nextPrime(5));
+		assertEquals("next prime 6", 7, getEventEncoder().nextPrime(7));
+	}
+	
+	public EventEncoder getEventEncoder() {
+		if (eventEncoder == null) {
+			eventEncoder = new EventEncoder();
+		}
+		return eventEncoder;
 	}
 
+	private EventEncoder eventEncoder;
 }
