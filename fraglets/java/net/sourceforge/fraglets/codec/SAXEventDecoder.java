@@ -32,13 +32,17 @@ import org.xml.sax.AttributeList;
 /**
  *
  * @author  marion@users.sourceforge.net
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class SAXEventDecoder extends EventDecoder implements SAXEventCodes {
     
     /** Creates a new instance of SAXEventDecoder */
     public SAXEventDecoder() {
         nextLiteral = NEXT_WORD;
+    }
+    
+    public int getFirstLiteral() {
+        return NEXT_WORD;
     }
     
     protected String nextString() {

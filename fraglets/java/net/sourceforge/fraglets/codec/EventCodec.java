@@ -30,19 +30,28 @@ import java.util.Arrays;
 /**
  *
  * @author  marion@users.sourceforge.net
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public abstract class EventCodec {
     public final int STRING_WORD = 0;
     
     /** Counter to assign next literal. */
-    protected int nextLiteral = 1;
+    protected int nextLiteral;
     
     /** The current alphabet. */
     protected Word[] alphabet;
     
     /** Creates a new instance of EventCodec */
     public EventCodec() {
+        reset();
+    }
+    
+    public void reset() {
+        nextLiteral = getFirstLiteral();
+    }
+    
+    public int getFirstLiteral() {
+        return 1;
     }
     
     public Word getWord(int code) {
