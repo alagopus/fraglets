@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Created-By: marion
+Main-Class: net.sourceforge.fraglets.beans.Showcase
+
