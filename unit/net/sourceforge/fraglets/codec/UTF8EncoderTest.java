@@ -71,7 +71,7 @@ public class UTF8EncoderTest extends TestCase {
                 }
                 sample[j] = value;
             }
-            encoder.setSize(0);
+            encoder.clear();
             encoder.encodeUCS2(sample, 0, sample.length);
             test = encoder.toByteArray();
             sampleCheck = new String(sample);
@@ -93,21 +93,6 @@ public class UTF8EncoderTest extends TestCase {
             new String(encoder.toByteArray(), "UTF-8"));
     }
     
-    /** Test of getBuffer method, of class net.sourceforge.fraglets.codec.UTF8Encoder. */
-    public void testGetBuffer() {
-        UTF8Encoder encoder = new UTF8Encoder();
-        encoder.encodeString("test");
-        assertNotNull("buffer is null", encoder.getBuffer());
-    }
-    
-    /** Test of setBuffer method, of class net.sourceforge.fraglets.codec.UTF8Encoder. */
-    public void testSetBuffer() {
-        UTF8Encoder encoder = new UTF8Encoder();
-        byte[] testBuffer = new byte[10];
-        encoder.setBuffer(testBuffer);
-        assertSame("set buffer failed", testBuffer, encoder.getBuffer());
-    }
-    
     /** Test of getSize method, of class net.sourceforge.fraglets.codec.UTF8Encoder. */
     public void testGetSize() {
         UTF8Encoder encoder = new UTF8Encoder();
@@ -119,33 +104,24 @@ public class UTF8EncoderTest extends TestCase {
     public void testSetSize() {
         UTF8Encoder encoder = new UTF8Encoder();
         encoder.encodeString("test");
-        encoder.setSize(0);
+        encoder.clear();
         assertTrue("set size", encoder.getSize() == 0);
     }
     
     /** Test of toByteArray method, of class net.sourceforge.fraglets.codec.UTF8Encoder. */
     public void testToByteArray() {
         UTF8Encoder encoder = new UTF8Encoder();
-        byte[] testBuffer = new byte[80];
-        encoder.setBuffer(testBuffer);
-        encoder.encodeString("test");
+        encoder.encodeString("test1islonger");
+        byte[] testBuffer = encoder.toByteArray();
+        encoder.clear();
+        encoder.encodeString("test2");
         byte[] checkBuffer = encoder.toByteArray();
         assertTrue("buffer copy", checkBuffer != testBuffer);
         assertTrue("copy size", checkBuffer.length < testBuffer.length);
     }
     
-    /** Test of growBuffer method, of class net.sourceforge.fraglets.codec.UTF8Encoder. */
-    public void testGrowBuffer() {
-        UTF8Encoder encoder = new UTF8Encoder();
-        byte[] testBuffer = new byte[10];
-        encoder.setBuffer(testBuffer);
-        encoder.growBuffer(12);
-        assertTrue("grow buffer", encoder.getBuffer().length >= 12);
-    }
-    
     public static Test suite() {
         TestSuite suite = new TestSuite(UTF8EncoderTest.class);
-        
         return suite;
     }
     

@@ -31,7 +31,7 @@ import java.io.UnsupportedEncodingException;
  * An UTF-8 encoder able to encode UCS-4 in addition to UCS-2. See
  * standards ISO/IEC 10646-1:1993 and RFC2279, RFC2781.
  * @author  marion@users.sourceforge.net
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class UTF8Encoder {
     
@@ -123,33 +123,6 @@ public class UTF8Encoder {
         }
     }
     
-    /** Getter for property buffer.
-     * @return Value of property buffer.
-     */
-    public byte[] getBuffer() {
-        return this.buffer;
-    }
-    
-    /** Setter for property buffer.
-     * @param buffer New value of property buffer.
-     */
-    public void setBuffer(byte[] buffer) {
-        this.buffer = buffer;
-    }
-    
-    /** Setter for properties buffer and size.
-     * @param buffer New value of property buffer.
-     * @param size New value of property size.
-     */
-    public void setBuffer(byte[] buffer, int size) {
-        if (size > buffer.length) {
-            throw new IndexOutOfBoundsException
-                ("size too big, "+size+">"+buffer.length);
-        }
-        setBuffer(buffer);
-        setSize(size);
-    }
-    
     /** Getter for property size.
      * @return Value of property size.
      */
@@ -157,22 +130,17 @@ public class UTF8Encoder {
         return this.size;
     }
     
-    /** Setter for property size.
-     * @param size New value of property size.
+    /** Clear the encoder.
      */
-    public void setSize(int size) {
-        if (size > buffer.length) {
-            throw new IndexOutOfBoundsException
-                ("size too big, "+size+">"+buffer.length);
-        }
-        this.size = size;
+    public void clear() {
+        this.size = 0;
     }
     
     /** Return a copy of the current buffer, trimmed to the current size. */
     public byte[] toByteArray() {
         byte result[] = new byte[getSize()];
         if (result.length > 0) {
-            System.arraycopy(getBuffer(), 0, result, 0, result.length);
+            System.arraycopy(buffer, 0, result, 0, result.length);
         }
         return result;
     }

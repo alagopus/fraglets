@@ -49,7 +49,7 @@ public class UTF8DecoderTest extends TestCase {
                 // Random cannot provide it.
                 sample[j] = random.nextInt(0x7fffffff);
             }
-            encoder.setSize(0);
+            encoder.clear();
             encoder.encodeUCS4(sample, 0, sample.length);
             test = encoder.toByteArray();
             decoder.setBuffer(test);
@@ -91,7 +91,7 @@ public class UTF8DecoderTest extends TestCase {
                     }
                     sample[j] = value;
             }
-            encoder.setSize(0);
+            encoder.clear();
             encoder.encodeUCS2(sample, 0, sample.length);
             test = encoder.toByteArray();
             decoder.setBuffer(test);
