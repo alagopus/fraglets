@@ -66,7 +66,7 @@ import thinlet.Thinlet;
  * </ul> 
  * 
  * @author Klaus Rennecke
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class Main extends Thinlet implements Comparator {
     
@@ -252,7 +252,7 @@ public class Main extends Thinlet implements Comparator {
 
     public void actionAbout() {
         add("about.xml");
-        setString(find("revisionLabel"), "text", "$Revision: 1.9 $");
+        setString(find("revisionLabel"), "text", "$Revision: 1.10 $");
     }
     
     public void actionHelp() {
@@ -809,7 +809,7 @@ public class Main extends Thinlet implements Comparator {
             date = tok.nextToken();
             name = tok.nextToken("").substring(1); // skip last delimiter
             
-            date = new Date(Long.parseLong(date)).toString();
+            date = new Date(Long.parseLong(date) * 1000).toString();
         } else {
             // string format
             String links = tok.nextToken();
