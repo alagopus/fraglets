@@ -1,4 +1,7 @@
 Changes for version 1.12 and 1.11:
+    - Added gzipped XML save file format.
+    - Added loading and saving the current roster.
+    - Track changes and ask for confirm on quit.
     - Tightened guild tracking.
     - More filter settings.
     - Add guild normalizeName.

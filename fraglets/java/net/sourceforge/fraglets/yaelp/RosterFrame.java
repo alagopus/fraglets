@@ -34,6 +34,16 @@ import javax.swing.DefaultCellEditor;
 import javax.swing.border.LineBorder;
 import java.awt.Color;
 import java.awt.Font;
+import java.io.OutputStreamWriter;
+import java.io.FileOutputStream;
+import java.util.zip.GZIPOutputStream;
+import java.io.FileWriter;
+import java.io.InputStream;
+import java.util.zip.GZIPInputStream;
+import java.io.FileInputStream;
+import java.io.Writer;
+import java.io.IOException;
+import java.io.BufferedInputStream;
 
 /** This class implements a simple GUI to invoke the log recognizer and
  * display the results.
@@ -53,7 +63,7 @@ import java.awt.Font;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.14 $
+ * @version $Revision: 1.15 $
  */
 public class RosterFrame extends javax.swing.JFrame {
     /** The file chooser map used to select files to parse and export.
@@ -203,6 +213,10 @@ public class RosterFrame extends javax.swing.JFrame {
         menuBar = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
         parseFileItem = new javax.swing.JMenuItem();
+        jSeparator5 = new javax.swing.JSeparator();
+        saveFileItem = new javax.swing.JMenuItem();
+        importFileItem = new javax.swing.JMenuItem();
+        loadFileItem = new javax.swing.JMenuItem();
         separator1 = new javax.swing.JSeparator();
         exportTableItem = new javax.swing.JMenuItem();
         exportXMLItem = new javax.swing.JMenuItem();
@@ -296,6 +310,7 @@ public class RosterFrame extends javax.swing.JFrame {
         contextMenu.add(dohMenuItem);
         propertyEditor.setModal(true);
 
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("YAELP log file parser");
         setIconImage(getToolkit().getImage(getClass().getResource("logo.gif")));
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -332,6 +347,34 @@ public class RosterFrame extends javax.swing.JFrame {
         });
 
         fileMenu.add(parseFileItem);
+        fileMenu.add(jSeparator5);
+        saveFileItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("saveFileItem.text"));
+        saveFileItem.setToolTipText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("saveFileItem.tooltip"));
+        saveFileItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                saveFileItemActionPerformed(evt);
+            }
+        });
+
+        fileMenu.add(saveFileItem);
+        importFileItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("importFileItem.text"));
+        importFileItem.setToolTipText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("importFileItem.tooltip"));
+        importFileItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                importFileItemActionPerformed(evt);
+            }
+        });
+
+        fileMenu.add(importFileItem);
+        loadFileItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("loadFileItem.text"));
+        loadFileItem.setToolTipText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("loadFileItem.tooltip"));
+        loadFileItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                loadFileItemActionPerformed(evt);
+            }
+        });
+
+        fileMenu.add(loadFileItem);
         fileMenu.add(separator1);
         exportTableItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("exportTableItem.text"));
         exportTableItem.setToolTipText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("exportTableItem.tooltip"));
@@ -579,6 +622,93 @@ public class RosterFrame extends javax.swing.JFrame {
 
         pack();
     }//GEN-END:initComponents
+
+    private void loadFileItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadFileItemActionPerformed
+        // Add your handling code here:
+        if (recognizer.getAvatarCount() > 0 &&
+            JOptionPane.showConfirmDialog(this,
+            "This will clear the current list. Continue?", "Load Roster",
+            JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE)
+            != JOptionPane.OK_OPTION) {
+            return; // canceled
+        }
+        JFileChooser chooser = getChooser("yxr");
+        chooser.setApproveButtonText("Load");
+        chooser.setDialogTitle("Load Roster");
+        chooser.setFileSelectionMode(chooser.FILES_ONLY);
+        chooser.setMultiSelectionEnabled(false);
+        chooser.resetChoosableFileFilters();
+        chooser.addChoosableFileFilter(new FileFilter() {
+            public boolean accept(File file) {
+                return file.isDirectory() || file.getName().endsWith(".yxr");
+            }
+            public String getDescription() {
+                return "YAELP Files (*.yxr)";
+            }
+        });
+        if (chooser.showOpenDialog(this) == chooser.APPROVE_OPTION) {
+            fixBackingStore();
+            doImport(chooser.getSelectedFile(), true);
+        } else {
+            fixBackingStore();
+        }
+        chooser.setSelectedFile(null);
+    }//GEN-LAST:event_loadFileItemActionPerformed
+
+    private void importFileItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_importFileItemActionPerformed
+        // Add your handling code here:
+        JFileChooser chooser = getChooser("yxr");
+        chooser.setApproveButtonText("Import");
+        chooser.setDialogTitle("Import Roster");
+        chooser.setFileSelectionMode(chooser.FILES_ONLY);
+        chooser.setMultiSelectionEnabled(false);
+        chooser.setSelectedFile(null);
+        chooser.resetChoosableFileFilters();
+        chooser.addChoosableFileFilter(new FileFilter() {
+            public boolean accept(File file) {
+                return file.isDirectory() || file.getName().endsWith(".yxr");
+            }
+            public String getDescription() {
+                return "YAELP Files (*.yxr)";
+            }
+        });
+        if (chooser.showOpenDialog(this) == chooser.APPROVE_OPTION) {
+            fixBackingStore();
+            doImport(chooser.getSelectedFile(), false);
+        } else {
+            fixBackingStore();
+        }
+        chooser.setSelectedFile(null);
+    }//GEN-LAST:event_importFileItemActionPerformed
+
+    private void saveFileItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveFileItemActionPerformed
+        // Add your handling code here:
+        JFileChooser chooser = getChooser("yxr");
+        chooser.setApproveButtonText("Save");
+        chooser.setDialogTitle("Save Roster");
+        chooser.setFileSelectionMode(chooser.FILES_ONLY);
+        chooser.setMultiSelectionEnabled(false);
+        chooser.resetChoosableFileFilters();
+        chooser.addChoosableFileFilter(new FileFilter() {
+            public boolean accept(File file) {
+                return file.isDirectory() || file.getName().endsWith(".yxr");
+            }
+            public String getDescription() {
+                return "YAELP Files (*.yxr)";
+            }
+        });
+        if (chooser.showSaveDialog(this) == chooser.APPROVE_OPTION) {
+            File file = chooser.getSelectedFile();
+            if (file.getName().indexOf('.') == -1) {
+                file = new File(file.getParent(), file.getName()+".yxr");
+            }
+            fixBackingStore();
+            doExportXML(file, true);
+            setChanged(false);
+        } else {
+            fixBackingStore();
+        }
+    }//GEN-LAST:event_saveFileItemActionPerformed
 
     private void propertyFilterItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_propertyFilterItemActionPerformed
         // Add your handling code here:
@@ -892,7 +1022,7 @@ public class RosterFrame extends javax.swing.JFrame {
         });
         if (chooser.showSaveDialog(this) == chooser.APPROVE_OPTION) {
             fixBackingStore();
-            doExportXML(chooser.getSelectedFile());
+            doExportXML(chooser.getSelectedFile(), false);
         } else {
             fixBackingStore();
         }
@@ -936,7 +1066,7 @@ public class RosterFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_exportTableItemActionPerformed
 
     private void quitItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_quitItemActionPerformed
-        System.exit(0);
+        exitForm(null);
     }//GEN-LAST:event_quitItemActionPerformed
 
     private void parseFileItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_parseFileItemActionPerformed
@@ -975,6 +1105,13 @@ public class RosterFrame extends javax.swing.JFrame {
 
     /** Exit the Application */
     private void exitForm(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_exitForm
+        if (isChanged() &&
+            JOptionPane.showConfirmDialog(this,
+            "Some changes are not saved. Really quit?", "Quit YAELP",
+            JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE)
+            != JOptionPane.OK_OPTION) {
+            return; // canceled
+        }
         System.exit(0);
     }//GEN-LAST:event_exitForm
 
@@ -1039,6 +1176,7 @@ public class RosterFrame extends javax.swing.JFrame {
     
     /** Update the editor for the new instance. */
     protected void updateEditor(Object newInstance) {
+        setChanged(true);
         TableCellEditor editor = rosterTable
             .getDefaultEditor(newInstance.getClass());
         java.awt.Component editorComponent = editor
@@ -1273,6 +1411,39 @@ public class RosterFrame extends javax.swing.JFrame {
         }
     }
     
+    /** Import an XML file.
+     * @param file file to import
+     * @param clear whether to start with a new recognizer
+     */    
+    protected void doImport(File file, boolean clear) {
+        try {
+            
+            Recognizer r = clear ? new Recognizer() : this.recognizer;
+            InputStream in = new BufferedInputStream(new FileInputStream(file));
+            try {
+                try {
+                    in.mark(20); // actually need only 4
+                    in = new GZIPInputStream(in);
+                } catch (IOException ex) {
+                    // apparently no compressed
+                    in.reset();
+                }
+                r.nextFile();
+                EqXMLParser.parseFile(in, r);
+            } finally {
+                in.close();
+            }
+            if (clear) {
+                this.recognizer = r;
+                setChanged(false);
+            }
+            setRoster(r.getAvatars(), r.getLines());
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            doException(ex);
+        }
+    }
+    
     protected void doShowDocument(String title, String resource) {
         doShowDocument(title, getClass().getResource(resource));
     }
@@ -1380,14 +1551,27 @@ public class RosterFrame extends javax.swing.JFrame {
     /** Export the current roster to an XML file.
      * @param file file to write the exported roster into
      */    
-    protected void doExportXML(java.io.File file) {
+    protected void doExportXML(java.io.File file, boolean compress) {
         if (!doWriteConfirmation(file)) {
             return; // nothing selected, canceled.
         }
         try {
-            java.io.FileWriter out = new java.io.FileWriter(file);
-            writeXML(out);
-            out.close();
+            Writer out;
+            if (compress) {
+                out = new OutputStreamWriter(new GZIPOutputStream
+                    (new FileOutputStream(file)));
+            } else {
+                out = new FileWriter(file);
+            }
+            try {
+                writeXML(out);
+            } finally {
+                out.close();
+            }
+            if (compress) {
+                // hack assume we saved now
+                setChanged(false);
+            }
         } catch (Exception ex) {
             ex.printStackTrace();
             doException(ex);
@@ -1486,6 +1670,11 @@ public class RosterFrame extends javax.swing.JFrame {
             for (int i = 0; i < cols; i++) {
                 pw.print("  <");
                 pw.print(tags[i]);
+                if (tags[i].equals("guild")) {
+                    pw.print(" time=\"");
+                    pw.print(avatar.getGuildTimestamp());
+                    pw.print('"');
+                }
                 Object value = rosterTable.getValueAt(j, i);
                 if (value != null) {
                     pw.print(">");
@@ -1705,10 +1894,34 @@ public class RosterFrame extends javax.swing.JFrame {
         frame.show();
     }
     
+    /** Getter for property changed.
+     * @return Value of property changed.
+     */
+    public boolean isChanged() {
+        return this.changed ||
+            (model != null && model.isChanged()) ||
+            (recognizer != null && recognizer.isChanged());
+    }    
+    
+    /** Setter for property changed.
+     * @param changed New value of property changed.
+     */
+    public void setChanged(boolean changed) {
+        this.changed = changed;
+        if (!changed) {
+            if (recognizer != null) {
+                recognizer.setChanged(false);
+            }
+            if (model != null) {
+                model.setChanged(false);
+            }
+        }
+    }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup styleButtonGroup;
     private javax.swing.JMenu fileMenu;
+    private javax.swing.JSeparator jSeparator5;
     private javax.swing.JSeparator jSeparator4;
     private javax.swing.JMenuItem cultureFilterItem;
     private javax.swing.JSeparator jSeparator3;
@@ -1717,6 +1930,7 @@ public class RosterFrame extends javax.swing.JFrame {
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JMenuItem exportXMLItem;
     private net.sourceforge.fraglets.yaelp.PropertyInput propertyInput;
+    private javax.swing.JMenuItem importFileItem;
     private javax.swing.JMenuItem licenseItem;
     private javax.swing.JMenuItem hideMenuItem;
     private javax.swing.JTextField status;
@@ -1729,8 +1943,8 @@ public class RosterFrame extends javax.swing.JFrame {
     private javax.swing.JSeparator separator2;
     private javax.swing.JSeparator separator1;
     private javax.swing.JCheckBoxMenuItem friendFilterItem;
-    private javax.swing.JCheckBoxMenuItem memberFilterItem;
     private javax.swing.JMenuItem newEntryItem;
+    private javax.swing.JCheckBoxMenuItem memberFilterItem;
     private javax.swing.JRadioButtonMenuItem ssStyleItem;
     private javax.swing.JMenuItem propertyFilterItem;
     private javax.swing.JMenuItem xpLicenseItem;
@@ -1738,6 +1952,7 @@ public class RosterFrame extends javax.swing.JFrame {
     private javax.swing.JMenuItem xtLicenseItem;
     private javax.swing.JMenuItem levelFilterItem;
     private javax.swing.JRadioButtonMenuItem vlStyleItem;
+    private javax.swing.JMenuItem saveFileItem;
     private javax.swing.JMenuItem noFilterItem;
     private javax.swing.JCheckBoxMenuItem defaultFilterItem;
     private javax.swing.JCheckBoxMenuItem mainFilterItem;
@@ -1748,6 +1963,7 @@ public class RosterFrame extends javax.swing.JFrame {
     private javax.swing.JScrollPane tableScroll;
     private javax.swing.JCheckBoxMenuItem level1FilterItem;
     private javax.swing.JMenu newFilterMenu;
+    private javax.swing.JMenuItem loadFileItem;
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JMenuItem dingMenuItem;
     private javax.swing.JMenu styleMenu;
@@ -1768,5 +1984,8 @@ public class RosterFrame extends javax.swing.JFrame {
     private javax.swing.JCheckBoxMenuItem officerFilterItem;
     private javax.swing.JMenuItem styleFileItem;
     // End of variables declaration//GEN-END:variables
+
+    /** Holds value of property changed. */
+    private boolean changed;    
 
 }
