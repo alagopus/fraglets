@@ -1,5 +1,5 @@
 /*
- * $Id: CVSHistory.java,v 1.1 2004-02-29 23:26:54 marion Exp $
+ * $Id: CVSHistory.java,v 1.2 2004-02-29 23:38:45 marion Exp $
  * Copyright (C) 2004 Klaus Rennecke, all rights reserved.
  * 
  * Permission is hereby granted, free of charge, to any person
@@ -47,7 +47,7 @@ import org.apache.log4j.Logger;
  * Perform modification check based on a plain history file.
  * 
  * @author  Klaus Rennecke
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class CVSHistory implements SourceControl
 {
@@ -95,20 +95,27 @@ public class CVSHistory implements SourceControl
         try
         {
             FileReader fin = new FileReader(historyFileName);
-            BufferedReader in = new BufferedReader(fin);
-            String line;
-            while ((line = in.readLine()) != null)
+            try
             {
-                parseModification(line, result, lastBuild, now);
+                BufferedReader in = new BufferedReader(fin);
+                String line;
+                while ((line = in.readLine()) != null)
+                {
+                    parseModification(line, result, lastBuild, now);
+                }
+                
+                if (onModifiedName != null && result.size() > 0)
+                {
+                    properties.put(onModifiedName, "true");
+                }
+                if (onDeletedName != null && deletionSeen)
+                {
+                    properties.put(onDeletedName, "true");
+                }
             }
-            
-            if (onModifiedName != null && result.size() > 0)
+            finally
             {
-                properties.put(onModifiedName, "true");
-            }
-            if (onDeletedName != null && deletionSeen)
-            {
-                properties.put(onDeletedName, "true");
+                fin.close();
             }
         }
         catch (IOException e)
