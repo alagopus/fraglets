@@ -31,6 +31,8 @@ public class CodecSuite extends TestCase {
         TestSuite suite = new TestSuite("CodecSuite");
         suite.addTest(net.sourceforge.fraglets.codec.UTF8DecoderTest.suite());
         suite.addTest(net.sourceforge.fraglets.codec.UTF8EncoderTest.suite());
+        suite.addTest(net.sourceforge.fraglets.codec.SAXEventDecoderTest.suite());
+        suite.addTest(net.sourceforge.fraglets.codec.SAXEventEncoderTest.suite());
         //:JUNIT--
         //This value MUST ALWAYS be returned from this function.
         return suite;
