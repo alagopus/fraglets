@@ -1,5 +1,5 @@
 /*
-    $Id: relay.c,v 1.1 2000-04-30 06:27:22 marion Exp $
+    $Id: relay.c,v 1.2 2000-05-01 16:06:47 marion Exp $
 
     relay.c - crude relay process.
     Sep 04 1995 by marion@marble.sax.de
@@ -39,10 +39,14 @@
  * program.
  */
 
-/* $Log: relay.c,v $
-/* Revision 1.1  2000-04-30 06:27:22  marion
-/* Converted to MIT license.
 /*
+ * $Log: relay.c,v $
+ * Revision 1.2  2000-05-01 16:06:47  marion
+ * Adapted to new RCS log message algorithm.
+ *
+ * Revision 1.1  2000/04/30 06:27:22  marion
+ * Converted to MIT license.
+ *
  * Revision 1.4  1995/09/06 00:04:18  marion
  * Added a configuration file for inetd.
  * The ancient header file relay.h vanished. All configuration

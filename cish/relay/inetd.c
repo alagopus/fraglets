@@ -1,5 +1,5 @@
 /*
-    $Id: inetd.c,v 1.2 2000-04-30 09:14:17 marion Exp $
+    $Id: inetd.c,v 1.3 2000-05-01 16:06:47 marion Exp $
     Internet dispatch server. (replacement)
 
     Sep 03 1995 by marion@marble.sax.de
@@ -28,13 +28,17 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-/* $Log: inetd.c,v $
-/* Revision 1.2  2000-04-30 09:14:17  marion
-/* Silly indirection error.
 /*
-/* Revision 1.1  2000/04/30 06:27:22  marion
-/* Converted to MIT license.
-/*
+ * $Log: inetd.c,v $
+ * Revision 1.3  2000-05-01 16:06:47  marion
+ * Adapted to new RCS log message algorithm.
+ *
+ * Revision 1.2  2000/04/30 09:14:17  marion
+ * Silly indirection error.
+ *
+ * Revision 1.1  2000/04/30 06:27:22  marion
+ * Converted to MIT license.
+ *
  * Revision 1.3  1995/09/06 00:04:07  marion
  * Added a configuration file for inetd.
  * The ancient header file relay.h vanished. All configuration
@@ -80,7 +84,7 @@ char copyright[] =
 extern char *strtok();
 
 #ifndef lint
-static char rcsid[] = "$Id: inetd.c,v 1.2 2000-04-30 09:14:17 marion Exp $";
+static char rcsid[] = "$Id: inetd.c,v 1.3 2000-05-01 16:06:47 marion Exp $";
 #endif /* not lint */
 
 suicide(prog, s) char *prog, *s; {
