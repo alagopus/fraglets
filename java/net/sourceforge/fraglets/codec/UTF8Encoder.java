@@ -31,6 +31,7 @@ import java.io.UnsupportedEncodingException;
  * An UTF-8 encoder able to encode UCS-4 in addition to UCS-2. See
  * standards ISO/IEC 10646-1:1993 and RFC2279, RFC2781.
  * @author  marion@users.sourceforge.net
+ * @version $Revision: 1.5 $
  */
 public class UTF8Encoder {
     
@@ -69,7 +70,6 @@ public class UTF8Encoder {
                     throw new IllegalArgumentException
                         ("invalid surrogate low-half: "+datum);
                 }
-                int low = datum & 0x3ff;
                 datum = (high | (datum & 0x3ff)) + 0x10000;
             }
             encodeUCS4(datum);

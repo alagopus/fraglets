@@ -28,6 +28,7 @@ package net.sourceforge.fraglets.codec;
 /**
  *
  * @author  marion@users.sourceforge.net
+ * @version $Revision: 1.5 $
  */
 public class UTF8Decoder {
     private byte buffer[];
@@ -57,6 +58,10 @@ public class UTF8Decoder {
         this.buffer = buffer;
         this.off = off;
         this.end = off + len;
+    }
+    
+    public int available() {
+        return end - off;
     }
     
     public int[] decodeUCS4(int buffer[], int off, int len) {
