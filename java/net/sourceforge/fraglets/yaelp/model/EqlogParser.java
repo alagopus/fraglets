@@ -33,7 +33,7 @@ import java.util.zip.GZIPInputStream;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class EqlogParser {
     protected Reader in;
@@ -167,7 +167,11 @@ public class EqlogParser {
             for (;;) {
                 if (parser.readLine(line)) {
                     n++;
-                    recognizer.parse(line);
+                    if (recognizer.parse(line)) {
+//                        System.err.println("*** '"+line+"'");
+                    } else {
+//                        System.err.println("--- '"+line+"'");
+                    }
                 } else {
                     break;
                 }

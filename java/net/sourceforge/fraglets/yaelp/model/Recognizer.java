@@ -26,7 +26,7 @@ import java.util.Iterator;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class Recognizer {
     /** Known avatars. */
@@ -68,8 +68,23 @@ public class Recognizer {
     protected static final char[] PATTERN__THE_GROUP_ =
         " the group.".toCharArray();
     /** Pattern for special lines. */
+    protected static final char[] PATTERN__THE_RAID_ =
+        " the raid.".toCharArray();
+    /** Pattern for special lines. */
     protected static final char[] PATTERN__IS_NO_LONGER_A_MEMBER =
         " is no longer a member".toCharArray();
+    /** Pattern for special lines. */
+    protected static final char[] PATTERN__IS_NOT_IN_A_GUILD_ =
+        " is not in a guild.".toCharArray();
+    /** Pattern for special lines. */
+    protected static final char[] PATTERN__IS_A_MEMBER_OF_ =
+        " is a member of ".toCharArray();
+    /** Pattern for special lines. */
+    protected static final char[] PATTERN__IS_AN_OFFICER_OF_ =
+        " is an officer of ".toCharArray();
+    /** Pattern for special lines. */
+    protected static final char[] PATTERN__IS_THE_LEADER_OF_ =
+        " is the leader of ".toCharArray();
     
     /** Holds value of property changed. */
     private boolean changed;
@@ -209,6 +224,8 @@ public class Recognizer {
                 if (line.startsWith(PATTERN_YOU_HAVE_JOINED_)) {
                     if (line.endsWith(PATTERN__THE_GROUP_)) {
                         return false;
+                    } else if (line.endsWith(PATTERN__THE_RAID_)) {
+                        return false;
                     } else if (line.getChar(line.getLength() - 1) == '.') {
                         String name = line.substring(PATTERN_YOU_HAVE_JOINED_.length, line.getLength() - 1);
                         Avatar.Guild guild = Avatar.Guild.create(name);
@@ -225,24 +242,57 @@ public class Recognizer {
                     return true;
                 }
             }
-            if (line.endsWith(PATTERN__OF_YOUR_GUILD_)) {
-                int space = line.indexOf(0, ' ');
-                if (line.compareTo(space, PATTERN__IS_NOW__, 0, PATTERN__IS_NOW__.length)) {
-                    long timestamp = line.getTimestamp();
-                    String name = line.substring(0, space);
-                    space += PATTERN__IS_NOW__.length;
-                    String rank = line.substring(space, line.getLength() - PATTERN__OF_YOUR_GUILD_.length);
-                    Avatar.Guild guild = (guildConfirmed && active != null) ? active.getGuild() : null;
-                    Avatar avatar = updateAvatar(timestamp, name, 0, null, null, guild, null);
-                    avatar.setProperty("Rank", rank, timestamp);
-                    return true;
-                } else if (line.compareTo(space, PATTERN__IS_NO_LONGER_A_MEMBER, 0, PATTERN__IS_NO_LONGER_A_MEMBER.length)) {
-                    long timestamp = line.getTimestamp();
-                    String name = line.substring(0, space);
-                    Avatar avatar = updateAvatar(timestamp, name, 0, null, null, Avatar.Guild.create("-"), null);
-                    return true;
+            int space = line.indexOf(0, ' ');
+            if (space > 0) {
+                if (line.endsWith(PATTERN__OF_YOUR_GUILD_)) {
+                    if (line.compareTo(space, PATTERN__IS_NOW__, 0, PATTERN__IS_NOW__.length)) {
+                        long timestamp = line.getTimestamp();
+                        String name = line.substring(0, space);
+                        space += PATTERN__IS_NOW__.length;
+                        String rank = line.substring(space, line.getLength() - PATTERN__OF_YOUR_GUILD_.length);
+                        Avatar.Guild guild = (guildConfirmed && active != null) ? active.getGuild() : null;
+                        Avatar avatar = updateAvatar(timestamp, name, 0, null, null, guild, null);
+                        avatar.setProperty("Rank", rank, timestamp);
+                        return true;
+                    } else if (line.compareTo(space, PATTERN__IS_NO_LONGER_A_MEMBER, 0, PATTERN__IS_NO_LONGER_A_MEMBER.length)) {
+                        long timestamp = line.getTimestamp();
+                        String name = line.substring(0, space);
+                        Avatar avatar = updateAvatar(timestamp, name, 0, null, null, Avatar.Guild.create(Avatar.GUILD_UNGUILDED), null);
+                        return true;
+                    } else {
+                        return false;
+                    }
                 } else {
-                    return false;
+                    if (line.getLength() == space + PATTERN__IS_NOT_IN_A_GUILD_.length &&
+                        line.compareTo(space, PATTERN__IS_NOT_IN_A_GUILD_, 0, PATTERN__IS_NOT_IN_A_GUILD_.length)) {
+                        long timestamp = line.getTimestamp();
+                        String name = line.substring(0, space);
+                        Avatar avatar = updateAvatar(timestamp, name, 0, null, null, Avatar.Guild.create(Avatar.GUILD_UNGUILDED), null);
+                        return true;
+                    } else if (line.getChar(line.getLength() - 1) != '.') {
+                        return false;
+                    } else if (line.compareTo(space, PATTERN__IS_A_MEMBER_OF_, 0, PATTERN__IS_A_MEMBER_OF_.length)) {
+                        long timestamp = line.getTimestamp();
+                        String name = line.substring(0, space);
+                        String guild = line.substring(space + PATTERN__IS_A_MEMBER_OF_.length, line.getLength() - 1);
+                        Avatar avatar = updateAvatar(timestamp, name, 0, null, null, Avatar.Guild.create(guild), null);
+                        avatar.setProperty("Rank", "a regular member", timestamp);
+                        return true;
+                    } else if (line.compareTo(space, PATTERN__IS_AN_OFFICER_OF_, 0, PATTERN__IS_AN_OFFICER_OF_.length)) {
+                        long timestamp = line.getTimestamp();
+                        String name = line.substring(0, space);
+                        String guild = line.substring(space + PATTERN__IS_AN_OFFICER_OF_.length, line.getLength() - 1);
+                        Avatar avatar = updateAvatar(timestamp, name, 0, null, null, Avatar.Guild.create(guild), null);
+                        avatar.setProperty("Rank", "an officer", timestamp);
+                        return true;
+                    } else if (line.compareTo(space, PATTERN__IS_THE_LEADER_OF_, 0, PATTERN__IS_THE_LEADER_OF_.length)) {
+                        long timestamp = line.getTimestamp();
+                        String name = line.substring(0, space);
+                        String guild = line.substring(space + PATTERN__IS_THE_LEADER_OF_.length, line.getLength() - 1);
+                        Avatar avatar = updateAvatar(timestamp, name, 0, null, null, Avatar.Guild.create(guild), null);
+                        avatar.setProperty("Rank", "leader", timestamp);
+                        return true;
+                    }
                 }
             }
             return false;
@@ -300,7 +350,7 @@ public class Recognizer {
                     skipSpace();
                 } else if (clazz != null) {
                     // unguilded
-                    guild = Avatar.Guild.create("-");
+                    guild = Avatar.Guild.create(Avatar.GUILD_UNGUILDED);
                 }
             }
             Avatar.Zone zone = null;
