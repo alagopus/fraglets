@@ -1,5 +1,5 @@
 /*
- * $Id: CVSHistory.java,v 1.14 2005-02-26 09:50:34 marion Exp $
+ * $Id: CVSHistory.java,v 1.15 2005-02-26 09:53:17 marion Exp $
  * Copyright (C) 2004 Klaus Rennecke, all rights reserved.
  * 
  * Permission is hereby granted, free of charge, to any person
@@ -55,7 +55,7 @@ import org.apache.log4j.Logger;
  * Perform modification check based on a plain history file.
  * 
  * @author  Klaus Rennecke
- * @version $Revision: 1.14 $
+ * @version $Revision: 1.15 $
  */
 public class CVSHistory implements SourceControl {
     /** The properties set for ANT. */
@@ -535,7 +535,7 @@ public class CVSHistory implements SourceControl {
                 Committer committer = (Committer)committers.get(scan);
                 try {
                     // test name and charset in one blow.
-                    committer.getName().getBytes(committer.getCharset());
+                    committer.getName().getBytes(committer.getEncoding());
                 } catch (UnsupportedEncodingException e) {
                     throw new CruiseControlException(Messages.getString(
                         "CVSHistory.Unsupported_encoding"), e); //$NON-NLS-1$
@@ -672,7 +672,7 @@ public class CVSHistory implements SourceControl {
             int scan = committers.size();
             while (--scan >= 0) {
                 Committer committer = (Committer)committers.get(scan);
-                encodings.put(committer.getName(), committer.getCharset()); 
+                encodings.put(committer.getName(), committer.getEncoding()); 
             }
         }
         String result = (String)encodings.get(committerName);
@@ -687,7 +687,7 @@ public class CVSHistory implements SourceControl {
      * Bean implementation for the module sub-element.
      * @since 01.03.2004
      * @author Klaus Rennecke
-     * @version $Revision: 1.14 $
+     * @version $Revision: 1.15 $
      */
     public static class Module {
         
@@ -733,18 +733,18 @@ public class CVSHistory implements SourceControl {
 
         private String name;
 
-        private String charset;
+        private String encoding;
 
-        public String getCharset() {
-            return charset;
+        public String getEncoding() {
+            return encoding;
         }
 
         public String getName() {
             return name;
         }
 
-        public void setCharset(String string) {
-            charset = string;
+        public void setEncoding(String string) {
+            encoding = string;
         }
 
         public void setName(String string) {
