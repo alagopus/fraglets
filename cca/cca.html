@@ -13,8 +13,9 @@
       .table { border-width:thin; border-color:#000033; }
    </style>
 </head>
-<body class="body" leftmargin="0" topmargin="0">
-<p><a name="cvshistory"><span class="small">CVSHistory</span><br>
+<body class="body">
+<p><a name="cvshistory"><span class="small">CVSHistory -
+net.sf.fraglets.cca.CVSHistory</span><br>
 The CVSHistory element is a ModificationSet emulating the standard CVS
 ModificationSet but working over HTTP exclusively if required. This may
 speed up
@@ -50,6 +51,11 @@ well, you will probably want to apply <a
 GNUTAR patch to viewcvs</a>. Otherwise, at least for Java sources, it
 will be very likely that some file names will be truncated.<br>
 <br>
+Do not put more than one CVSHistory ModificationSet for each source
+repository into a configuration, or the history would be downloaded
+repeatedly for each instance. The collection of modules to monitor from
+a repository can be specified by nested module elements.<br>
+<br>
 <a name="cvs"> </a>
 <table cellpadding="3" cellspacing="1" border="0">
   <tbody>
@@ -62,7 +68,7 @@ will be very likely that some file names will be truncated.<br>
       <td class="tabledata">historyurl</td>
       <td colspan="1" rowspan="2" class="tabledata">One of</td>
       <td class="tabledata">The URL where to fetch the history file.
-Required if historyfilename is not specified.<i></i></td>
+Required if historyfilename is not specified.</td>
     </tr>
     <tr>
       <td class="tabledata">historyfilename</td>
@@ -94,7 +100,9 @@ deleted. For use in conditionally controlling the build later.</td>
 <ul>
   <p><a name="cvshistory.module"><span class="small">Module</span><br>
 Nested element of CVSHistory, defining a module to look for in the
-repository. Module names are relative to the repository root. </a></p>
+repository. Module names are relative to the repository root. You can
+specify as many modules as desired, each with a different branch.<br>
+  </a></p>
   <a name="property"> </a>
   <table cellpadding="3" cellspacing="1" border="0">
     <tbody>
@@ -122,5 +130,18 @@ You must provide a viewcvs URL if you need branch support.<br>
     </tbody>
   </table>
 </ul>
+<a name="antbootstrapper"><span class="small">ANTBootstrapper</span></a><br>
+Specify an Ant build to be run as part of the bootstrap process for a
+project. This may be used to update the project build files or
+configuration. See the <a
+ href="http://cruisecontrol.sourceforge.net/main/configxml.html#antbuilder">standard
+ANT builder</a> for configuration details.<br>
+<br>
+<a name="antpublisher"><span class="small">ANTPublisher</span></a><br>
+Specify an Ant build to be run for publishing of build results.
+Properties from the build run are copied to the property set for ANT.
+See the <a
+ href="http://cruisecontrol.sourceforge.net/main/configxml.html#antbuilder">standard
+ANT builder</a> for configuration details.
 </body>
 </html>

@@ -10,6 +10,8 @@ This software is Copyright(C) 2004 Klaus Rennecke, see LICENSE for details.
 
 The CruiseControl home page is at http://cruisecontrol.sourceforge.net
 
+See cca.html for detailed documentation.
+
 CVSHistory
 ==========
 
@@ -56,4 +58,16 @@ To use the ANTBootstrapper, add the following line to your <project .../>:
 And use it just like the ANT builder. In fact, it is just the ANT builder,
 with the bootstrap() method calling the build. So you can set properties
 and build files with the standard builder.
+
+ANTPublisher
+============
+
+To use the ANTPublisher, add the following line to your <project .../>:
+
+	<plugin name="antpublisher" classname="net.sf.fraglets.cca.ANTPublisher"/>
+
+And use it just like the ANT builder. In fact, it is just the ANT builder,
+with the publish() method calling the build. So you can set properties
+and build files as with the standard builder. Properties which were set
+for the build process are copied to the publisher.
 
