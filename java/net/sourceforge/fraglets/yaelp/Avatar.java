@@ -34,7 +34,7 @@ import java.util.Iterator;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class Avatar {
     public static final PropertyChangeSupport CHANGE =
@@ -87,7 +87,8 @@ public class Avatar {
         } else if (name.equals("zone")) {
             return zone.getName();
         } else if (properties != null) {
-            return properties.get(name).toString();
+            Object value = properties.get(name);
+            return value == null ? null : value.toString();
         } else {
             return null;
         }
@@ -132,9 +133,11 @@ public class Avatar {
                 if (entry == null) {
                     entry = new TimestampEntry(value, timestamp);
                     properties.put(name, entry);
+                    CHANGE.firePropertyChange("Avatar.property", this, name);
                 } else if (timestamp >= entry.timestamp) {
                     entry.value = value;
                     entry.timestamp = timestamp;
+                    CHANGE.firePropertyChange("Avatar.property", this, name);
                 }
             }
         }
