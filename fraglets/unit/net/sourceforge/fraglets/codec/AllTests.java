@@ -4,24 +4,24 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 /**
- * @author kre
- *
- * To change this generated comment edit the template variable "typecomment":
- * Window>Preferences>Java>Templates.
- * To enable and disable the creation of type comments go to
- * Window>Preferences>Java>Code Generation.
+ * @author marion@users.sourceforge.net
+ * @version $Revision$
  */
 public class AllTests {
 
+	/**
+	 * Create a test suite for this package.
+	 * @return the test suite.
+	 */
 	public static Test suite() {
 		TestSuite suite =
 			new TestSuite("Test for net.sourceforge.fraglets.codec");
 		//$JUnit-BEGIN$
-		suite.addTest(SAXEventDecoderTest.suite());
-		suite.addTest(SAXEventEncoderTest.suite());
-		suite.addTest(UTF8DecoderTest.suite());
-		suite.addTest(UTF8EncoderTest.suite());
-		suite.addTest(new TestSuite(EventCodecTest.class));
+		suite.addTestSuite(SAXEventDecoderTest.class);
+		suite.addTestSuite(SAXEventEncoderTest.class);
+		suite.addTestSuite(UTF8DecoderTest.class);
+		suite.addTestSuite(UTF8EncoderTest.class);
+		suite.addTestSuite(EventCodecTest.class);
 		//$JUnit-END$
 		return suite;
 	}
