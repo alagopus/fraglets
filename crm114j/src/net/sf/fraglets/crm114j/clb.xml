@@ -15,8 +15,8 @@
       <menuitem text="i18n.clb.New.Category" action="newCategory()"/>
     </menu>
   </menubar>
-  <splitpane orientation="vertical" weightx="1" weighty="1">
-    <list name="header" action="updateDetails()" selection="single"/>
+  <splitpane orientation="vertical" weightx="1" weighty="1" divider="210">
+    <list name="header" action="updateDetails()" perform="center(item)" selection="single"/>
     <textarea name="details" editable="false">
       <popupmenu name="context"/>
     </textarea>

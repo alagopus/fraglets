@@ -1,5 +1,5 @@
 /*
- * $Id: FilesystemBrowser.java,v 1.2 2004-04-04 19:10:35 marion Exp $
+ * $Id: FilesystemBrowser.java,v 1.3 2004-04-04 23:37:11 marion Exp $
  * Copyright (C) 2004 Klaus Rennecke, all rights reserved.
  */
 package net.sf.fraglets.crm114j;
@@ -15,7 +15,7 @@ import java.util.Date;
 import thinlet.Thinlet;
 
 /**
- * @version $Id: FilesystemBrowser.java,v 1.2 2004-04-04 19:10:35 marion Exp $
+ * @version $Id: FilesystemBrowser.java,v 1.3 2004-04-04 23:37:11 marion Exp $
  */
 public class FilesystemBrowser {
     
@@ -83,7 +83,7 @@ public class FilesystemBrowser {
 
     public void expand(final Object node) {
         if (hasLoader(node)) {
-            Thread thread = new Thread() {
+            Thread thread = new Thread("Loading "+thinlet.getProperty(node, "file")) {
                 File[] list = null;
                 boolean first = true;
                 public void run() {

@@ -1,25 +1,32 @@
 /*
- * $Id: CategoryLogBrowser.java,v 1.2 2004-04-04 19:10:35 marion Exp $
+ * $Id: CategoryLogBrowser.java,v 1.3 2004-04-04 23:37:11 marion Exp $
  * Copyright (C) 2004 Klaus Rennecke, all rights reserved.
  */
 package net.sf.fraglets.crm114j;
 
+import java.awt.Component;
 import java.awt.Cursor;
+import java.awt.EventQueue;
+import java.awt.FileDialog;
+import java.awt.Frame;
 import java.awt.datatransfer.StringSelection;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.util.Hashtable;
 import java.util.StringTokenizer;
 
 import thinlet.FrameLauncher;
 import thinlet.Thinlet;
 
 /**
- * @version $Id: CategoryLogBrowser.java,v 1.2 2004-04-04 19:10:35 marion Exp $
+ * @version $Id: CategoryLogBrowser.java,v 1.3 2004-04-04 23:37:11 marion Exp $
  */
 public class CategoryLogBrowser extends Thinlet implements FilesystemBrowser.FileSelectionListener {
     
+    private static final boolean USE_AWT_FILE_DIALOG = true;
+
     private RandomAccessFile file;
     
     private static final char TAB_SUBSTITUTE = '\u21e5';
@@ -29,6 +36,8 @@ public class CategoryLogBrowser extends Thinlet implements FilesystemBrowser.Fil
     private CSSFile[] categoryFile;
     
     private long lastPos;
+    
+    private long lastPart;
 
     public CategoryLogBrowser() throws IOException {
         setResourceBundle(Resources.getResourceBundle());
@@ -171,11 +180,57 @@ public class CategoryLogBrowser extends Thinlet implements FilesystemBrowser.Fil
         }
     }
     
+    public void center(Object item) {
+        if (lastPart <= 0) {
+            return;
+        }
+        Long p = (Long)getProperty(item, "pos");
+        if (p != null) {
+            try {
+                final long oldPos = p.longValue();
+                long newPos = Math.max(p.longValue() - lastPart / 2, 0L);
+                if (newPos != lastPos) {
+                    long all = file.length();
+                    Object slider = find("slider");
+                    int max = getInteger(slider, "maximum");
+                    setInteger(slider, "value", (int)(max * newPos / all));
+                    file.seek(newPos);
+                    EventQueue.invokeLater(new Runnable() {
+                        public void run() {
+                            updateHeader(oldPos);
+                        }
+                    });
+                } else {
+                    updateDetails(item);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    
     public void open() {
-        try {
-            FilesystemBrowser.show(this);
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (USE_AWT_FILE_DIALOG) {
+            Component c = this;
+            while (c != null && !(c instanceof Frame)) {
+                c = c.getParent();
+            }
+            FileDialog dialog = new FileDialog((Frame)c);
+            dialog.setMode(FileDialog.LOAD);
+            dialog.show();
+            String name = dialog.getDirectory();
+            File file = name == null ? null : new File(name);
+            name = dialog.getFile();
+            if (name != null) {
+                file = file == null ? new File(name) : new File(file, name);
+                fileSelected(file);
+            }
+        } else {
+            try {
+                FilesystemBrowser.show(this);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
     
@@ -188,12 +243,20 @@ public class CategoryLogBrowser extends Thinlet implements FilesystemBrowser.Fil
         }
     }
     
-    public void learn(Object item) {
-        learn(item, 1);
+    public void learn(final Object item) {
+        EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                learn(item, 1);
+            }
+        });
     }
     
-    public void forget(Object item) {
-        learn(item, -1);
+    public void forget(final Object item) {
+        EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                learn(item, -1);
+            }
+        });
     }
     
     public void learn(Object item, int sense) {
@@ -215,7 +278,8 @@ public class CategoryLogBrowser extends Thinlet implements FilesystemBrowser.Fil
                                     sense);
                             }
                             file.seek(lastPos);
-                            updateHeader();
+                            Long p = (Long)getProperty(getSelectedItem(find("header")), "pos");
+                            updateHeader(p == null ? 0L : p.longValue());
                             break;
                         }
                     }
@@ -244,6 +308,14 @@ public class CategoryLogBrowser extends Thinlet implements FilesystemBrowser.Fil
     }
     
     public void updateHeader() {
+        EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                updateHeader(0L);
+            }
+        });
+    }
+    
+    public void updateHeader(long focus) {
         Cursor oldCursor = getCursor();
         setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         try {
@@ -253,18 +325,17 @@ public class CategoryLogBrowser extends Thinlet implements FilesystemBrowser.Fil
             Object item = null;
             Object header = find("header");
             Object context = find("context");
-            removeAll(header);
+            int count = 0;
             byte[] buffer = new byte[8000];
             Tokenizer tok = new Tokenizer(new char[buffer.length]);
             int off = 0, len = 0, max = 0;
             for(;;) {
                 if (off >= len) {
                     pos += len;
+                    off = 0;
                     len = file.read(buffer);
                     if (len <= 0) {
                         break;
-                    } else {
-                        off = 0;
                     }
                 }
                 char c = (char)buffer[off++];
@@ -283,12 +354,18 @@ public class CategoryLogBrowser extends Thinlet implements FilesystemBrowser.Fil
                     int best = Statistics.bestOf(s);
                     String name = getString(getItem(context, best), "text");
                     if (item == null || "start".equals(name)) {
-                        if (getCount(header) >= 10) {
+                        if (count >= 10) {
                             break;
                         }
-                        item = create("item");
+                        if (count < getCount(header)) {
+                            item = getItem(header, count++);
+                            clearProperties(item);
+                        } else {
+                            item = create("item");
+                            add(header, item);
+                            count += 1;
+                        }
                         putProperty(item, "pos", new Long(pos + off - max));
-                        add(header, item);
                     }
                     StringBuffer b = (StringBuffer)getProperty(item, name);
                     if (b == null) {
@@ -318,26 +395,65 @@ public class CategoryLogBrowser extends Thinlet implements FilesystemBrowser.Fil
                     tok.reset(grow, 0, 0, max);
                 }
             }
+            
+            // dispose of extra items - unlikely
+            while (count < getCount(header)) {
+                remove(getItem(header, count));
+            }
+            
+            // set item text from "start" category
             Object[] items = getItems(header);
             for (int i = 0; i < items.length; i++) {
                 StringBuffer b = (StringBuffer)getProperty(items[i], "start");
                 if (b != null) {
                     setString(items[i], "text", b.toString());
+                } else {
+                    // avoid empty item shrinking to small line
+                    setString(items[i], "text", " ");
                 }
             }
-            long part = pos + off - max - lastPos, all = file.length();
-            setString(find("status"), "text", "pos="+lastPos+", part="+part);
-            if (part > 0) {
+            
+            // update status and sliders with current position and portion
+            lastPart = pos + off - lastPos;
+            long all = file.length();
+            System.out.println("lastPos: " + lastPos);
+            System.out.println("lastPart: " + lastPart);
+            System.out.println("all: " + all);
+            setString(find("status"), "text", "pos="+lastPos+", part="+lastPart);
+            if (lastPart > 0) {
                 Object slider = find("slider");
                 max = getInteger(slider, "maximum");
-                setInteger(slider, "block", (int)(max * part / all));
+                setInteger(slider, "block", (int)(max * lastPart / all));
+                System.out.println("block: " + getInteger(slider, "block"));
             }
             item = find("portion");
             if (item != null) {
                 max = getInteger(item, "maximum");
-                setInteger(item, "value", (int)(max * (lastPos + part) / all));
+                setInteger(item, "value", (int)(max * (lastPos + lastPart) / all));
+                System.out.println("portion: " + getInteger(item, "value"));
             }
-            updateDetails();
+            
+            // select the item which is closest to focus
+            item = null;
+            int scan = getCount(header);
+            while (--scan >= 0) {
+                item = getItem(header, scan);
+                Long p = (Long)getProperty(item, "pos");
+                if (p != null && p.longValue() <= focus) {
+                    setLead(header, item);
+                    break;
+                }
+            }
+            if (scan < 0 && getCount(header) > 0) {
+                item = getItem(header, 0);
+                setLead(header, item);
+            }
+            
+            // update details
+            if (item != null) {
+//                requestFocus(header);
+                updateDetails(item);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -345,9 +461,76 @@ public class CategoryLogBrowser extends Thinlet implements FilesystemBrowser.Fil
         }
     }
     
+    private void clearProperties(Object item) {
+        Object[] scan = (Object[])item;
+        while (scan != null && scan[0] != ":bind") {
+            scan = (Object[])scan[2];
+        }
+        if (scan != null && scan[1] != null) {
+            ((Hashtable)scan[1]).clear();
+        }
+    }
+    
+    private void setLead(Object parent, Object item) {
+        if (item == null) {
+            throw new IllegalArgumentException("null lead");
+        }
+        Object[] scan = (Object[])parent;
+        while (scan != null) {
+            if (scan[0] == ":comp") {
+                scan = (Object[])scan[1];
+                break;
+            } else {
+                scan = (Object[])scan[2];
+            }
+        }
+        if (scan == null) {
+            throw new IllegalStateException("no :comp");
+        }
+        while (scan != null) {
+            if (scan == item) {
+                break;
+            }
+            if (scan[0] == ":next") {
+                scan = (Object[])scan[1];
+            } else {
+                scan = (Object[])scan[2];
+            }
+        }
+        if (scan == null) {
+            throw new IllegalArgumentException("item not child");
+        }
+        setBoolean(item, "selected", true);
+        Object[] prev = scan = (Object[])parent;
+        while (scan != null) {
+            if (scan[0] == ":lead") {
+                if (scan[1] != item) {
+                    setBoolean(scan[1], "selected", false);
+                    scan[1] = item;
+                }
+                break;
+            } else {
+                prev = scan;
+                scan = (Object[])scan[2];
+            }
+        }
+        if (scan == null) {
+            prev[2] = new Object[] { ":lead", item, null };
+        }
+    }
+    
     public void updateDetails() {
-        Object details = find("details");
-        Object item = getSelectedItem(find("header"));
+        Object header = find("header");
+        int index = getSelectedIndex(header);
+        Object item = getItem(header, index);
+        if (index == 0 || index == getCount(header) - 1) {
+            center(item);
+        } else {
+            updateDetails(item);
+        }
+    }
+    
+    public void updateDetails(Object item) {
         StringBuffer text = new StringBuffer();
         Object context = find("context");
         int count = getCount(context);
@@ -365,6 +548,7 @@ public class CategoryLogBrowser extends Thinlet implements FilesystemBrowser.Fil
                 }
             }
         }
+        Object details = find("details");
         setString(
             details,
             "text",
@@ -391,7 +575,7 @@ public class CategoryLogBrowser extends Thinlet implements FilesystemBrowser.Fil
         try {
             FrameLauncher launcher = new FrameLauncher(
                 Resources.getString("clb.title"), //$NON-NLS-1$
-                new CategoryLogBrowser(), 600, 400);
+                new CategoryLogBrowser(), 800, 600);
             launcher.show();
         } catch (Exception e) {
             e.printStackTrace();
