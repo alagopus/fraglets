@@ -29,6 +29,8 @@
 package net.sourceforge.fraglets.zieh;
 
 import java.awt.AWTEvent;
+import java.awt.FontMetrics;
+import java.awt.Window;
 import java.awt.event.MouseEvent;
 import java.io.BufferedReader;
 import java.io.File;
@@ -70,14 +72,27 @@ public class Main extends Thinlet implements Comparator {
     private ArrayList sftpListing;
     
     private Thread shuffler;
+    private FontMetrics metrics;
+    
+    private String queue[];
+    private int queueHead;
+    private int queueSize;
+    
+    private String stack[];
+    private int stackTop;
+    
     private int sessionLength;
+    private boolean sessionIdle;
+    private boolean remoteChanges;
+    private boolean localChanges;
+    private String multiListing;
     
     private int mouseX;
     private int mouseY;
     private int lastX;
     private int lastY;
     
-    public Main() {
+    public Main(String args[]) {
         try {
             add(parse("main.xml"));
         } catch (Exception ex) {
@@ -138,9 +153,10 @@ public class Main extends Thinlet implements Comparator {
         if (name.toLowerCase().startsWith("a:")) {
             return;
         }
-        setString(find("status"), "text", "searching: "+name);
+        setStatus("searching: "+name);
         File probe =new File(root, "psftp.exe"); 
         if (probe.exists()) {
+            setStatus("");
             setBackend(probe.getAbsolutePath());
         }
         File list[] = root.listFiles(DIR_FILTER);
@@ -156,6 +172,7 @@ public class Main extends Thinlet implements Comparator {
         Thread.currentThread().interrupt();
     }
 
+    /////
     // -- handlers
 
     public void actionExit() {
@@ -165,6 +182,10 @@ public class Main extends Thinlet implements Comparator {
 
     public void actionAbout() {
         add("about.xml");
+    }
+    
+    public void actionHelp() {
+        sessionCommand("help");
     }
     
     public void actionClose() {
@@ -187,12 +208,7 @@ public class Main extends Thinlet implements Comparator {
             Thread t;
             
             t = new Thread
-                (new ChatStream(sftp.getInputStream()) {
-                    public void run() {
-                        super.run();
-                        sftpStream = null;
-                    }
-                },
+                (new ChatStream(sftp.getInputStream(), sftpPrompt),
                 "Zieh input shuffler");
             t.setDaemon(true);
             t.start();
@@ -204,6 +220,9 @@ public class Main extends Thinlet implements Comparator {
             t.start();
             
             sftpStream = new PrintStream(sftp.getOutputStream());
+            
+            Thread.sleep(400); // wait for new window
+            ((Window)getParent()).toFront(); // nuisance
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -231,6 +250,7 @@ public class Main extends Thinlet implements Comparator {
             value = getString(path, "text");
         }
         sessionCommand("cd "+quoteSsh2(value));
+        sessionCommand("ls");
     }
     
     public void actionLocalRemove() {
@@ -239,6 +259,9 @@ public class Main extends Thinlet implements Comparator {
         for (int i = 0; i < items.length; i++) {
             Object row = items[i];
             String name = getString(getItem(row, 0), "text");
+            if (name.equals("..")) {
+                continue; // ignore
+            }
             localRemove(new File(base, name));
         }
         initLocal(find("localList"));
@@ -249,7 +272,11 @@ public class Main extends Thinlet implements Comparator {
         for (int i = 0; i < items.length; i++) {
             Object row = items[i];
             String name = getString(getItem(row, 0), "text");
-            sessionCommand("rm " + quoteSsh2(name));
+            if (name.equals("..")) {
+                continue; // ignore
+            }
+            boolean dir = "true".equals(getProperty(row, "directory"));
+            sessionCommand((dir ? "mrm " : "rm ") + quoteSsh2(name), false);
         }
     }
     
@@ -258,8 +285,16 @@ public class Main extends Thinlet implements Comparator {
         for (int i = 0; i < items.length; i++) {
             Object row = items[i];
             String name = getString(getItem(row, 0), "text");
-            sessionCommand("put " + quoteSsh2(name));
+            if (name.equals("..")) {
+                continue; // ignore
+            }
+            if ("true".equals(getProperty(row, "directory"))) {
+                sessionCommand("mput " + name, false);
+            } else {
+                sessionCommand("put " + quoteSsh2(name), false);
+            }
         }
+        enable(ALL_CONTROLS, sessionIdle);
     }
     
     public void actionGet() {
@@ -267,7 +302,11 @@ public class Main extends Thinlet implements Comparator {
         for (int i = 0; i < items.length; i++) {
             Object row = items[i];
             String name = getString(getItem(row, 0), "text");
-            sessionCommand("get " + quoteSsh2(name));
+            if (name.equals("..")) {
+                continue; // ignore
+            }
+            boolean dir = "true".equals(getProperty(row, "directory"));
+            sessionCommand((dir ? "mget " : "get ") + quoteSsh2(name), false);
         }
     }
     
@@ -282,34 +321,46 @@ public class Main extends Thinlet implements Comparator {
     }
     
     public void localSelect() {
-        clearSelection(find("remoteList"));
-        lastX = mouseX;
-        lastY = mouseY;
+        updateState(find("localList"), find("remoteList"),
+            find("localRemove"), find("remoteRemove"),
+            find("localPut"), find("remoteGet"));
     }
 
     public void remoteSelect() {
-        clearSelection(find("localList"));
-        lastX = mouseX;
-        lastY = mouseY;
+        updateState(find("remoteList"), find("localList"),
+            find("remoteRemove"), find("localRemove"),
+            find("remoteGet"), find("localPut"));
     }
     
     protected void triggerSelection() {
         {
             Object item = getSelectedItem(find("localList"));
             if (item != null) {
-                triggerSelection("lcd", "put", item);
+                triggerSelection("lcd", "lcd", item);
                 return;
             }
         }
         {
             Object item = getSelectedItem(find("remoteList"));
             if (item != null) {
-                triggerSelection("cd", "get", item);
+                triggerSelection("cd", "cd", item);
                 return;
             }
         }
     }
     
+    /**
+     * Destroy the application window (close clicked).
+     * @see thinlet.Thinlet#destroy()
+     */
+    public boolean destroy() {
+        actionClose();
+        return super.destroy();
+    }
+    
+    /////
+    // state handling
+
     protected void triggerSelection(String cd, String mv, Object row) {
         String name = getString(getItem(row, 0), "text");
         boolean dir = "true".equals(getProperty(row, "directory"));
@@ -361,30 +412,37 @@ public class Main extends Thinlet implements Comparator {
             Arrays.sort(list, this);
         }
         boolean empty = true;
+        int width[] = new int[] {20, 20, 20 };
         for (int i = 0; i < list.length; i++) {
             if (".".equals(list[i].getName())) {
                 // ignore .
                 continue;
             } else if (empty && !"..".equals(list[i].getName())) {
                 // insert ..
-                addLocalEntry(c, new File(".."), df);
+                addLocalEntry(c, new File(".."), df, width);
+                
             }
-            addLocalEntry(c, list[i], df);
+            addLocalEntry(c, list[i], df, width);
             empty = false;
         }
+        setColumns(c, width);
     }
     
-    protected void addLocalEntry(Object c, File file, DateFormat df) {
+    protected void addLocalEntry(Object c, File file, DateFormat df, int width[]) {
         Object row = create("row");
+        String text;
         Object cell;
         cell = create("cell");
-        setString(cell, "text", file.getName());
+        setString(cell, "text", text = file.getName());
+        width[0] = max(width[0], width(text));
         add(row, cell);
         cell = create("cell");
-        setString(cell, "text", String.valueOf(file.length()));
+        setString(cell, "text", text = String.valueOf(file.length()));
+        width[1] = max(width[1], width(text));
         add(row, cell);
         cell = create("cell");
-        setString(cell, "text", df.format(new Date(file.lastModified())));
+        setString(cell, "text", text = df.format(new Date(file.lastModified())));
+        width[2] = max(width[2], width(text));
         add(row, cell);
         putProperty(row, "directory", String.valueOf(file.isDirectory()));
         add(c, row);
@@ -489,6 +547,9 @@ public class Main extends Thinlet implements Comparator {
         }
     }
     
+    /////
+    // interaction
+    
     protected void parseSession(String line, Object source) {
         if (sftp != null) {
             if (source == sftp.getErrorStream()) {
@@ -502,10 +563,29 @@ public class Main extends Thinlet implements Comparator {
         appendChat(line);
     }
     
-    protected void parseSession(String line) {
-        while (line.startsWith(sftpPrompt)) {
-            line = line.substring(sftpPrompt.length());
+    protected void parsePrompt() {
+//        appendChat("[prompt]");
+        parseListResults();
+        String command = dequeue();
+        if (command != null) {
+            sendCommand(command);
+        } else {
+            sessionIdle = true;
+            if (remoteChanges) {
+                remoteChanges = false;
+                sessionCommand("ls");
+            } else if (localChanges) {
+                localChanges = false;
+                sessionCommand("lls");
+            } else {
+                setStatus("idle");
+                appendChat(sftpPrompt, false);
+                enable(ALL_CONTROLS, true);
+            }
         }
+    }
+    
+    protected void parseSession(String line) {
 //        appendChat("["+line+"]");
         if (line.startsWith(sftpOpenPwd)) {
             parseRcd(line.substring(sftpOpenPwd.length()));
@@ -516,33 +596,29 @@ public class Main extends Thinlet implements Comparator {
             System.setProperty("user.dir", newCd);
             Object localList = find("localList");
             initLocal(localList);
-            requestFocus(localList);
+            requestFocus(find("sessionChat"));
         } else if (line.startsWith(sftpPwd)) {
             parseRcd(line.substring(sftpPwd.length()));
         } else if (line.startsWith(sftpLs)) {
             sftpListingPath = line.substring(sftpLs.length());
             sftpListing = new ArrayList();
-            sessionCommand("pwd", true); // hack - allow detection of list end
-            if (!sftpListingPath.equals(getString(find("remotePath"), "text"))) {
+            if (multiListing == null &&
+                !sftpListingPath.equals(getString(find("remotePath"), "text"))) {
                 appendChat(line);
             }
         } else if (sftpListingPath != null) {
             sftpListing.add(line);
-            if (!sftpListingPath.equals(getString(find("remotePath"), "text"))) {
+            if (multiListing == null &&
+                !sftpListingPath.equals(getString(find("remotePath"), "text"))) {
                 appendChat(line);
             }
         } else if (line.startsWith("local:") && line.indexOf("=> remote:") > 0) {
-            sessionCommand("ls");
-            setBoolean(find("localList"), "enabled", true);
+            remoteChanges = true;
         } else if (line.startsWith("remote:") && line.indexOf("=> local:") > 0) {
-            initLocal(find("localList"));
-            setBoolean(find("localList"), "enabled", true);
-            setBoolean(find("remoteList"), "enabled", true);
-        } else if (line.startsWith("psftp: not connected to a host") ||
-            line.startsWith("local: unable to open ")) {
-            setBoolean(find("localList"), "enabled", true);
-            setBoolean(find("remoteList"), "enabled", true);
+            localChanges = true;
         } else {
+            multiListing = null;
+            sftpListingPath = null;
             appendChat(line);
         }
     }
@@ -553,24 +629,73 @@ public class Main extends Thinlet implements Comparator {
         if (!dir.equals(old)) {
             setString(rp, "text", dir);
             initRemotePath();
-            sessionCommand("ls");
-        } else if (sftpListingPath != null) {
-            String now = sftpListingPath;
-            sftpListingPath = null;
-            if (now.equals(old)) {
-                Object list = find("remoteList");
-                removeAll(list);
-//                add(list, create("header"));
-                for (Iterator i = sftpListing.iterator(); i.hasNext();) {
-                    String element = (String)i.next();
-                    parseRemoteList(element, list);
-                }
-                setBoolean(find("remoteList"), "enabled", true);
+            if (!isQueued("ls")) {
+                sessionCommand("ls");
             }
         }
     }
     
-    protected void parseRemoteList(String line, Object list) {
+    protected void parseListResults() {
+        if (sftpListingPath != null) {
+            if (multiListing != null) {
+                String action = multiListing;
+                multiListing = null;
+                String start = getString(find("remotePath"), "text");
+                if (sftpListingPath.startsWith(start)) {
+                    start = sftpListingPath.substring(start.length() + 1);
+                    if (action.equals("get")) {
+                        new File(System.getProperty("user.dir"), start).mkdirs();
+                    }
+                    boolean subdirs = false;
+                    for (Iterator i = sftpListing.iterator(); i.hasNext();) {
+                        String element = (String)i.next();
+                        if (element.length() <= 56) {
+                            appendChat("OOPS: short listing element: '"+element+"'");
+                            continue;
+                        }
+                        String name = element.substring(56);
+                        if (name.equals("..") || name.equals(".")) {
+                            continue; // skip
+                        }
+                        if (element.startsWith("d")) {
+                            sessionCommand("m" + action + " "
+                                + quoteSsh2(start + '/' + name));
+                            subdirs = true;
+                        } else if (action.equals("get")) {
+                            sessionCommand(action + " "
+                                + quoteSsh2(start + '/' + name) + " "
+                                + quoteSsh2(start + '/' + name));
+                        } else {
+                            sessionCommand(action + " "
+                                + quoteSsh2(start + '/' + name));
+                        }
+                    }
+                    if (action.equals("rm") || action.equals("del")) {
+                        sessionCommand("rmdir " + quoteSsh2(start));
+                    }
+                } else {
+                    appendChat("OOPS: "+sftpListingPath+" not in "+start);
+                }
+            } else {
+                if (sftpListingPath.equals(getString(find("remotePath"), "text"))) {
+                    Object list = find("remoteList");
+                    int width[] = new int[] { 20, 20, 20 };
+                    removeAll(list);
+                    for (Iterator i = sftpListing.iterator(); i.hasNext();) {
+                        String element = (String)i.next();
+                        parseRemoteList(element, list, width);
+                    }
+                    setColumns(list, width);
+                    setBoolean(find("remotePath"), "enabled", true);
+                    setBoolean(find("remoteList"), "enabled", true);
+                    requestFocus(find("sessionChat"));
+                }
+            }
+            sftpListingPath = null;
+        }
+    }
+    
+    protected void parseRemoteList(String line, Object list, int width[]) {
         // drwxr-xr-x   19 root     root         4096 Mar 27 13:49 .
         // crw-rw-rw-    1 root     root            0 Mar 16 17:02 tty
         StringTokenizer tok = new StringTokenizer(line, " ");
@@ -592,12 +717,15 @@ public class Main extends Thinlet implements Comparator {
         row = create("row");
         cell = create("cell");
         setString(cell, "text", name);
+        width[0] = max(width[0], width(name));
         add(row, cell);
         cell = create("cell");
         setString(cell, "text", size);
+        width[1] = max(width[1], width(size));
         add(row, cell);
         cell = create("cell");
         setString(cell, "text", date);
+        width[2] = max(width[2], width(date));
         add(row, cell);
         boolean isDir = "dl".indexOf(perms.charAt(0)) >= 0;
         putProperty(row, "directory", String.valueOf(isDir));
@@ -612,52 +740,124 @@ public class Main extends Thinlet implements Comparator {
             if (end >= 0 && text.charAt(end) == '\n') {
                 int start = text.lastIndexOf('\n', end - 1) + 1;
                 String command = text.substring(start, end);
-                setString(find("status"), "text", "command: '"+command+"'");
-                sessionCommand(command);
+                while (command.startsWith(sftpPrompt)) {
+                    command = command.substring(sftpPrompt.length());
+                }
+                sessionCommand(command, false);
             }
         }
         sessionLength = text.length();
     }
     
     public void sessionCommand(String command) {
-        sessionCommand(command, false);
+        sessionCommand(command, true);
     }
     
-    public void sessionCommand(String command, boolean silent) {
+    public void sessionCommand(String command, boolean echo) {
         if (sftpStream == null) {
             actionOpen();
         }
         if (sftpStream != null) {
-            if (!silent) {
-                setString(find("status"), "text", "command: '"+command+"'");
+            boolean beenIdle = sessionIdle;
+            
+            if (sessionIdle) {
+                sendCommand(command, echo);
+            } else if (command.startsWith("rmdir ")) {
+                push(command);
+            } else {
+                enqueue(command);
             }
             
-            sftpStream.println(command);
-            sftpStream.flush();
-            
-            if (command.startsWith("put ") || command.startsWith("get ")) {
-                setBoolean(find("localList"), "enabled", false);
-                setBoolean(find("remoteList"), "enabled", false);
-            } else if (command.equals("ls")) {
-                setBoolean(find("remoteList"), "enabled", false);
-            } else if (command.startsWith("rm ") || command.startsWith("del ")) {
-                sessionCommand("ls");
-            } else if (command.startsWith("!")) {
-                try {
-                    Thread.sleep(200); // TODO
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+            if (beenIdle != sessionIdle) {
+                if (command.startsWith("put ") || command.startsWith("get ")
+                    || command.startsWith("reput ") || command.startsWith("reget ")) {
+                    enable(ALL_CONTROLS, sessionIdle);
+                } else if (command.equals("ls")) {
+                    enable(REMOTE_CONTROLS, sessionIdle);
                 }
-                initLocal(find("localList"));
+            }
+            if (!remoteChanges) {
+                if (command.startsWith("rm ") || command.startsWith("del ")
+                    || command.startsWith("mv ") || command.startsWith("ren ")
+                    || command.startsWith("mkdir ") || command.startsWith("rmdir ")) {
+                    remoteChanges = true;
+                }
+            }
+            if (!localChanges) {
+                if (command.startsWith("!")) {
+                    localChanges = true;
+                }
             }
         }
     }
     
+    protected void sendCommand(String command) {
+        sendCommand(command, true);
+    }
+    
+    protected void sendCommand(String command, boolean echo) {
+        if (command.equals("lls")) {
+            // builtin
+            initLocal(find("localList"));
+            // synthetic
+            parsePrompt();
+            return;
+        }
+        
+        if (command.startsWith("mput ")) {
+            // builtin
+            String start = command.substring(5);
+            File base = new File(System.getProperty("user.dir"), start);
+            File list[] = base.listFiles();
+            sessionCommand("mkdir " + start, false);
+            for (int i = 0; i < list.length; i++) {
+                File file = list[i];
+                String name = start + '/' + file.getName();
+                if (file.isDirectory()) {
+                    sessionCommand("mput " + name, false);
+                } else {
+                    sessionCommand("put "
+                        + quoteSsh2(name) + ' ' + quoteSsh2(name), false);
+                }
+            }
+            // synthetic
+            parsePrompt();
+            return;
+        }
+        
+        if (command.startsWith("mget ")) {
+            // builtin
+            command = "ls " + command.substring(5);
+            multiListing = "get";
+        } else if (command.startsWith("mrm ")) {
+            // builtin
+            command = "ls " + command.substring(4);
+            multiListing = "rm";
+        } else if (command.startsWith("mdel ")) {
+            // builtin
+            command = "ls " + command.substring(5);
+            multiListing = "rm";
+        }
+        
+        if (sessionIdle && echo) {
+            appendChat(command);
+        }
+        sessionIdle = false;
+        setStatus("command: '"+command+"'");
+        sftpStream.println(command);
+        sftpStream.flush();
+//        appendHistory(command);
+    }
+    
     protected void appendChat(String line) {
+        appendChat(line, true);
+    }
+    
+    protected void appendChat(String line, boolean newline) {
         Object chat = find("sessionChat");
         StringBuffer buffer = new StringBuffer(getString(chat, "text"));
         buffer.append(line);
-        if (buffer.charAt(buffer.length() - 1) != '\n') {
+        if (newline && buffer.charAt(buffer.length() - 1) != '\n') {
             buffer.append('\n');
         }
         if (buffer.length() > 8192) {
@@ -674,15 +874,20 @@ public class Main extends Thinlet implements Comparator {
         setInteger(chat, "end", sessionLength);
     }
 
-    /**
-     * Destroy the application window (close clicked).
-     * @see thinlet.Thinlet#destroy()
-     */
-    public boolean destroy() {
-        actionClose();
-        return super.destroy();
-    }
+//    protected void appendHistory(String line) {
+//        Object history = find("sessionHistory");
+//        StringBuffer buffer = new StringBuffer(getString(history, "text"));
+//        buffer.append(line);
+//        if (buffer.charAt(buffer.length() - 1) != '\n') {
+//            buffer.append('\n');
+//        }
+//        int length = buffer.length();
+//        setString(history, "text", buffer.toString());
+//        setInteger(history, "start", length);
+//        setInteger(history, "end", length);
+//    }
 
+    /////
     // -- handler utilities
 
     protected void add(String name) {
@@ -693,6 +898,22 @@ public class Main extends Thinlet implements Comparator {
         }
     }
     
+    protected void enable(String names[], boolean state) {
+        for (int i = 0; i < names.length; i++) {
+            String name = names[i];
+            setBoolean(find(name), "enabled", state);
+        }
+    }
+    
+    protected static final String[] ALL_CONTROLS = {
+        "localPath", "localList", "localPut", "localRemove",
+        "remotePath", "remoteList", "remoteGet", "remoteRemove",
+    };
+    
+    protected static final String[] REMOTE_CONTROLS = {
+        "remotePath", "remoteList", "remoteGet", "remoteRemove",
+    };
+    
     protected void clearSelection(Object list) {
         Object items[] = getItems(list);
         for (int i = 0; i < items.length; i++) {
@@ -700,9 +921,125 @@ public class Main extends Thinlet implements Comparator {
         }
     }
     
+    protected void updateState(Object s, Object o,
+        Object srm, Object orm, Object smv, Object omv) {
+        lastX = mouseX;
+        lastY = mouseY;
+        clearSelection(o);
+        setBoolean(orm, "enabled", false);
+        setBoolean(omv, "enabled", false);
+        boolean something = getSelectedIndex(s) >= 0;
+        setBoolean(srm, "enabled", something);
+        setBoolean(smv, "enabled", something);
+    }
+    
+    protected void setStatus(String text) {
+        setString(find("status"), "text", text);
+    }
+    
     public static boolean near(int a, int b) {
         int d = a - b;
         return d <= 2 && d >= -2;
+    }
+    
+    protected int width(String s) {
+        if (metrics == null) {
+            metrics = getFontMetrics(getFont());
+        }
+        return metrics.stringWidth(s);
+    }
+    
+    protected void setColumns(Object table, int width[]) {
+        for (int i = 0; i < width.length; i++) {
+            setInteger(getItem(table, "column", i), "width", width[i] + 10);
+        }
+    }
+    
+    public static int max(int a, int b) {
+        return a > b ? a : b;
+    }
+    
+    protected synchronized void enqueue(String cmd) {
+        if (queue == null) {
+            queue = new String[20];
+            queueHead = 0;
+            queueSize = 1;
+        } else if (++queueSize > queue.length) {
+            String grow[] = new String[queue.length + queue.length / 2];
+            if (queueHead < queue.length) {
+                System.arraycopy(queue, queueHead, grow, 0, queue.length - queueHead);
+            }
+            if (queueHead > 0) {
+                System.arraycopy(queue, 0, grow, queue.length - queueHead, queueHead);
+            }
+            queueHead = queue.length;
+            queue = grow;
+        }
+        
+        if (queueHead == queue.length) {
+            queueHead = 0;
+        }
+
+        queue[queueHead++] = cmd;
+        updateQueue();
+    }
+    
+    protected synchronized void push(String cmd) {
+        if (stack == null) {
+            stack = new String[20];
+        } else if (stackTop >= stack.length) {
+            String grow[] = new String[stack.length + stack.length / 2];
+            System.arraycopy(stack, 0, grow, 0, stack.length);
+            stack = grow;
+        }
+        stack[stackTop++] = cmd;
+        updateQueue();
+    }
+    
+    protected synchronized String dequeue() {
+        try {
+            if (queue != null && queueSize > 0) {
+                int index = queueHead - queueSize--;
+                if (index < 0) {
+                    index += queue.length;
+                }
+                return queue[index];
+            } else if (stack != null && stackTop > 0) {
+                return stack[--stackTop];
+            } else {
+                return null;
+            }
+        } finally {
+            updateQueue();
+        }
+    }
+    
+    public synchronized void clearQueue() {
+        queue = null;
+        stack = null;
+        queueSize = 0;
+        stackTop = 0;
+    }
+    
+    protected void updateQueue() {
+        setString(find("queue"), "text", String.valueOf(queueSize + stackTop));
+    }
+    
+    protected synchronized boolean isQueued(String cmd) {
+        if (queue != null) {
+            int index = queueHead - queueSize;
+            if (index < 0) {
+                index += queue.length;
+            }
+            while (index != queueHead) {
+                if (cmd.equals(queue[index])) {
+                    return true;
+                } else if (++index >= queue.length) {
+                    index = 0;
+                }
+            }
+        }
+        return false;
     }
     
     public static String quoteSsh2(String str) {
@@ -725,28 +1062,42 @@ public class Main extends Thinlet implements Comparator {
         }
     }
     
+    /////
     // -- launcher
 
     public static void main(String[] args) {
-        Main main = new Main();
-//        Frame.open(main, "Zieh");
+        Main main = new Main(args);
         new FrameLauncher("Zieh", main, 620, 440);
         main.init();
     }
     
+    /////
     // -- inner classes
     
     public class ChatStream extends OutputStream implements Runnable {
         
         protected InputStream in;
         
+        protected char prompt[];
+        
+        protected boolean match;
+        
         protected StringBuffer buffer = new StringBuffer();
         
-        public ChatStream() {
+        public ChatStream(InputStream in, String prompt) {
+            this.in = in;
+            if (prompt != null) {
+                this.prompt = prompt.toCharArray();
+                this.match = true;
+            }
         }
         
         public ChatStream(InputStream in) {
-            this.in = in;
+            this(in, null);
+        }
+        
+        public ChatStream() {
+            this(null, null);
         }
         
         /**
@@ -754,17 +1105,32 @@ public class Main extends Thinlet implements Comparator {
          */
         public void write(int b) throws IOException {
             switch (b) {
-                case '\n':
-                    append(buffer.toString());
-                    buffer.setLength(0);
                 case '\r':
-                    break;
+                case '\n':
+                    if (buffer.length() > 0) {
+                        append(buffer.toString());
+                        buffer.setLength(0);
+                        match = prompt != null;
+                    }
+                    return;
                 case '\t':
                     buffer.append(' ');
                     break;
                 default:
                     buffer.append((char)b);
                     break;
+            }
+            if (match) {
+                int index = buffer.length() - 1;
+                if (index < prompt.length) {
+                    match = prompt[index] == buffer.charAt(index);
+                    if (match && index + 1 == prompt.length) {
+                        buffer.setLength(0);
+                        parsePrompt(); 
+                    }
+                } else {
+                    match = false; // unlikely
+                }
             }
         }
         
@@ -784,6 +1150,10 @@ public class Main extends Thinlet implements Comparator {
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
+            }
+            
+            if (sftp != null && in == sftp.getInputStream()) {
+                sftpStream = null;
             }
         }
 
