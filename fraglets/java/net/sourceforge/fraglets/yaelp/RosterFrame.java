@@ -68,7 +68,7 @@ import javax.swing.RepaintManager;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.23 $
+ * @version $Revision: 1.24 $
  */
 public class RosterFrame extends javax.swing.JFrame {
     /** The file chooser map used to select files to parse and export.
@@ -693,17 +693,6 @@ public class RosterFrame extends javax.swing.JFrame {
         JFileChooser chooser = getChooser("yxr");
         chooser.setApproveButtonText("Load");
         chooser.setDialogTitle("Load Roster");
-        chooser.setFileSelectionMode(chooser.FILES_ONLY);
-        chooser.setMultiSelectionEnabled(false);
-        chooser.resetChoosableFileFilters();
-        chooser.addChoosableFileFilter(new FileFilter() {
-            public boolean accept(File file) {
-                return file.isDirectory() || file.getName().endsWith(".yxr");
-            }
-            public String getDescription() {
-                return "YAELP Files (*.yxr)";
-            }
-        });
         if (chooser.showOpenDialog(this) == chooser.APPROVE_OPTION) {
             fixBackingStore();
             doImport(chooser.getSelectedFile(), true);
@@ -718,18 +707,6 @@ public class RosterFrame extends javax.swing.JFrame {
         JFileChooser chooser = getChooser("yxr");
         chooser.setApproveButtonText("Import");
         chooser.setDialogTitle("Import Roster");
-        chooser.setFileSelectionMode(chooser.FILES_ONLY);
-        chooser.setMultiSelectionEnabled(false);
-        chooser.setSelectedFile(null);
-        chooser.resetChoosableFileFilters();
-        chooser.addChoosableFileFilter(new FileFilter() {
-            public boolean accept(File file) {
-                return file.isDirectory() || file.getName().endsWith(".yxr");
-            }
-            public String getDescription() {
-                return "YAELP Files (*.yxr)";
-            }
-        });
         if (chooser.showOpenDialog(this) == chooser.APPROVE_OPTION) {
             fixBackingStore();
             doImport(chooser.getSelectedFile(), false);
@@ -744,17 +721,6 @@ public class RosterFrame extends javax.swing.JFrame {
         JFileChooser chooser = getChooser("yxr");
         chooser.setApproveButtonText("Save");
         chooser.setDialogTitle("Save Roster");
-        chooser.setFileSelectionMode(chooser.FILES_ONLY);
-        chooser.setMultiSelectionEnabled(false);
-        chooser.resetChoosableFileFilters();
-        chooser.addChoosableFileFilter(new FileFilter() {
-            public boolean accept(File file) {
-                return file.isDirectory() || file.getName().endsWith(".yxr");
-            }
-            public String getDescription() {
-                return "YAELP Files (*.yxr)";
-            }
-        });
         if (chooser.showSaveDialog(this) == chooser.APPROVE_OPTION) {
             File file = chooser.getSelectedFile();
             if (file.getName().indexOf('.') == -1) {
@@ -1003,21 +969,6 @@ public class RosterFrame extends javax.swing.JFrame {
 
     private void styleFileItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_styleFileItemActionPerformed
         JFileChooser chooser = getChooser("xsl");
-        chooser.setApproveButtonText("Use Style");
-        chooser.setDialogTitle("Use New Style");
-        chooser.setFileSelectionMode(chooser.FILES_ONLY);
-        chooser.setMultiSelectionEnabled(false);
-        chooser.setSelectedFile(null);
-        chooser.resetChoosableFileFilters();
-        chooser.addChoosableFileFilter(new FileFilter() {
-            public boolean accept(File file) {
-                return file.isDirectory() ||
-                    file.getName().endsWith(".xsl");
-            }
-            public String getDescription() {
-                return "XSL Style Files (*.xsl)";
-            }
-        });
         if (chooser.showOpenDialog(this) == chooser.APPROVE_OPTION) {
             fixBackingStore();
             doNewStyle(chooser.getSelectedFile());
@@ -1045,21 +996,7 @@ public class RosterFrame extends javax.swing.JFrame {
             doExportHTML(null);
             return;
         }
-        JFileChooser chooser = getChooser("xml");
-        chooser.setApproveButtonText("Export");
-        chooser.setDialogTitle("Export HTML");
-        chooser.setFileSelectionMode(chooser.FILES_ONLY);
-        chooser.setMultiSelectionEnabled(false);
-        chooser.setSelectedFile(null);
-        chooser.resetChoosableFileFilters();
-        chooser.addChoosableFileFilter(new FileFilter() {
-            public boolean accept(File file) {
-                return file.isDirectory() || file.getName().endsWith(".html");
-            }
-            public String getDescription() {
-                return "HTML Files (*.html)";
-            }
-        });
+        JFileChooser chooser = getChooser("html");
         if (chooser.showSaveDialog(this) == chooser.APPROVE_OPTION) {
             fixBackingStore();
             doExportHTML(chooser.getSelectedFile());
@@ -1070,20 +1007,6 @@ public class RosterFrame extends javax.swing.JFrame {
 
     private void exportXMLItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportXMLItemActionPerformed
         JFileChooser chooser = getChooser("xml");
-        chooser.setApproveButtonText("Export");
-        chooser.setDialogTitle("Export XML");
-        chooser.setFileSelectionMode(chooser.FILES_ONLY);
-        chooser.setMultiSelectionEnabled(false);
-        chooser.setSelectedFile(null);
-        chooser.resetChoosableFileFilters();
-        chooser.addChoosableFileFilter(new FileFilter() {
-            public boolean accept(File file) {
-                return file.isDirectory() || file.getName().endsWith(".xml");
-            }
-            public String getDescription() {
-                return "XML Files (*.xml)";
-            }
-        });
         if (chooser.showSaveDialog(this) == chooser.APPROVE_OPTION) {
             fixBackingStore();
             doExportXML(chooser.getSelectedFile(), false);
@@ -1104,23 +1027,7 @@ public class RosterFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_aboutItemActionPerformed
 
     private void exportTableItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportTableItemActionPerformed
-        JFileChooser chooser = getChooser("xml");
-        chooser.setApproveButtonText("Export");
-        chooser.setDialogTitle("Export table");
-        chooser.setFileSelectionMode(chooser.FILES_ONLY);
-        chooser.setMultiSelectionEnabled(false);
-        chooser.setSelectedFile(null);
-        chooser.resetChoosableFileFilters();
-        chooser.addChoosableFileFilter(new FileFilter() {
-            public boolean accept(File file) {
-                return file.isDirectory() ||
-                    file.getName().endsWith(".csv") ||
-                    file.getName().endsWith(".txt");
-            }
-            public String getDescription() {
-                return "Table Files (*.csv, *.txt)";
-            }
-        });
+        JFileChooser chooser = getChooser("csv");
         if (chooser.showSaveDialog(this) == chooser.APPROVE_OPTION) {
             fixBackingStore();
             doExport(chooser.getSelectedFile());
@@ -1324,8 +1231,8 @@ public class RosterFrame extends javax.swing.JFrame {
     
     protected void fixBackingStore() {
         // hack to fix dialog backing store bug
-        javax.swing.RepaintManager.currentManager(this)
-            .markCompletelyDirty(getRootPane());
+//        javax.swing.RepaintManager.currentManager(this)
+//            .markCompletelyDirty(getRootPane());
     }
     
     /** Initialize the roster table with a new list of avatars.
@@ -1376,7 +1283,7 @@ public class RosterFrame extends javax.swing.JFrame {
             }
             public int compare(Object a, Object b) {
                 return ((Avatar)a).getName()
-                .compareTo(((Avatar)b).getName());
+                    .compareTo(((Avatar)b).getName());
             }
         });
     }
@@ -1389,8 +1296,11 @@ public class RosterFrame extends javax.swing.JFrame {
                 other.getClass() == this.getClass();
             }
             public int compare(Object a, Object b) {
-                return stringValue(((Avatar)a).getClazz())
-                .compareTo(stringValue(((Avatar)b).getClazz()));
+                Avatar aa = (Avatar)a, ab = (Avatar)b;
+                int delta = stringValue(aa.getClazz())
+                    .compareTo(stringValue(ab.getClazz()));
+                return delta != 0 ? delta :
+                    aa.getName().compareTo(ab.getName());
             }
         });
     }
@@ -1403,8 +1313,45 @@ public class RosterFrame extends javax.swing.JFrame {
                 other.getClass() == this.getClass();
             }
             public int compare(Object a, Object b) {
-                return stringValue(((Avatar)a).getCulture())
-                .compareTo(stringValue(((Avatar)b).getCulture()));
+                Avatar aa = (Avatar)a, ab = (Avatar)b;
+                int delta = stringValue(aa.getCulture())
+                    .compareTo(stringValue(ab.getCulture()));
+                return delta != 0 ? delta :
+                    aa.getName().compareTo(ab.getName());
+            }
+        });
+    }
+    
+    protected void doGuildOrder() {
+        // sort by guild
+        model.setOrder(new java.util.Comparator() {
+            public boolean equals(Object other) {
+                return other != null &&
+                other.getClass() == this.getClass();
+            }
+            public int compare(Object a, Object b) {
+                Avatar aa = (Avatar)a, ab = (Avatar)b;
+                int delta = stringValue(aa.getGuild())
+                    .compareTo(stringValue(ab.getGuild()));
+                return delta != 0 ? delta :
+                    aa.getName().compareTo(ab.getName());
+            }
+        });
+    }
+    
+    protected void doZoneOrder() {
+        // sort by guild
+        model.setOrder(new java.util.Comparator() {
+            public boolean equals(Object other) {
+                return other != null &&
+                other.getClass() == this.getClass();
+            }
+            public int compare(Object a, Object b) {
+                Avatar aa = (Avatar)a, ab = (Avatar)b;
+                int delta = stringValue(aa.getZone())
+                    .compareTo(stringValue(ab.getZone()));
+                return delta != 0 ? delta :
+                    aa.getName().compareTo(ab.getName());
             }
         });
     }
@@ -1417,13 +1364,14 @@ public class RosterFrame extends javax.swing.JFrame {
                 other.getClass() == this.getClass();
             }
             public int compare(Object a, Object b) {
-                int delta = ((Avatar)a).getLevel() - ((Avatar)b).getLevel();
+                Avatar aa = (Avatar)a, ab = (Avatar)b;
+                int delta = aa.getLevel() - ab.getLevel();
                 if (delta < 0) {
                     return 1;
                 } else if (delta > 0) {
                     return -1;
                 } else {
-                    return 0;
+                    return aa.getName().compareTo(ab.getName());
                 }
             }
         });
@@ -1437,13 +1385,14 @@ public class RosterFrame extends javax.swing.JFrame {
                 other.getClass() == this.getClass();
             }
             public int compare(Object a, Object b) {
-                long delta = ((Avatar)a).getTimestamp() - ((Avatar)b).getTimestamp();
+                Avatar aa = (Avatar)a, ab = (Avatar)b;
+                long delta = aa.getTimestamp() - ab.getTimestamp();
                 if (delta < 0) {
                     return 1;
                 } else if (delta > 0) {
                     return -1;
                 } else {
-                    return 0;
+                    return aa.getName().compareTo(ab.getName());
                 }
             }
         });
@@ -1459,6 +1408,10 @@ public class RosterFrame extends javax.swing.JFrame {
             doCultureOrder();
         } else if (order.equals("level")) {
             doLevelOrder();
+        } else if (order.equals("guild")) {
+            doGuildOrder();
+        } else if (order.equals("zone")) {
+            doZoneOrder();
         } else if (order.equals("time")) {
             doTimeOrder();
         }
@@ -1706,12 +1659,15 @@ public class RosterFrame extends javax.swing.JFrame {
                 public void run() {
                     try {
                         writeXML(pw);
-                        pw.close();
                     } catch (java.io.IOException ex) {
                         ex.printStackTrace();
+                    } finally {
+                        try { pw.close(); }
+                        catch (IOException ex) {} // ignored
                     }
                 }
             }.start();
+            Thread.yield();
             processor.parse(new InputSource(new java.io.PipedReader(pw)));
             
             if (exportToClipboardItem.isSelected()) {
@@ -1733,7 +1689,7 @@ public class RosterFrame extends javax.swing.JFrame {
     }
     
     protected void writeXML(java.io.Writer out) throws java.io.IOException {
-        java.io.PrintWriter pw = new java.io.PrintWriter(out);
+        java.io.PrintWriter pw = new java.io.PrintWriter(out, false);
         pw.println("<roster title=\"Roster\">"); // FIXME: allow setting title
         // create tag names
         javax.swing.table.TableColumnModel header = rosterTable.getColumnModel();
@@ -1857,6 +1813,83 @@ public class RosterFrame extends javax.swing.JFrame {
                 chooser.setCurrentDirectory(((JFileChooser)chooserMap
                     .get(lastChooser)).getCurrentDirectory());
             }
+            if (category.equals("yxr")) {
+                chooser.setFileSelectionMode(chooser.FILES_ONLY);
+                chooser.setMultiSelectionEnabled(false);
+                chooser.setSelectedFile(null);
+                chooser.resetChoosableFileFilters();
+                chooser.addChoosableFileFilter(new FileFilter() {
+                    public boolean accept(File file) {
+                        return file.isDirectory() || file.getName().endsWith(".yxr");
+                    }
+                    public String getDescription() {
+                        return "YAELP Files (*.yxr)";
+                    }
+                });
+            } else if (category.equals("html")) {
+                chooser.setApproveButtonText("Export");
+                chooser.setDialogTitle("Export HTML");
+                chooser.setFileSelectionMode(chooser.FILES_ONLY);
+                chooser.setMultiSelectionEnabled(false);
+                chooser.setSelectedFile(null);
+                chooser.resetChoosableFileFilters();
+                chooser.addChoosableFileFilter(new FileFilter() {
+                    public boolean accept(File file) {
+                        return file.isDirectory() || file.getName().endsWith(".html");
+                    }
+                    public String getDescription() {
+                        return "HTML Files (*.html)";
+                    }
+                });
+            } else if (category.equals("csv")) {
+                chooser.setApproveButtonText("Export");
+                chooser.setDialogTitle("Export table");
+                chooser.setFileSelectionMode(chooser.FILES_ONLY);
+                chooser.setMultiSelectionEnabled(false);
+                chooser.setSelectedFile(null);
+                chooser.resetChoosableFileFilters();
+                chooser.addChoosableFileFilter(new FileFilter() {
+                    public boolean accept(File file) {
+                        return file.isDirectory() ||
+                            file.getName().endsWith(".csv") ||
+                            file.getName().endsWith(".txt");
+                    }
+                    public String getDescription() {
+                        return "Table Files (*.csv, *.txt)";
+                    }
+                });
+            } else if (category.equals("xml")) {
+                chooser.setApproveButtonText("Export");
+                chooser.setDialogTitle("Export XML");
+                chooser.setFileSelectionMode(chooser.FILES_ONLY);
+                chooser.setMultiSelectionEnabled(false);
+                chooser.setSelectedFile(null);
+                chooser.resetChoosableFileFilters();
+                chooser.addChoosableFileFilter(new FileFilter() {
+                    public boolean accept(File file) {
+                        return file.isDirectory() || file.getName().endsWith(".xml");
+                    }
+                    public String getDescription() {
+                        return "XML Files (*.xml)";
+                    }
+                });
+            } else if (category.equals("xsl")) {
+                chooser.setApproveButtonText("Use Style");
+                chooser.setDialogTitle("Use New Style");
+                chooser.setFileSelectionMode(chooser.FILES_ONLY);
+                chooser.setMultiSelectionEnabled(false);
+                chooser.setSelectedFile(null);
+                chooser.resetChoosableFileFilters();
+                chooser.addChoosableFileFilter(new FileFilter() {
+                    public boolean accept(File file) {
+                        return file.isDirectory() ||
+                            file.getName().endsWith(".xsl");
+                    }
+                    public String getDescription() {
+                        return "XSL Style Files (*.xsl)";
+                    }
+                });
+            }
         }
         lastChooser = category;
         return chooser;
@@ -1883,7 +1916,7 @@ public class RosterFrame extends javax.swing.JFrame {
                 }
             }
             aboutText =
-            "YAELP log file parser, version 1.18.\n"+
+            "YAELP log file parser, version 1.19.\n"+
             "Copyright © 2001, 2002 Klaus Rennecke.\n"+
             "XML parser Copyright © 1997, 1998 James Clark.\n"+
             "XSL transformation Copyright © 1998, 1999 James Clark.\n"+
