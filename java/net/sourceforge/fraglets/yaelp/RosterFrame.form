@@ -220,6 +220,16 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="noFilterItemActionPerformed"/>
               </Events>
             </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="invertFilterItem">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="invert filter"/>
+                <Property name="toolTipText" type="java.lang.String" value="Invert all selected filter items."/>
+              </Properties>
+
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="invertFilterItemActionPerformed"/>
+              </Events>
+            </MenuItem>
             <MenuItem class="javax.swing.JSeparator" name="jSeparator2">
             </MenuItem>
             <MenuItem class="javax.swing.JCheckBoxMenuItem" name="mainFilterItem">

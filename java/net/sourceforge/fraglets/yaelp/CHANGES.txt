@@ -1,3 +1,8 @@
+Changes for version 1.20:
+    - Added filter inversion.
+    - Cleanup XSTL processor on error.
+    - Simplify NEoP style.
+
 Changes for version 1.19:
     - Add ordering by guild and zone.
     - Make all order expressions complete (deferring to character name).
