@@ -20,14 +20,13 @@ import net.sourceforge.fraglets.zeig.model.PlainTextFactory;
 import net.sourceforge.fraglets.zeig.model.SAXFactory;
 import net.sourceforge.fraglets.zeig.model.VersionFactory;
 
-import org.apache.xerces.dom.DocumentImpl;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class DOMStateFactory implements StateFactory {
     protected SAXFactory sf = new SAXFactory(ConnectionFactory.getInstance());
@@ -71,8 +70,11 @@ public class DOMStateFactory implements StateFactory {
                 if (binding == null) {
                     int ve = VersionFactory.getInstance()
                         .createVersion(id, co);
-                    Document doc = new DocumentImpl();
-                    binding = doc.createElementNS(DOMContext.CONTEXT_NAMESPACE, "binding");
+                    String localName = DOMObjectFactory.isDOMContext(id)
+                        ? DOMContext.CONTEXT_TAGNAME
+                        : DOMContext.BINDING_TAGNAME;
+                    Document doc = new org.apache.xerces.dom.DocumentImpl();
+                    binding = doc.createElementNS(DOMContext.CONTEXT_NAMESPACE, localName);
                     binding.setAttributeNS("", "id", atom);
                     binding.setAttributeNS(DOMContext.CONTEXT_NAMESPACE, "ve", String.valueOf(ve));
                 } else {

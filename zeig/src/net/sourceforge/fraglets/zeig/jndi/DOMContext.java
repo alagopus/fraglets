@@ -47,7 +47,7 @@ import net.sourceforge.fraglets.zeig.model.VersionFactory;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class DOMContext implements Context {
     /** Context option. */
@@ -590,11 +590,13 @@ public class DOMContext implements Context {
          */
         public Object next() throws NamingException {
             if (index < nl.getLength()) {
-                NamedNodeMapImpl nn = (NamedNodeMapImpl)
-                    nl.item(index++).getAttributes();
-                String name = nn.getNamedItem(idTag)
-                    .getNodeValue();
-                return new NameClassPair(name, Document.class.getName());
+                Element e = (Element)nl.item(index++);
+                NamedNodeMapImpl nn = (NamedNodeMapImpl)e.getAttributes();
+                String name = nn.getNamedItem(idTag).getNodeValue();
+                String type = DOMObjectFactory.isDOMContext(e)
+                    ? DOMContext.class.getName()
+                    : Document.class.getName();
+                return new NameClassPair(name, type);
             } else {
                 throw new NoSuchElementException();
             }
