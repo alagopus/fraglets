@@ -1,5 +1,5 @@
 /*
- * $Id: CVSHistory.java,v 1.13 2004-08-25 19:54:40 marion Exp $
+ * $Id: CVSHistory.java,v 1.14 2005-02-26 09:50:34 marion Exp $
  * Copyright (C) 2004 Klaus Rennecke, all rights reserved.
  * 
  * Permission is hereby granted, free of charge, to any person
@@ -25,19 +25,21 @@
 
 package net.sf.fraglets.cca;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -53,7 +55,7 @@ import org.apache.log4j.Logger;
  * Perform modification check based on a plain history file.
  * 
  * @author  Klaus Rennecke
- * @version $Revision: 1.13 $
+ * @version $Revision: 1.14 $
  */
 public class CVSHistory implements SourceControl {
     /** The properties set for ANT. */
@@ -73,9 +75,18 @@ public class CVSHistory implements SourceControl {
     
     /** The URL of the viewcvs gateway. */
     private String viewcvsUrl;
+    
+    /** The default encoding for log entries. */
+    private String defaultEncoding;
 
     /** The module name to check for. */
     private List modules = new ArrayList();
+    
+    /** The committers with their personal charset setting. */
+    private List committers;
+    
+    /** Map from committer name to charset. */
+    private HashMap encodings;
 
     /** Logger for this class. */
     private static Logger log = Logger.getLogger(CVSHistory.class);
@@ -105,9 +116,14 @@ public class CVSHistory implements SourceControl {
         try {
             Reader fin;
             if (historyFileName != null) {
+                // the local history is always read with system encoding
                 fin = new FileReader(historyFileName);
             } else {
-                fin = openUrl(historyUrl);
+                if (defaultEncoding != null) {
+                    fin = new InputStreamReader(new URL(historyUrl).openStream(), defaultEncoding);
+                } else {
+                    fin = new InputStreamReader(new URL(historyUrl).openStream());
+                }
             }
             try {
                 BufferedReader in = new BufferedReader(fin);
@@ -172,9 +188,9 @@ public class CVSHistory implements SourceControl {
             }
 
             try {
-                    StringTokenizer tok = new StringTokenizer(
-                        line.substring(TIMESTAMP_END + 1), "|", //$NON-NLS-1$
-                        true);
+                StringTokenizer tok = new StringTokenizer(
+                    line.substring(TIMESTAMP_END + 1), "|", //$NON-NLS-1$
+                    true);
                 String userName = tok.nextToken();
                 tok.nextToken(); // delimiter
                 tok.nextToken(); // working directory
@@ -192,10 +208,7 @@ public class CVSHistory implements SourceControl {
                 String fileName = tok.nextToken();
 
                 String comment =
-                    fetchLog(
-                        folderName + '/' + fileName,
-                        revision,
-                        module.getBranch());
+                    fetchLog(folderName + '/' + fileName, revision, module.getBranch(), getEncoding(userName));
                 if (comment == null) {
                     return; // modification on a different branch
                 }
@@ -233,21 +246,20 @@ public class CVSHistory implements SourceControl {
      * @param cvslog the CVS log map, updated as necessary.
      * @return the commit message, or null.
      */
-    private String fetchLog(String fileName, String revision, String branch)
+    private String fetchLog(String fileName, String revision, String branch, String encoding)
         throws MalformedURLException, UnsupportedEncodingException, IOException {
         if (viewcvsUrl == null) {
             // cannot fetch log
             return ""; //$NON-NLS-1$
         }
         
-        Reader reader;
+        InputStream in;
         try {
             if (branch != null) {
-                reader = openUrl(viewcvsUrl + urlquote(fileName, false)
-                    + "?only_with_tag=" //$NON-NLS-1$
-                    + urlquote(branch, true));
+                in = new URL(viewcvsUrl + urlquote(fileName, false) + "?only_with_tag=" //$NON-NLS-1$
+                    + urlquote(branch, true)).openStream();
             } else {
-                reader = openUrl(viewcvsUrl + urlquote(fileName, false));
+                in = new URL(viewcvsUrl + urlquote(fileName, false)).openStream();
             }
         } catch (IOException e) {
             // This happens when the file does not exist on the specified branch.
@@ -267,52 +279,33 @@ public class CVSHistory implements SourceControl {
             return null;
         }
         
-        reader = new BufferedReader(reader);
+        if (!(in instanceof BufferedInputStream)) {
+            in = new BufferedInputStream(in);
+        }
         try {
             for (;;) {
-                skipTag(reader, "hr"); //$NON-NLS-1$
-                if (!"Revision".equals(readToken(reader))) { //$NON-NLS-1$
+                skipTag(in, "hr"); //$NON-NLS-1$
+                if (!"Revision".equals(readToken(in))) { //$NON-NLS-1$
                     continue;
                 }
-                if (!revision.equals(readToken(reader))) {
+                if (!revision.equals(readToken(in))) {
                     continue;
                 }
-                return readBlock(reader, "pre");
+                return readBlock(in, "pre", encoding);
             }
         } catch (EOFException e) {
         } finally {
-            reader.close();
+            in.close();
         }
         
         return null;
     }
     
-    /**
-     * Open a URL and return a Reader that uses the appropriate encoding.
-     * @param url a URL.
-     * @return an open Reader.
-     * @throws IOException propagated.
-     * @throws MalformedURLException propagated.
-     * @throws UnsupportedEncodingException propagated.
-     */
-    private static Reader openUrl(String url)
-        throws IOException, MalformedURLException, UnsupportedEncodingException {
-        Reader fin;
-        URLConnection connection = new URL(url).openConnection();
-        String encoding = connection.getContentEncoding();
-        if (encoding == null) {
-            fin = new InputStreamReader(connection.getInputStream());
-        } else {
-            fin = new InputStreamReader(connection.getInputStream(), encoding);
-        }
-        return fin;
-    }
-
-    private static void skipTo(Reader reader, String mark) throws IOException {
+    private static void skipTo(InputStream in, String mark) throws IOException {
         int end = mark.length();
         int scan = 0;
         while (scan < end){
-            int c = reader.read();
+            int c = in.read();
             if (c == mark.charAt(scan)) {
                 scan += 1;
             } else if (c == -1) {
@@ -323,29 +316,29 @@ public class CVSHistory implements SourceControl {
         }
     }
     
-    private static boolean matchText(Reader reader, String text) throws IOException {
+    private static boolean matchText(InputStream in, String text) throws IOException {
         int end = text.length();
         int scan = 0;
-        reader.mark(end);
+        in.mark(end);
         while (scan < end){
-            int c = reader.read();
+            int c = in.read();
             if (c == text.charAt(scan)) {
                 scan += 1;
             } else if (c == -1) {
                 throw new EOFException();
             } else {
-                reader.reset();
+                in.reset();
                 return false;
             }
         }
         return true;
     }
     
-    private static String readToken(Reader reader) throws IOException {
+    private static String readToken(InputStream in) throws IOException {
         StringBuffer buffer = new StringBuffer();
         for (;;) {
-            reader.mark(1);
-            int c = reader.read();
+            in.mark(1);
+            int c = in.read();
             if (c == -1) {
                 break;
             } else if (Character.isWhitespace((char)c)) {
@@ -356,61 +349,75 @@ public class CVSHistory implements SourceControl {
                 if (buffer.length() > 0) {
                     break;
                 }
-                skipTo(reader, ">"); //$NON-NLS-1$
+                skipTo(in, ">"); //$NON-NLS-1$
             } else {
                 buffer.append((char)c);
             }
         }
         if (buffer.length() > 0) {
-            reader.reset();
+            in.reset();
             return buffer.toString();
         } else {
             throw new EOFException();
         }
     }
     
-    private static String readBlock(Reader reader, String tagName) throws IOException {
-        skipTag(reader, tagName); //$NON-NLS-1$
-        StringBuffer buffer = new StringBuffer();
+    private static String readBlock(InputStream in, String tagName, String encoding) throws IOException {
+        skipTag(in, tagName); //$NON-NLS-1$
+        byte[] buffer = new byte[1024];
+        int pos = 0;
         for (;;) {
-            int c = reader.read();
+            int c = in.read();
             if (c == -1) {
                 break;
             } else if (c == '<') {
-                if (matchText(reader, "/"+tagName)) {
-                    skipTo(reader, ">"); //$NON-NLS-1$
+                if (matchText(in, "/"+tagName)) {
+                    skipTo(in, ">"); //$NON-NLS-1$
                     break;
                 }
             }
-            buffer.append((char)c);
+            try {
+                buffer[pos] = (byte)c;
+            } catch (ArrayIndexOutOfBoundsException e) {
+                int more = buffer.length * 2;
+                byte[] grow = new byte[more];
+                System.arraycopy(buffer, 0, grow, 0, buffer.length);
+                buffer = grow;
+                buffer[pos] = (byte)c;
+            }
+            pos += 1;
         }
-        return buffer.toString();
+        if (encoding != null) {
+            return new String(buffer, 0, pos, encoding);
+        } else {
+            return new String(buffer, 0, pos);
+        }
     }
     
-    private static void skipWhite(Reader reader) throws IOException {
+    private static void skipWhite(InputStream in) throws IOException {
         do {
-            reader.mark(1);
-        } while (Character.isWhitespace((char)reader.read()));
-        reader.reset();
+            in.mark(1);
+        } while (Character.isWhitespace((char)in.read()));
+        in.reset();
     }
     
-    private static void skipTag(Reader reader, String tagName)
+    private static void skipTag(InputStream in, String tagName)
         throws IOException {
         String found;
         do {
-            found = readTag(reader, "<");
-            skipTo(reader, ">"); //$NON-NLS-1$
+            found = readTag(in, "<");
+            skipTo(in, ">"); //$NON-NLS-1$
         } while (!tagName.equals(found));
     }
     
-    private static String readTag(Reader reader, String start)
+    private static String readTag(InputStream in, String start)
         throws IOException {
-        skipTo(reader, start);
-        skipWhite(reader);
+        skipTo(in, start);
+        skipWhite(in);
         StringBuffer buffer = new StringBuffer();
         for (;;) {
-            reader.mark(1);
-            int c = reader.read();
+            in.mark(1);
+            int c = in.read();
             if (c == -1) {
                 break;
             } else if (Character.isLetter((char)c)) {
@@ -419,7 +426,7 @@ public class CVSHistory implements SourceControl {
                 break;
             }
         }
-        reader.reset();
+        in.reset();
         return buffer.toString();
     }
 
@@ -522,6 +529,30 @@ public class CVSHistory implements SourceControl {
                     "CVSHistory.Malformed_viewcvsurl"), e); //$NON-NLS-1$
             }
         }
+        if (committers != null) {
+            int scan = committers.size();
+            while (--scan >= 0) {
+                Committer committer = (Committer)committers.get(scan);
+                try {
+                    // test name and charset in one blow.
+                    committer.getName().getBytes(committer.getCharset());
+                } catch (UnsupportedEncodingException e) {
+                    throw new CruiseControlException(Messages.getString(
+                        "CVSHistory.Unsupported_encoding"), e); //$NON-NLS-1$
+                } catch (NullPointerException e) {
+                    throw new CruiseControlException(Messages.getString(
+                        "CVSHistory.Missing_committer_name"), e); //$NON-NLS-1$
+                }
+            }
+        }
+        if (defaultEncoding != null) {
+            try {
+                defaultEncoding.getBytes(defaultEncoding);
+            } catch (UnsupportedEncodingException e) {
+                throw new CruiseControlException(Messages.getString(
+                    "CVSHistory.Unsupported_encoding"), e); //$NON-NLS-1$
+            }
+        }
     }
 
     /**
@@ -600,6 +631,13 @@ public class CVSHistory implements SourceControl {
     public void setModule(String string) {
         createModule().setName(string);
     }
+    
+    /**
+     * @param encoding the default charset encoding.
+     */
+    public void setEncoding(String encoding) {
+        this.defaultEncoding = encoding;
+    }
 
     /**
      * Create a new sub-element for a module.
@@ -612,10 +650,44 @@ public class CVSHistory implements SourceControl {
     }
 
     /**
+     * Create a new sub-element for a committer.
+     * @return the new committer sub-element.
+     */
+    public synchronized Committer createCommitter() {
+        if (committers == null) {
+            committers = new ArrayList();
+        }
+        Committer result = new Committer();
+        committers.add(result);
+        encodings = null;
+        return result;
+    }
+    
+    private synchronized String getEncoding(String committerName) {
+        if (committerName == null || committers == null) {
+            return defaultEncoding;
+        }
+        if (encodings == null) {
+            encodings = new HashMap();
+            int scan = committers.size();
+            while (--scan >= 0) {
+                Committer committer = (Committer)committers.get(scan);
+                encodings.put(committer.getName(), committer.getCharset()); 
+            }
+        }
+        String result = (String)encodings.get(committerName);
+        if (result == null) {
+            return defaultEncoding;
+        } else {
+            return result;
+        }
+    }
+
+    /**
      * Bean implementation for the module sub-element.
      * @since 01.03.2004
      * @author Klaus Rennecke
-     * @version $Revision: 1.13 $
+     * @version $Revision: 1.14 $
      */
     public static class Module {
         
@@ -653,6 +725,30 @@ public class CVSHistory implements SourceControl {
          */
         public void setBranch(String string) {
             branch = string;
+        }
+
+    }
+    
+    public static class Committer {
+
+        private String name;
+
+        private String charset;
+
+        public String getCharset() {
+            return charset;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setCharset(String string) {
+            charset = string;
+        }
+
+        public void setName(String string) {
+            name = string;
         }
 
     }

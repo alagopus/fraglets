@@ -56,7 +56,7 @@ repository into a configuration, or the history would be downloaded
 repeatedly for each instance. The collection of modules to monitor from
 a repository can be specified by nested module elements.<br>
 <br>
-<a name="cvs"> </a>
+<a name="cvshistory"> </a>
 <table cellpadding="3" cellspacing="1" border="0">
   <tbody>
     <tr>
@@ -95,40 +95,82 @@ occurred. For use in conditionally controlling the build later. </td>
       <td class="tabledata"> Set this property if a file has been
 deleted. For use in conditionally controlling the build later.</td>
     </tr>
+    <tr>
+      <td class="tabledata">encoding</td>
+      <td class="tabledata">No</td>
+      <td class="tabledata"> The default encoding to use when reading
+log message entries, and when fetching the history file from a URL.</td>
+    </tr>
   </tbody>
 </table>
-<ul>
-  <p><a name="cvshistory.module"><span class="small">Module</span><br>
+<ul style="list-style: none;">
+  <li>
+    <p><a name="cvshistory.module"><span class="small">Module</span><br>
 Nested element of CVSHistory, defining a module to look for in the
 repository. Module names are relative to the repository root. You can
 specify as many modules as desired, each with a different branch.<br>
-  </a></p>
-  <a name="property"> </a>
-  <table cellpadding="3" cellspacing="1" border="0">
-    <tbody>
-      <tr>
-        <td class="tableheader">ttribute</td>
-        <td class="tableheader">Required</td>
-        <td class="tableheader">Description</td>
-      </tr>
-      <tr>
-        <td class="tabledata">name</td>
-        <td class="tabledata">Yes</td>
-        <td class="tabledata" rowspan="1">Relative path name of the
+    </a></p>
+    <a name="property"> </a>
+    <table cellpadding="3" cellspacing="1" border="0">
+      <tbody>
+        <tr>
+          <td class="tableheader">Attribute</td>
+          <td class="tableheader">Required</td>
+          <td class="tableheader">Description</td>
+        </tr>
+        <tr>
+          <td class="tabledata">name</td>
+          <td class="tabledata">Yes</td>
+          <td class="tabledata" rowspan="1">Relative path name of the
 module in the repository. Always use the canonical name, not aliases
 from CVSROOT/modules.<br>
-        </td>
-      </tr>
-      <tr>
-        <td class="tabledata">branch</td>
-        <td class="tabledata">No</td>
-        <td class="tabledata" rowspan="1">Branch tag for this module.
+          </td>
+        </tr>
+        <tr>
+          <td class="tabledata">branch</td>
+          <td class="tabledata">No</td>
+          <td class="tabledata" rowspan="1">Branch tag for this module.
 If not specified, all branches are included in the modification set.
 You must provide a viewcvs URL if you need branch support.<br>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
+  <li>
+    <p><a name="cvshistory.committer"><span class="small">Committer</span><br>
+Nested element of CVSHistory, declaring the charset encoding to use when
+reading log messages from a specific committer. Since CVS log entries do
+not carry charset encoding information, and clients may submit log messages
+in varying encodings, these can be set here per committer.<br>
+    </a></p>
+    <a name="property"> </a>
+    <table cellpadding="3" cellspacing="1" border="0">
+      <tbody>
+        <tr>
+          <td class="tableheader">Attribute</td>
+          <td class="tableheader">Required</td>
+          <td class="tableheader">Description</td>
+        </tr>
+        <tr>
+          <td class="tabledata">name</td>
+          <td class="tabledata">Yes</td>
+          <td class="tabledata" rowspan="1">Name of the committer, as it
+appears in the history file. This is usually the user name on the operating
+system level.<br>
+          </td>
+        </tr>
+        <tr>
+          <td class="tabledata">encoding</td>
+          <td class="tabledata">Yes</td>
+          <td class="tabledata" rowspan="1">Charset encoding to use for this
+committer. This value overrides the default encoding set on cvshistory for
+log messages read from this committer.<br>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
 </ul>
 <a name="antbootstrapper"><span class="small">ANTBootstrapper</span></a><br>
 Specify an Ant build to be run as part of the bootstrap process for a
