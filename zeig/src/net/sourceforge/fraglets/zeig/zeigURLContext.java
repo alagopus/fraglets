@@ -6,6 +6,9 @@
  */
 package net.sourceforge.fraglets.zeig;
 
+import java.lang.ref.Reference;
+import java.lang.ref.WeakReference;
+import java.util.HashMap;
 import java.util.Hashtable;
 
 import javax.naming.CannotProceedException;
@@ -17,11 +20,18 @@ import javax.naming.NameParser;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.spi.NamingManager;
+import javax.xml.transform.Source;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.URIResolver;
+import javax.xml.transform.dom.DOMSource;
 
 import net.sourceforge.fraglets.zeig.jdbc.ConnectionFactory;
 import net.sourceforge.fraglets.zeig.jndi.DOMContext;
 
+import org.apache.log4j.Category;
 import org.apache.xml.utils.URI;
+import org.apache.xml.utils.URI.MalformedURIException;
+import org.w3c.dom.Document;
 
 /**
  * @author unknown
@@ -29,8 +39,9 @@ import org.apache.xml.utils.URI;
  * To change this generated comment go to 
  * Window>Preferences>Java>Code Generation>Code Template
  */
-public class zeigURLContext implements Context {
+public class zeigURLContext implements Context, URIResolver {
     private Hashtable env;
+    private HashMap roots;
 
     /**
      * @param env
@@ -38,6 +49,17 @@ public class zeigURLContext implements Context {
     public zeigURLContext(Hashtable env) {
         this.env = new Hashtable();
         this.env.putAll(env);
+        this.env.put(DOMContext.URL_CONTEXT_PARENT, this);
+    }
+    
+    public static zeigURLContext getInstance(Context ctx) throws NamingException {
+        Hashtable env = ctx.getEnvironment();
+        zeigURLContext result = (zeigURLContext)
+            env.get(DOMContext.URL_CONTEXT_PARENT);
+        if (result == null) {
+            result = new zeigURLContext(env);
+        }
+        return result;
     }
 
     /**
@@ -61,13 +83,10 @@ public class zeigURLContext implements Context {
      * @see javax.naming.Context#lookup(java.lang.String)
      */
     public Object lookup(String name) throws NamingException {
+        Category.getInstance(getClass()).debug(name);
         URI uri = toUri(name);
         Context ctx = getRootContext(uri);
-        try {
-            return ctx.lookup(getRemainingName(uri));
-        } finally {
-            ctx.close();
-        }
+        return ctx.lookup(getRemainingName(uri));
     }
 
     /**
@@ -121,11 +140,7 @@ public class zeigURLContext implements Context {
     public void rebind(String name, Object obj) throws NamingException {
         URI uri = toUri(name);
         Context ctx = getRootContext(uri);
-        try {
-            ctx.rebind(getRemainingName(uri), obj);
-        } finally {
-            ctx.close();
-        }
+        ctx.rebind(getRemainingName(uri), obj);
     }
 
     /**
@@ -150,11 +165,7 @@ public class zeigURLContext implements Context {
     public void unbind(String name) throws NamingException {
         URI uri = toUri(name);
         Context ctx = getRootContext(uri);
-        try {
-            ctx.unbind(getRemainingName(uri));
-        } finally {
-            ctx.close();
-        }
+        ctx.unbind(getRemainingName(uri));
     }
 
     /**
@@ -192,11 +203,7 @@ public class zeigURLContext implements Context {
         URI newUri = toUri(newName);
         if (equalsRoots(oldUri, newUri)) {
             Context ctx = getRootContext(oldUri);
-            try {
-                ctx.rename(getRemainingName(oldUri), getRemainingName(newUri));
-            } finally {
-                ctx.close();
-            }
+            ctx.rename(getRemainingName(oldUri), getRemainingName(newUri));
         } else {
             bind(newName, lookup(oldName));
             unbind(oldName);
@@ -225,11 +232,7 @@ public class zeigURLContext implements Context {
     public NamingEnumeration list(String name) throws NamingException {
         URI uri = toUri(name);
         Context ctx = getRootContext(uri);
-        try {
-            return ctx.list(getRemainingName(uri));
-        } finally {
-            ctx.close();
-        }
+        return ctx.list(getRemainingName(uri));
     }
 
     /**
@@ -254,11 +257,7 @@ public class zeigURLContext implements Context {
     public NamingEnumeration listBindings(String name) throws NamingException {
         URI uri = toUri(name);
         Context ctx = getRootContext(uri);
-        try {
-            return ctx.listBindings(getRemainingName(uri));
-        } finally {
-            ctx.close();
-        }
+        return ctx.listBindings(getRemainingName(uri));
     }
 
     /**
@@ -283,11 +282,7 @@ public class zeigURLContext implements Context {
     public void destroySubcontext(String name) throws NamingException {
         URI uri = toUri(name);
         Context ctx = getRootContext(uri);
-        try {
-            ctx.destroySubcontext(getRemainingName(uri));
-        } finally {
-            ctx.close();
-        }
+        ctx.destroySubcontext(getRemainingName(uri));
     }
 
     /**
@@ -312,11 +307,7 @@ public class zeigURLContext implements Context {
     public Context createSubcontext(String name) throws NamingException {
         URI uri = toUri(name);
         Context ctx = getRootContext(uri);
-        try {
-            return ctx.createSubcontext(getRemainingName(uri));
-        } finally {
-            ctx.close();
-        }
+        return ctx.createSubcontext(getRemainingName(uri));
     }
 
     /**
@@ -341,11 +332,7 @@ public class zeigURLContext implements Context {
     public Object lookupLink(String name) throws NamingException {
         URI uri = toUri(name);
         Context ctx = getRootContext(uri);
-        try {
-            return ctx.lookupLink(getRemainingName(uri));
-        } finally {
-            ctx.close();
-        }
+        return ctx.lookupLink(getRemainingName(uri));
     }
 
     /**
@@ -370,11 +357,7 @@ public class zeigURLContext implements Context {
     public NameParser getNameParser(String name) throws NamingException {
         URI uri = toUri(name);
         Context ctx = getRootContext(uri);
-        try {
-            return ctx.getNameParser(getRemainingName(uri));
-        } finally {
-            ctx.close();
-        }
+        return ctx.getNameParser(getRemainingName(uri));
     }
 
     /**
@@ -471,9 +454,22 @@ public class zeigURLContext implements Context {
     protected Context getRootContext(URI uri) throws NamingException {
         String connectionURL = ConnectionFactory.getConnectionURL
             (uri.getHost(), uri.getPort(), uri.getUserinfo());
+        if (roots == null) {
+            roots = new HashMap();
+        }
+        Reference cached = (Reference)roots.get(connectionURL);
+        if (cached != null) {
+            DOMContext result = (DOMContext)cached.get();
+            if (result != null && result.isOpen()) {
+                return result;
+            }
+            roots.remove(connectionURL);
+        }
         Hashtable subEnv = new Hashtable(env);
         subEnv.put(ConnectionFactory.RESOURCE_CONNECTION_URL, connectionURL);
-        return new DOMContext(subEnv);
+        DOMContext result = new DOMContext(subEnv);
+        roots.put(connectionURL, new WeakReference(result));
+        return result;
     }
     
     /**
@@ -518,5 +514,22 @@ public class zeigURLContext implements Context {
         result.setResolvedObj(where);
         result.setEnvironment(env);
         return result;
+    }
+
+    /**
+     * @see javax.xml.transform.URIResolver#resolve(java.lang.String, java.lang.String)
+     */
+    public Source resolve(String href, String base) throws TransformerException {
+        try {
+            Category.getInstance(getClass()).debug(base);
+            Category.getInstance(getClass()).debug(href);
+            URI uri = base == null ? null : new URI(base);
+            uri = new URI(uri, href);
+            return new DOMSource((Document)lookup(uri.toString()));
+        } catch (MalformedURIException e) {
+            throw new TransformerException(e);
+        } catch (NamingException e) {
+            throw new TransformerException(e);
+        }
     }
 }
