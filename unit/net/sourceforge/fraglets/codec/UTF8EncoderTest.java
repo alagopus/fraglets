@@ -24,12 +24,6 @@ public class UTF8EncoderTest extends TestCase {
         junit.textui.TestRunner.run(suite());
     }
     
-    public static Test suite() {
-        TestSuite suite = new TestSuite(UTF8EncoderTest.class);
-        
-        return suite;
-    }
-    
     /** Test of encodeUCS4 method, of class net.sourceforge.fraglets.codec.UTF8Encoder. */
     public void testEncodeUCS4() throws java.io.UnsupportedEncodingException {
         String sample = "f\u00FCrchterlich";
@@ -148,4 +142,11 @@ public class UTF8EncoderTest extends TestCase {
         encoder.growBuffer(12);
         assertTrue("grow buffer", encoder.getBuffer().length >= 12);
     }
+    
+    public static Test suite() {
+        TestSuite suite = new TestSuite(UTF8EncoderTest.class);
+        
+        return suite;
+    }
+    
 }

@@ -23,12 +23,6 @@ public class UTF8DecoderTest extends TestCase {
         junit.textui.TestRunner.run(suite());
     }
     
-    public static Test suite() {
-        TestSuite suite = new TestSuite(UTF8DecoderTest.class);
-        
-        return suite;
-    }
-    
     /** Test of setBuffer method, of class net.sourceforge.fraglets.codec.UTF8Decoder. */
     public void testSetBuffer() throws java.io.UnsupportedEncodingException {
         String sample = "foo";
@@ -133,4 +127,11 @@ public class UTF8DecoderTest extends TestCase {
         }
         out.println(']');
     }
+    
+    public static Test suite() {
+        TestSuite suite = new TestSuite(UTF8DecoderTest.class);
+        
+        return suite;
+    }
+    
 }
