@@ -36,7 +36,7 @@ import java.util.Collections;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class Avatar {
     public static final String GUILD_UNGUILDED = "-";
@@ -161,14 +161,20 @@ public class Avatar {
                 }
                 TimestampEntry entry = (TimestampEntry)properties.get(name);
                 if (entry == null) {
-                    entry = new TimestampEntry(value, timestamp);
-                    properties.put(name, entry);
-//                    addHistory(timestamp, name, value);
-                    fireNewProperty(this, name);
+                    if (value != null) {
+                        entry = new TimestampEntry(value, timestamp);
+                        properties.put(name, entry);
+    //                    addHistory(timestamp, name, value);
+                        fireNewProperty(this, name);
+                    }
                 } else if (timestamp >= entry.timestamp && value != entry.value
-                    && (value == null || entry.value == null || !value.equals(entry.value))) {
-                    entry.value = value;
-                    entry.timestamp = timestamp;
+                    && (value == null || !value.equals(entry.value))) {
+                    if (value == null) {
+                        properties.remove(name);
+                    } else {
+                        entry.value = value;
+                        entry.timestamp = timestamp;
+                    }
 //                    addHistory(timestamp, name, value);
                     fireNewProperty(this, name);
                 }
