@@ -47,7 +47,7 @@ import net.sourceforge.fraglets.zeig.model.VersionFactory;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class DOMContext implements Context {
     /** Context option. */
@@ -56,6 +56,9 @@ public class DOMContext implements Context {
     
     public static final String CONTEXT_NAMESPACE =
         "http://fraglets.sourceforge.net/zeig/DOMContext";
+    
+    public static final String CONTEXT_TAGNAME = "context";
+    public static final String BINDING_TAGNAME = "binding";
     
     private Properties environment;
     private NameParser nameParser;
