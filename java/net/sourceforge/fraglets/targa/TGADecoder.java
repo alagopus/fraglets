@@ -48,10 +48,10 @@ public class TGADecoder {
         throws IOException
     {
         int idLength = in.readByte() & 0xff;
-        byte colorMapType = in.readByte();
+        in.skipBytes(1); // byte colorMapType = in.readByte();
         byte imageType = in.readByte();
         
-        int colorMapOffset = in.readShort() & 0xffff;
+        in.skipBytes(2); // int colorMapOffset = in.readShort() & 0xffff;
         int colorMapLength = in.readShort() & 0xffff;
         int colorMapDepth = in.readByte() & 0xff;
         

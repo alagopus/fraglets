@@ -124,7 +124,7 @@ public class CardDetective {
         try {
             // scrape the set list from the document
             HTMLDocument document = getDocument();
-            URL base = document.getBase();
+//            URL base = document.getBase();
             HTMLDocument.Iterator i = document.getIterator(HTML.Tag.A);
             while (i.isValid()) {
                 Object value = i.getAttributes()

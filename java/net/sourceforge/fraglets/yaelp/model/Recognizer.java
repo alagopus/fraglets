@@ -27,7 +27,7 @@ import java.util.Observable;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class Recognizer extends Observable {
     /** Known avatars. */
@@ -283,7 +283,7 @@ public class Recognizer extends Observable {
                     } else if (line.compareTo(space, PATTERN__IS_NO_LONGER_A_MEMBER, 0, PATTERN__IS_NO_LONGER_A_MEMBER.length)) {
                         long timestamp = line.getTimestamp();
                         String name = line.substring(0, space);
-                        Avatar avatar = updateAvatar(timestamp, name, 0, null, null, Avatar.Guild.create(Avatar.GUILD_UNGUILDED), null);
+                        updateAvatar(timestamp, name, 0, null, null, Avatar.Guild.create(Avatar.GUILD_UNGUILDED), null);
                         return true;
                     } else {
                         return false;
@@ -293,7 +293,7 @@ public class Recognizer extends Observable {
                         line.compareTo(space, PATTERN__IS_NOT_IN_A_GUILD_, 0, PATTERN__IS_NOT_IN_A_GUILD_.length)) {
                         long timestamp = line.getTimestamp();
                         String name = line.substring(0, space);
-                        Avatar avatar = updateAvatar(timestamp, name, 0, null, null, Avatar.Guild.create(Avatar.GUILD_UNGUILDED), null);
+                        updateAvatar(timestamp, name, 0, null, null, Avatar.Guild.create(Avatar.GUILD_UNGUILDED), null);
                         return true;
                     } else if (line.getChar(line.getLength() - 1) != '.') {
                         return false;

@@ -145,7 +145,7 @@ public class TGAViewer extends javax.swing.JFrame {
                 File file = chooser.getSelectedFile();
                 if (file != null && file.exists() && file.isFile()) {
                     InputStream in = new FileInputStream(file);
-                    long read;
+//                    long read;
                     Image image;
                     try {
                         ImageProducer producer = TGADecoder.decode(in);

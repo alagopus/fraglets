@@ -33,7 +33,7 @@ import java.util.zip.GZIPInputStream;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class EqlogParser {
     protected Reader in;
@@ -85,7 +85,7 @@ public class EqlogParser {
     public synchronized boolean readLine(Line line)
         throws IOException
     {
-        char c;
+//        char c;
         int scan = off;
         int last = scan;
         int end = off + len;

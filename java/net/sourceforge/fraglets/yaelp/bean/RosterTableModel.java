@@ -25,7 +25,7 @@ import net.sourceforge.fraglets.yaelp.model.Avatar;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class RosterTableModel extends javax.swing.table.AbstractTableModel {
     /** Headers for the roster table. */    
@@ -118,7 +118,7 @@ public class RosterTableModel extends javax.swing.table.AbstractTableModel {
         } else if (order.equals(this.order)) {
             invertOrder();
         } else {
-            Comparator oldOrder = this.order;
+//            Comparator oldOrder = this.order;
             this.order = order;
             if (roster != null) {
                 java.util.Arrays.sort(roster, order);
