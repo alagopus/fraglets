@@ -1,5 +1,5 @@
 /*
- * UCS4Codec.java
+ * UTF8Encoder.java
  * Copyright (C) 2002, Klaus Rennecke.
  * Created on 10. Juli 2002, 01:10
  *
