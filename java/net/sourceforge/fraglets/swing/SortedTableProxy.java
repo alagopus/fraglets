@@ -323,12 +323,14 @@ public class SortedTableProxy implements SortedTableModel, TableModelListener {
             int result;
             Object value0 = model.getValueAt(index, sortedColumn);
             Object value1 = model.getValueAt(((Transformation)obj).index, sortedColumn);
-            if (comparator != null) {
-                result = comparator.compare(value0, value1);
-            } else if (value0 != null) {
+            if (value0 == null) {
+                result = value1 == null ? 0 : -1;
+            } else if (value1 == null) {
+                result = 1;
+            } else if (comparator == null) {
                 result = ((Comparable)value0).compareTo(value1);
             } else {
-                result = value1 == null ? 0 : -1;
+                result = comparator.compare(value0, value1);
             }
             return ascending ? result : 0 - result;
         }
