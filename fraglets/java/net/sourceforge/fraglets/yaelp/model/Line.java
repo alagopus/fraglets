@@ -27,7 +27,7 @@ import java.util.Locale;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class Line {
     public static final String PREFIX = "[Sun Apr 01 16:38:57 2001] ";
@@ -210,6 +210,6 @@ public class Line {
      * @param off starting offset for the desired string
      * @return the created String */
     public String substring(int off) {
-        return substring(off, this.len - off);
+        return substring(off, this.len);
     }
 }
