@@ -48,8 +48,11 @@
         <jar compress="true" defaultexcludes="false" jarfile="../jars/wizard-${version}.jar" manifest="${package}/wizard.mf">
             <fileset dir=".">
                 <include name="${package}/**/*.class"/>
-                <include name="${package}/**/*.properties"/>
-                <include name="${package}/**/*.gif"/>
+                <include name="${package}/model/**/*.properties"/>
+                <include name="${package}/version.properties"/>
+                <include name="${package}/logo.gif"/>
+                <include name="${package}/gpl.txt"/>
+                <include name="${package}/copying_xp.txt"/>
                 <include name="net/sourceforge/fraglets/targa/TGADecoder*.class"/>
             </fileset>
         </jar>
