@@ -13,13 +13,14 @@ import javax.naming.Name;
 import javax.naming.NamingException;
 import javax.naming.spi.ObjectFactory;
 
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import net.sourceforge.fraglets.zeig.dom.DocumentImpl;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class DOMObjectFactory implements ObjectFactory {
 
@@ -29,7 +30,13 @@ public class DOMObjectFactory implements ObjectFactory {
     public Object getObjectInstance(Object obj, Name name,
         Context ctx, Hashtable environment) throws NamingException {
         if (ctx instanceof DOMContext) {
-            return new DocumentImpl(DOMContext.getLatest((Element)obj));
+            Document doc = new DocumentImpl(DOMContext.getLatest((Element)obj));
+            if (DOMContext.CONTEXT_NAMESPACE.equals(doc.getDocumentElement().getNamespaceURI()) &&
+                "context".equals(doc.getDocumentElement().getLocalName())) {
+                return new DOMContext((DOMContext)ctx, name.get(0), doc);
+            } else {
+                return doc;
+            }
         } else {
             return null;
         }

@@ -6,13 +6,15 @@
  */
 package net.sourceforge.fraglets.zeig.cache;
 
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import org.apache.log4j.Category;
+import org.apache.log4j.Priority;
+
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class SensorCache implements SimpleCache {
     private String name;
@@ -82,23 +84,24 @@ public class SensorCache implements SimpleCache {
         return name;
     }
     
-    public static void printStatistics(PrintStream out) {
+    public static void logStatistics(Priority priority) {
+        Category category = Category.getInstance(SensorCache.class);
         for (Iterator i = instances.iterator(); i.hasNext();) {
             SensorCache element = (SensorCache)i.next();
             int[] sensor = element.getSensor();
             String name = element.getName();
-            out.println(name + ".get: "+sensor[GET_SENSOR]);
-            out.println(name + ".hit: "+sensor[HIT_SENSOR]);
-            out.println(name + ".put: "+sensor[PUT_SENSOR]);
+            category.log(priority, name + ".get: "+sensor[GET_SENSOR]);
+            category.log(priority, name + ".hit: "+sensor[HIT_SENSOR]);
+            category.log(priority, name + ".put: "+sensor[PUT_SENSOR]);
             if (sensor[GET_SENSOR] > 0) {
-                out.println(name + " hit rate: "
+                category.log(priority, name + " hit rate: "
                     + percent(sensor[HIT_SENSOR], sensor[GET_SENSOR]) + "%");
             }
-            out.println(name + ".size: " + element.getSize());
-            out.println(name + ".fill: " + element.getFill());
-            out.println(name + ".drop: " + element.getDrop());
+            category.log(priority, name + ".size: " + element.getSize());
+            category.log(priority, name + ".fill: " + element.getFill());
+            category.log(priority, name + ".drop: " + element.getDrop());
             if (element.getSize() > 0) {
-                out.println(name + " fill rate: "
+                category.log(priority, name + " fill rate: "
                     + percent(element.getFill(), element.getSize()) + "%");
             }
         }

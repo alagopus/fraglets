@@ -45,12 +45,15 @@ import net.sourceforge.fraglets.zeig.model.VersionFactory;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class DOMContext implements Context {
     /** Context option. */
     public static final String VERSION_COMMENT =
         "net.sourceforge.fraglets.zeig.jndi.versionComment";
+    
+    public static final String CONTEXT_NAMESPACE =
+        "http://fraglets.sourceforge.net/zeig/DOMContext";
     
     private Properties environment;
     private NameParser nameParser;
@@ -147,6 +150,9 @@ public class DOMContext implements Context {
 
             bind(obj, in, atom);
         } else {
+            if (in == null) {
+                throw new NamingException("no subcontext: "+atom);
+            }
             getSubContext(in, atom).bind(nm.getSuffix(1), obj);
         }
     }
@@ -199,9 +205,11 @@ public class DOMContext implements Context {
         Element in = lookupElement(atom);
 
         if (nm.size() == 1) {
-            binding.removeChild(in);
+            binding.getDocumentElement().removeChild(in);
             // just in case it's a context
-            context.remove(atom);
+            if (context != null) {
+                context.remove(atom);
+            }
         } else {
             getSubContext(in, atom).unbind(nm.getSuffix(1));
         }
@@ -242,13 +250,17 @@ public class DOMContext implements Context {
     public NamingEnumeration list(Name name) throws NamingException {
         if (name.isEmpty()) {
             // listing this context
-            return new DOMNames(binding);
+            return new DOMNames(binding.getDocumentElement());
         } 
 
         // Perhaps 'name' names a context
         Object target = lookup(name);
         if (target instanceof Context) {
-            return ((Context)target).list("");
+            try {
+                return ((Context)target).list("");
+            } finally {
+                ((Context)target).close();
+            }
         } else {
             throw new NotContextException(name.toString());
         }
@@ -267,13 +279,17 @@ public class DOMContext implements Context {
     public NamingEnumeration listBindings(Name name) throws NamingException {
         if (name.isEmpty()) {
             // listing this context
-            return new DOMBindings(binding, this);
+            return new DOMBindings(binding.getDocumentElement(), this);
         } 
 
         // Perhaps 'name' names a context
         Object target = lookup(name);
         if (target instanceof Context) {
-            return ((Context)target).list("");
+            try {
+                return ((Context)target).listBindings("");
+            } finally {
+                ((Context)target).close();
+            }
         } else {
             throw new NotContextException(name.toString());
         }
@@ -425,11 +441,14 @@ public class DOMContext implements Context {
         obj = NamingManager.getStateToBind(obj,
             new CompositeName().add(atom), this, environment);
         if (obj != old) {
-            binding.appendChild((Node)obj);
+            binding.getDocumentElement().appendChild((Node)obj);
         }
     }
 
     protected DOMContext getSubContext(Element in, String atom) throws NumberFormatException, DOMException, NamingException {
+        if (context == null) {
+            context = new HashMap();
+        }
         DOMContext sub = (DOMContext)context.get(atom);
         if (sub == null) {
             int id = getLatest(in);
@@ -462,12 +481,13 @@ public class DOMContext implements Context {
         try {
             try {
                 // lookup root
-                return VersionFactory.getInstance().getValue(0);
-            } catch (NoSuchElementException ex) {
+                int id =VersionFactory.getInstance().getVersions(getEmpty())[0];
+                return VersionFactory.getInstance().getValue(id);
+            } catch (ArrayIndexOutOfBoundsException ex) {
                 int root = getEmpty();
                 int comment = PlainTextFactory.getInstance()
                     .getPlainText("naming root");
-                VersionFactory.getInstance().addVersion(0, root, comment);
+                VersionFactory.getInstance().createVersion(root, comment);
                 return root;
             }
         } catch (NamingException ex) {
@@ -486,7 +506,7 @@ public class DOMContext implements Context {
         
         try  {
             SAXFactory sf = new SAXFactory(ConnectionFactory.getInstance());
-            return emptyId = sf.parse("<context/>");
+            return emptyId = sf.parse("<ctx:context xmlns:ctx=\""+CONTEXT_NAMESPACE+"\"/>");
         } catch (Exception ex) {
             throw namingException(ex);
         }
@@ -505,7 +525,7 @@ public class DOMContext implements Context {
     public static int getVe(Element el) throws NamingException {
         if (veTag == 0) {
             try {
-                veTag = NodeFactory.getInstance().getName("", "ve");
+                veTag = NodeFactory.getInstance().getName(CONTEXT_NAMESPACE, "ve");
             } catch (SQLException ex) {
                 throw namingException(ex);
             }

@@ -8,13 +8,20 @@ package net.sourceforge.fraglets.zeig.model;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.StringReader;
 import java.sql.SQLException;
 import java.util.Stack;
 
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NameNotFoundException;
+import javax.naming.NamingException;
+
 import net.sourceforge.fraglets.zeig.cache.SensorCache;
 import net.sourceforge.fraglets.zeig.jdbc.ConnectionFactory;
+import net.sourceforge.fraglets.zeig.jndi.DOMContext;
 
 import org.apache.log4j.Category;
 import org.apache.log4j.Priority;
@@ -28,7 +35,7 @@ import org.xml.sax.helpers.XMLReaderFactory;
 
 /**
  * @author unknown
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class SAXFactory implements ContentHandler {
     private NodeFactory nf;
@@ -39,8 +46,18 @@ public class SAXFactory implements ContentHandler {
     private NodeBuffer result;
     
     public SAXFactory(ConnectionFactory cf) {
-        nf = new NodeFactory(cf);
+//        nf = new NodeFactory(cf);
+        try {
+            nf = NodeFactory.getInstance();
+        } catch (SQLException e) {
+            nf = new NodeFactory(cf);
+        }
         result = new NodeBuffer();
+    }
+    
+    public void reset() {
+        stack = new Stack();
+        buffer = new NodeBuffer();
     }
     
     public int[] getResult() {
@@ -63,8 +80,7 @@ public class SAXFactory implements ContentHandler {
      */
     public void startDocument() throws SAXException {
         try {
-            stack = new Stack();
-            buffer = new NodeBuffer();
+            reset();
             buffer.setId(nf.getRoot());
         } catch (SQLException ex) {
             throw new SAXException(ex);
@@ -80,6 +96,20 @@ public class SAXFactory implements ContentHandler {
         } catch (SQLException ex) {
             throw new SAXException(ex);
         }
+    }
+
+    /**
+     * @see org.xml.sax.DocumentHandler#startDocument()
+     */
+    public void startFragment() {
+        reset();
+    }
+
+    /**
+     * @see org.xml.sax.DocumentHandler#endDocument()
+     */
+    public void endFragment() throws SAXException {
+        result.append(buffer.get(1));
     }
 
     /**
@@ -208,37 +238,37 @@ public class SAXFactory implements ContentHandler {
         return reader;
     }
     
-    public static void process(XMLReader reader, SAXFactory sf, File file) {
-        Category category = Category.getInstance(SAXFactory.class);
+    private static final Category CATEGORY = Category.getInstance(SAXFactory.class);
+    
+    public static void process(XMLReader reader, SAXFactory sf, File file, Context ctx) throws NamingException, FileNotFoundException {
+        ctx.addToEnvironment(DOMContext.VERSION_COMMENT, "imported from "+file);
         if (file.isDirectory()) {
+            Context subCtx;
             File list[] = file.listFiles();
+            try {
+                subCtx = (Context)ctx.lookup(file.getName());
+            } catch (ClassCastException ex) {
+                // not a subcontext
+                throw new NamingException("not a subcontext: "+file.getName());
+            } catch (NameNotFoundException ex) {
+                // ignore
+                CATEGORY.debug("creating subcontext "+file.getName());
+                subCtx = ctx.createSubcontext(file.getName());
+            }
             for (int i = 0; i < list.length; i++) {
-                process(reader, sf, list[i]);
+                process(reader, sf, list[i], subCtx);
             }
         } else {
+            FileInputStream in = new FileInputStream(file);
             try {
-                FileInputStream in = new FileInputStream(file);
-                try {
-                    category.debug("reading "+file.getName());
-                    InputSource is = new InputSource(in);
-                    is.setSystemId(file.toString());
-                    reader.parse(is);
-                    int id = sf.getLastResult();
-                    VersionFactory.getInstance()
-                        .createVersion(id, sf.nf.pt.getPlainText(file.toString()));
-                } finally {
-                    try { in.close(); } catch (IOException ex) { }
-                }
-            } catch (SAXException ex) {
-//                ex.printStackTrace();
-                if (ex.getException() != null) {
-//                    ex.getException().printStackTrace();
-                    category.error(file+": "+ex.getException().toString());
-                } else {
-                    category.error(file+": "+ex.toString());
-                }
-            } catch (Exception ex) {
-                category.error(file, ex);
+                CATEGORY.debug("reading "+file.getName());
+                InputSource is = new InputSource(in);
+                is.setSystemId(file.toString());
+                ctx.rebind(file.getName(), is);
+            } catch (NamingException ex) {
+                CATEGORY.error("failed to import", ex);
+            } finally {
+                try { in.close(); } catch (IOException ex) { }
             }
         }
     }
@@ -250,7 +280,7 @@ public class SAXFactory implements ContentHandler {
             XMLReader reader = createReader();
             reader.setContentHandler(sf);
             for (int i = 0; i < args.length; i++) {
-                process(reader, sf, new File(args[i]));
+                process(reader, sf, new File(args[i]), new InitialContext());
             }
 //            int result[] = sf.getResult();
 //            for (int i = 0; i < result.length; i++) {

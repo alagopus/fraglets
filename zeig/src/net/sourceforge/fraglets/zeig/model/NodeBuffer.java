@@ -8,7 +8,7 @@ package net.sourceforge.fraglets.zeig.model;
 
 /**
  * @author unknown
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class NodeBuffer {
     public static final int MT[] = new int[0];
@@ -43,7 +43,7 @@ public class NodeBuffer {
             return buffer[index];
         } else {
             throw new ArrayIndexOutOfBoundsException
-                (index + "not in [0," + (size-1) + "]");
+                (index + "not in [0," + size + "[");
         }
     }
     

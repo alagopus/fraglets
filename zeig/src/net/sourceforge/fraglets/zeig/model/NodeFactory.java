@@ -28,7 +28,7 @@ import org.xml.sax.SAXException;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class NodeFactory implements NodeTags {
     protected NameFactory nm;
@@ -141,7 +141,13 @@ public class NodeFactory implements NodeTags {
         }
         
         SAXFactory sf = new SAXFactory(ConnectionFactory.getInstance());
+        if (node.getNodeType() != Node.DOCUMENT_NODE) {
+            sf.startFragment();
+        }
         walk(node, sf);
+        if (node.getNodeType() != Node.DOCUMENT_NODE) {
+            sf.endFragment();
+        }
         return sf.getLastResult();
     }
     
@@ -163,9 +169,6 @@ public class NodeFactory implements NodeTags {
                 Element el = (Element)node;
                 sf.startElement(el.getNamespaceURI(), el.getLocalName(),
                     el.getTagName(), new NNLAttributes(el.getAttributes()));
-                walk(el, sf);
-                sf.endElement(el.getNamespaceURI(), el.getLocalName(),
-                    el.getTagName());
                 break;
             }
             case Node.TEXT_NODE:

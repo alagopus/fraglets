@@ -32,12 +32,22 @@ import org.w3c.dom.Text;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class DocumentImpl extends NodeImpl implements Document {
+    public static final int ROOT;
+    
+    static {
+        try {
+            ROOT = NodeFactory.getInstance().getRoot();
+        } catch (SQLException ex) {
+            // TODO: fixme
+            throw new RuntimeException(ex.toString());
+        }
+    }
     
     public DocumentImpl(int id) {
-        super(null, id, 0);
+        super(null, id, ROOT);
     }
 
     /**

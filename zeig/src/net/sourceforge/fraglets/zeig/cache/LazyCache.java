@@ -6,9 +6,11 @@
  */
 package net.sourceforge.fraglets.zeig.cache;
 
+import org.apache.log4j.Category;
+
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class LazyCache implements SimpleCache {
     private CacheEntry entries[];
@@ -88,15 +90,13 @@ public class LazyCache implements SimpleCache {
             }
         }
         
-        System.out.println(
+        Category.getInstance(getClass()).debug(
             "grow: fill=" + fill + ", size=" + less.length +
             ", more=" + more.length + ", count=" + count);
             
         this.drop += this.fill - count; 
         this.fill = count;
         this.entries = more;
-        
-        SensorCache.printStatistics(System.out);
         
         return more;
     }

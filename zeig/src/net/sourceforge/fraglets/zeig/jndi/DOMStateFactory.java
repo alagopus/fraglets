@@ -6,7 +6,7 @@
  */
 package net.sourceforge.fraglets.zeig.jndi;
 
-import java.io.File;
+import java.sql.SQLException;
 import java.util.Hashtable;
 
 import javax.naming.Context;
@@ -20,16 +20,21 @@ import net.sourceforge.fraglets.zeig.model.PlainTextFactory;
 import net.sourceforge.fraglets.zeig.model.SAXFactory;
 import net.sourceforge.fraglets.zeig.model.VersionFactory;
 
+import org.apache.xerces.dom.DocumentImpl;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class DOMStateFactory implements StateFactory {
+    protected SAXFactory sf = new SAXFactory(ConnectionFactory.getInstance());
 
+    public DOMStateFactory() throws SQLException {
+    }
+    
     /**
      * @see javax.naming.spi.StateFactory#getStateToBind(java.lang.Object, javax.naming.Name, javax.naming.Context, java.util.Hashtable)
      */
@@ -43,17 +48,15 @@ public class DOMStateFactory implements StateFactory {
                     id = NodeFactory.getInstance().getId((Document)obj);
                 } else {
                     InputSource in;
-                    if (obj instanceof File) {
-                        in = new InputSource(((File)obj).toURL().toExternalForm());
+                    if (obj instanceof InputSource) {
+                        in = (InputSource)obj;
                     } else if (obj instanceof String) {
                         in = new InputSource((String)obj);
                     } else {
                         throw new IllegalArgumentException
                             ("invalid binding: " + obj);
                     }
-                    SAXFactory sf = new SAXFactory(ConnectionFactory.getInstance());
-                    sf.parse(in);
-                    id = sf.getLastResult();
+                    id = sf.parse(in);
                 }
                 
                 String comment = (String)environment
@@ -68,9 +71,10 @@ public class DOMStateFactory implements StateFactory {
                 if (binding == null) {
                     int ve = VersionFactory.getInstance()
                         .createVersion(id, co);
-                    binding = dctx.getBinding().createElement("binding");
-                    binding.setAttribute("id", atom);
-                    binding.setAttribute("ve", String.valueOf(ve));
+                    Document doc = new DocumentImpl();
+                    binding = doc.createElementNS(DOMContext.CONTEXT_NAMESPACE, "binding");
+                    binding.setAttributeNS("", "id", atom);
+                    binding.setAttributeNS(DOMContext.CONTEXT_NAMESPACE, "ve", String.valueOf(ve));
                 } else {
                     int ve = DOMContext.getVe(binding);
                     VersionFactory.getInstance().addVersion(ve, id, co);

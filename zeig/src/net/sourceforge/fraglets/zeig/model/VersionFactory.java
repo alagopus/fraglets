@@ -16,7 +16,7 @@ import net.sourceforge.fraglets.zeig.jdbc.ConnectionFactory;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class VersionFactory {
     private ConnectionFactory cf;
@@ -60,6 +60,44 @@ public class VersionFactory {
         if (ps.executeUpdate() != 1) {
             throw new RuntimeException("version insert updated != 1");
         }
+    }
+    
+    public int[] getVersions(int value) throws SQLException {
+        PreparedStatement ps =
+            cf.prepareStatement("select count(*) from ve where v=? and g=0");
+        
+        ps.setInt(1, value);
+        
+        int count;
+        ResultSet rs = ps.executeQuery();
+        try {
+            if (rs.next()) {
+                count = rs.getInt(1);
+            } else {
+                throw new NoSuchElementException();
+            }
+        } finally {
+            rs.close();
+        }
+        
+        int result[] = new int[count];
+        ps = cf.prepareStatement("select id from ve where v=? and g=0 order by ts desc");
+        
+        ps.setInt(1, value);
+        
+        rs = ps.executeQuery();
+        try {
+            while (rs.next()) {
+                result[--count] = rs.getInt(1);
+            }
+            if (count != 0) {
+                throw new IllegalStateException();
+            }
+        } finally {
+            rs.close();
+        }
+        
+        return result;
     }
     
     public int getValue(int id) throws SQLException {

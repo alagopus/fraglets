@@ -20,12 +20,16 @@ import org.w3c.dom.NodeList;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class NamedNodeMapImpl implements NamedNodeMap, NodeList {
     NodeImpl nodes[];
     
     public NamedNodeMapImpl(NodeImpl node, boolean atts) throws DOMException {
+        init(node, atts);
+    }
+    
+    public void init(NodeImpl node, boolean atts) throws DOMException {
         try {
             NodeFactory nf = NodeFactory.getInstance();
             int nodeIds[] = nf.getNodes(node.getId());
