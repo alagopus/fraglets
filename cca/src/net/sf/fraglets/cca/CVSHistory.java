@@ -1,5 +1,5 @@
 /*
- * $Id: CVSHistory.java,v 1.7 2004-07-30 12:12:43 marion Exp $
+ * $Id: CVSHistory.java,v 1.8 2004-07-30 12:34:45 marion Exp $
  * Copyright (C) 2004 Klaus Rennecke, all rights reserved.
  * 
  * Permission is hereby granted, free of charge, to any person
@@ -53,7 +53,7 @@ import org.apache.log4j.Logger;
  * Perform modification check based on a plain history file.
  * 
  * @author  Klaus Rennecke
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class CVSHistory implements SourceControl {
     /** The properties set for ANT. */
@@ -245,11 +245,11 @@ public class CVSHistory implements SourceControl {
             reader =
                 openUrl(
                     viewcvsUrl
-                        + fileName
+                        + urlquote(fileName, false)
                         + "?only_with_tag=" //$NON-NLS-1$
-                        + urlquote(branch));
+                        + urlquote(branch, true));
         } else {
-            reader = openUrl(viewcvsUrl + urlquote(fileName));
+            reader = openUrl(viewcvsUrl + urlquote(fileName, false));
         }
         
         reader = new BufferedReader(reader);
@@ -413,7 +413,7 @@ public class CVSHistory implements SourceControl {
      * @param string a string.
      * @return the quoted string.
      */
-    private String urlquote(String string) {
+    private String urlquote(String string, boolean query) {
         byte[] data;
         try {
             data = string.getBytes("UTF-8"); //$NON-NLS-1$
@@ -434,7 +434,7 @@ public class CVSHistory implements SourceControl {
                 if (buffer != null) {
                     buffer.append(c);
                 }
-            } else if (c == ' ') {
+            } else if (query && c == ' ') {
                 buffer.append('+');
             } else {
                 if (buffer == null) {
@@ -605,7 +605,7 @@ public class CVSHistory implements SourceControl {
      * Bean implementation for the module sub-element.
      * @since 01.03.2004
      * @author Klaus Rennecke
-     * @version $Revision: 1.7 $
+     * @version $Revision: 1.8 $
      */
     public static class Module {
         
