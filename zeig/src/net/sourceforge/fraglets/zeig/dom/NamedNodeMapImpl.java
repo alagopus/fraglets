@@ -19,7 +19,7 @@ import org.w3c.dom.NodeList;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class NamedNodeMapImpl implements NamedNodeMap, NodeList {
     private NodeFactory nf;
@@ -149,7 +149,11 @@ public class NamedNodeMapImpl implements NamedNodeMap, NodeList {
      * @see org.w3c.dom.NamedNodeMap#item(int)
      */
     public Node item(int index) {
-        return nodes[index];
+        try {
+            return nodes[index];
+        } catch (ArrayIndexOutOfBoundsException ex) {
+            return null;
+        }
     }
     
     public Iterator iterator() {
