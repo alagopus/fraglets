@@ -20,7 +20,7 @@ import net.sourceforge.fraglets.zeig.dom.DocumentImpl;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class DOMObjectFactory implements ObjectFactory {
 
@@ -30,10 +30,12 @@ public class DOMObjectFactory implements ObjectFactory {
     public Object getObjectInstance(Object obj, Name name,
         Context ctx, Hashtable environment) throws NamingException {
         if (ctx instanceof DOMContext) {
-            Document doc = new DocumentImpl(DOMContext.getLatest((Element)obj));
+            int ve = DOMContext.getVe((Element)obj);
+            int id = DOMContext.getLatest(ve);
+            Document doc = new DocumentImpl(id);
             if (DOMContext.CONTEXT_NAMESPACE.equals(doc.getDocumentElement().getNamespaceURI()) &&
                 "context".equals(doc.getDocumentElement().getLocalName())) {
-                return new DOMContext((DOMContext)ctx, name.get(0), doc);
+                return new DOMContext((DOMContext)ctx, name.get(0), doc, ve);
             } else {
                 return doc;
             }

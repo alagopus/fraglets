@@ -12,9 +12,11 @@ import javax.naming.Context;
 import javax.naming.NamingException;
 import javax.naming.spi.InitialContextFactory;
 
+import org.apache.log4j.Category;
+
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class DOMContextFactory implements InitialContextFactory {
 
@@ -22,7 +24,22 @@ public class DOMContextFactory implements InitialContextFactory {
      * @see javax.naming.spi.InitialContextFactory#getInitialContext(java.util.Hashtable)
      */
     public Context getInitialContext(Hashtable environment) throws NamingException {
-        return new DOMContext(environment);
+        Category.getInstance(DOMContext.class).debug("initializing DOMContext");
+        try {
+            return new DOMContext(environment);
+        } catch (NamingException ex) {
+            Category.getInstance(DOMContext.class)
+                .error("initializing DOMContext", ex);
+            throw ex;
+        } catch (RuntimeException ex) {
+            Category.getInstance(DOMContext.class)
+                .error("initializing DOMContext", ex);
+            throw ex;
+        } catch (Error ex) {
+            Category.getInstance(DOMContext.class)
+                .error("initializing DOMContext", ex);
+            throw ex;
+        }
     }
 
 }

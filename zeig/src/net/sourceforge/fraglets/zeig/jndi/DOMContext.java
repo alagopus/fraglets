@@ -29,6 +29,7 @@ import javax.naming.NamingException;
 import javax.naming.NotContextException;
 import javax.naming.spi.NamingManager;
 
+import org.apache.log4j.Category;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -41,11 +42,12 @@ import net.sourceforge.fraglets.zeig.jdbc.ConnectionFactory;
 import net.sourceforge.fraglets.zeig.model.NodeFactory;
 import net.sourceforge.fraglets.zeig.model.PlainTextFactory;
 import net.sourceforge.fraglets.zeig.model.SAXFactory;
+import net.sourceforge.fraglets.zeig.model.SAXSerializer;
 import net.sourceforge.fraglets.zeig.model.VersionFactory;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class DOMContext implements Context {
     /** Context option. */
@@ -61,11 +63,19 @@ public class DOMContext implements Context {
     private Document binding;
     private HashMap context;
     private String atom;
+    private int ve;
     
     public DOMContext(Hashtable defaults) throws NamingException {
         init(defaults);
         this.nameParser = new SimpleNameParser(environment);
-        this.binding = new DocumentImpl(getRoot());
+        this.ve = getRoot();
+        try {
+            this.binding = new DocumentImpl(VersionFactory.getInstance().getValue(ve));
+        } catch (SQLException ex) {
+            throw namingException("root not found", ex);
+        }
+        this.atom = "";
+        report();
     }
     
     protected DOMContext(DOMContext blueprint) {
@@ -74,19 +84,35 @@ public class DOMContext implements Context {
         this.binding = blueprint.binding;
         this.parent = blueprint.parent;
         this.atom = blueprint.atom;
+        this.ve = blueprint.ve;
+        report();
     }
     
-    protected DOMContext(DOMContext parent, String name, Document binding) {
+    protected DOMContext(DOMContext parent, String name, Document binding, int ve) {
         this.environment = new Properties(parent.environment);
         this.nameParser = parent.nameParser;
         this.binding = binding;
         this.parent = parent;
         this.atom = name;
+        this.ve = ve;
+        report();
     }
     
     protected void init(Hashtable defaults) {
         environment = new Properties();
         environment.putAll(defaults);
+    }
+    
+    protected void report() {
+        try {
+            int id = ((DocumentImpl)binding).getId();
+            Category.getInstance(DOMContext.class)
+                .debug("DOMContext '"+atom+"' binding["+ve+"="+id+"]: "
+                    +SAXSerializer.toString(id));
+        } catch (Exception ex) {
+            Category.getInstance(DOMContext.class)
+                .error("reporting", ex);
+        }
     }
 
     /**
@@ -441,7 +467,14 @@ public class DOMContext implements Context {
         obj = NamingManager.getStateToBind(obj,
             new CompositeName().add(atom), this, environment);
         if (obj != old) {
-            binding.getDocumentElement().appendChild((Node)obj);
+            try {
+                binding.getDocumentElement().appendChild((Node)obj);
+                VersionFactory.getInstance()
+                    .addVersion(ve, ((DocumentImpl)binding).getId(), 0);
+                report();
+            } catch (SQLException ex) {
+                throw namingException(ex);
+            }
         }
     }
 
@@ -451,8 +484,9 @@ public class DOMContext implements Context {
         }
         DOMContext sub = (DOMContext)context.get(atom);
         if (sub == null) {
-            int id = getLatest(in);
-            sub = new DOMContext(this, atom, new DocumentImpl(id));
+            int subVe = getVe(in);
+            int subId = getLatest(ve);
+            sub = new DOMContext(this, atom, new DocumentImpl(subId), subVe);
             context.put(atom, sub);
         }
         return sub;
@@ -481,14 +515,12 @@ public class DOMContext implements Context {
         try {
             try {
                 // lookup root
-                int id =VersionFactory.getInstance().getVersions(getEmpty())[0];
-                return VersionFactory.getInstance().getValue(id);
+                return VersionFactory.getInstance().getVersions(getEmpty())[0];
             } catch (ArrayIndexOutOfBoundsException ex) {
                 int root = getEmpty();
                 int comment = PlainTextFactory.getInstance()
                     .getPlainText("naming root");
-                VersionFactory.getInstance().createVersion(root, comment);
-                return root;
+                return VersionFactory.getInstance().createVersion(root, comment);
             }
         } catch (NamingException ex) {
             throw ex;
@@ -512,9 +544,9 @@ public class DOMContext implements Context {
         }
     }
     
-    public static int getLatest(Element in) throws NamingException {
+    public static int getLatest(int ve) throws NamingException {
         try {
-            return VersionFactory.getInstance().getValue(getVe(in));
+            return VersionFactory.getInstance().getValue(ve);
         } catch (SQLException ex) {
             throw namingException(ex);
         }
