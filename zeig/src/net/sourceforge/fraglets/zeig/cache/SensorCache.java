@@ -24,12 +24,13 @@
  */
 package net.sourceforge.fraglets.zeig.cache;
 
+import java.lang.ref.Reference;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class SensorCache implements SimpleCache {
     private String name;
@@ -43,17 +44,19 @@ public class SensorCache implements SimpleCache {
         
     private static ArrayList instances = new ArrayList();
     
-    private LazyCache delegate;
+    private SimpleCache delegate;
     
     public SensorCache(String name) {
         this(name, new LazyCache());
     }
     
-    protected SensorCache(String name, LazyCache delegate) {
+    protected SensorCache(String name, SimpleCache delegate) {
         this.name = name;
         this.sensor = new int[3];
         this.delegate = delegate;
-        instances.add(new WeakReference(this));
+        synchronized (instances) {
+            instances.add(new WeakReference(this));
+        }
     }
     
     /**
@@ -100,10 +103,6 @@ public class SensorCache implements SimpleCache {
         return name;
     }
     
-    public static double percent(int have, int max) {
-        return (10000L * have / max) / 100.0;
-    }
-    
     /**
      * 
      */
@@ -132,4 +131,46 @@ public class SensorCache implements SimpleCache {
         return delegate.getDrop();
     }
 
+    /**
+     * Get statistics for all caches, one string per active cache. This method
+     * will clean up the instances array as a side effect.
+     * 
+     * @return an array of cache statistics
+     */
+    public static String[] getStatistics()
+    {
+        int copy;
+        String result[];
+        
+        // collect information
+        synchronized (instances) {
+            int scan = copy = instances.size();
+            result = new String[copy];
+            while (--scan >= 0) {
+                SensorCache c = (SensorCache)((Reference)instances.get(scan)).get();
+                if (c != null) {
+                    int sensor[] = c.getSensor();
+                    result[--copy] = c.getName()
+                        + ": size=" + c.getSize()
+                        + ", fill=" + c.getFill()
+                        + ", drop=" + c.getDrop()
+                        + ", put=" + sensor[PUT_SENSOR]
+                        + ", get=" + sensor[GET_SENSOR]
+                        + ", hit=" + sensor[HIT_SENSOR];
+                } else {
+                    // cleanup
+                    instances.remove(scan);
+                }
+            }
+        }
+        
+        // check for holes
+        if (copy > 0) {
+            String shrink[] = new String[result.length - copy];
+            System.arraycopy(result, copy, shrink, 0, shrink.length);
+            return shrink;
+        } else {
+            return result;
+        }
+    }
 }
