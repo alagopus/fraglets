@@ -1,12 +1,8 @@
 Changes for version 1.12 and 1.11:
     - Tightened guild tracking.
     - More filter settings.
-    - Fix getProperty for name.
-    - Use fireNewProperty.
-    - Fix getProperties for empty properties.
-    - Fix hashCode for null name.
-    - Add normalizeName.
-    - Fix canonicalName for names including spaces.
+    - Add guild normalizeName.
+    - Fix class canonicalName for names including spaces.
     - Allow adding new properties.
     - Added property editor.
     - Added extra avatar properties.
