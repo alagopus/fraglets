@@ -1,3 +1,7 @@
+2004-07-30
+* Fix [ 1000649 ] CVSHistory: spurious URL-Encoding on log query
+* Updated the README
+
 2004-06-11
 * Add branch level and log message support
 * Add documentation in cca.html
