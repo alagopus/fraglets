@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jardesc>
-    <jar path="C:/usr/workspace/zeig/lib/otphash.jar"/>
-    <options buildIfNeeded="true" compress="true"
-        descriptionLocation="/zeig/otphash.jardesc" exportErrors="true"
-        exportWarnings="true" overwrite="true" saveDescription="true" useSourceFolders="false"/>
-    <manifest generateManifest="true" manifestLocation=""
-        manifestVersion="1.0" reuseManifest="false" saveManifest="false" usesManifest="true">
+    <jar path="C:/usr/workspace/net.sourceforge.fraglets.zeig.core/lib/otphash.jar"/>
+    <options overwrite="true" compress="true" exportErrors="true"
+        exportWarnings="true" saveDescription="true"
+        descriptionLocation="/net.sourceforge.fraglets.zeig.core/otphash.jardesc"
+        useSourceFolders="false" buildIfNeeded="true"/>
+    <manifest manifestVersion="1.0" usesManifest="true"
+        reuseManifest="false" saveManifest="false"
+        generateManifest="true" manifestLocation="">
         <sealing sealJar="true">
             <packagesToSeal/>
             <packagesToUnSeal/>
