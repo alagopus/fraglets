@@ -12,22 +12,22 @@ import junit.framework.TestSuite;
  */
 public class AllTests {
 
-	/**
-	 * Create a test suite for this package.
-	 * @return the test suite.
-	 */
-	public static Test suite() {
-		TestSuite suite =
-			new TestSuite("Test for net.sourceforge.fraglets.codec");
-		//$JUnit-BEGIN$
-		suite.addTestSuite(SAXEventDecoderTest.class);
-		suite.addTestSuite(SAXEventEncoderTest.class);
-		suite.addTestSuite(UTF8DecoderTest.class);
-		suite.addTestSuite(UTF8EncoderTest.class);
-		suite.addTestSuite(EventCodecTest.class);
-//		suite.addTest(STDHashTest.suite());
-		suite.addTest(OTPHashTest.suite());
-		//$JUnit-END$
-		return suite;
-	}
+    /**
+     * Create a test suite for this package.
+     * @return the test suite.
+     */
+    public static Test suite() {
+        TestSuite suite =
+            new TestSuite("Test for net.sourceforge.fraglets.codec");
+        //$JUnit-BEGIN$
+        suite.addTestSuite(SAXEventDecoderTest.class);
+        suite.addTestSuite(SAXEventEncoderTest.class);
+        suite.addTestSuite(UTF8DecoderTest.class);
+        suite.addTestSuite(UTF8EncoderTest.class);
+        suite.addTestSuite(EventCodecTest.class);
+//	suite.addTest(STDHashTest.suite());
+        suite.addTest(OTPHashTest.suite());
+        //$JUnit-END$
+        return suite;
+    }
 }

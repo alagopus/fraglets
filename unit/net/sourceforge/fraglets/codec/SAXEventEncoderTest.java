@@ -17,25 +17,25 @@ import com.jclark.xml.sax.Driver;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class SAXEventEncoderTest extends SAXCodecTest {
-    
+
     public SAXEventEncoderTest(String testName) {
         super(testName);
     }
-    
+
     public static Test suite() {
         TestSuite suite = new TestSuite(SAXEventEncoderTest.class);
-        
+
         return suite;
     }
-    
+
     public void testFromFile() throws SAXException, IOException {
         Driver driver = new Driver();
         SAXEventEncoder encoder = new SAXEventEncoder();
         driver.setDocumentHandler(encoder);
         driver.parse(toInputSource(SAXCodecTest.TEST_INPUT));
-		assertTrue("encoder output", encoder.getUTF8().length > 0);
+        assertTrue("encoder output", encoder.getUTF8().length > 0);
     }
 }

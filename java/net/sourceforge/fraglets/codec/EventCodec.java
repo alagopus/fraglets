@@ -30,46 +30,46 @@ import java.util.Arrays;
 /**
  *
  * @author  marion@users.sourceforge.net
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public abstract class EventCodec {
     public final int STRING_WORD = 0;
-    
+
     /** Counter to assign next literal. */
     protected int nextLiteral;
-    
+
     /** The current alphabet. */
     protected Word[] alphabet;
-    
+
     /** Creates a new instance of EventCodec */
     public EventCodec() {
         reset();
     }
-    
+
     public void reset() {
         nextLiteral = getFirstLiteral();
     }
-    
+
     public int getFirstLiteral() {
         return 1;
     }
-    
+
     public Word getWord(int code) {
         return alphabet[code];
     }
-    
+
     public String getString(int code) {
         return getWord(code).getUCS2();
     }
-    
+
     public int[] getUCS4(int code) {
         return getWord(code).getUCS4();
     }
-    
+
     public int createCode() {
         return nextLiteral++;
     }
-    
+
     protected synchronized void ensureCapacity(int code) {
         int size = alphabet == null ? 0 : alphabet.length;
         if (size <= code) {
@@ -81,7 +81,7 @@ public abstract class EventCodec {
             alphabet = grow;
         }
     }
-    
+
     public static int[] toUCS4(String ucs2) {
         int in = 0, out = 0, end = ucs2.length();
         int buffer[] = new int[end];
@@ -89,17 +89,16 @@ public abstract class EventCodec {
             int datum = ucs2.charAt(in++);
             if ((datum & 0xf800) == 0xd800) {
                 if (datum > 0xdbff) {
-                    throw new IllegalArgumentException
-                        ("invalid surrogate high-half: "+datum);
+                    throw new IllegalArgumentException(
+                        "invalid surrogate high-half: " + datum);
                 } else if (in >= end) {
-                    throw new IllegalArgumentException
-                        ("truncated surrogate");
+                    throw new IllegalArgumentException("truncated surrogate");
                 }
                 int high = (datum & 0x3ff) << 10;
                 datum = ucs2.charAt(in++);
                 if (datum < 0xdc00 || datum > 0xdfff) {
-                    throw new IllegalArgumentException
-                        ("invalid surrogate low-half: "+datum);
+                    throw new IllegalArgumentException(
+                        "invalid surrogate low-half: " + datum);
                 }
                 datum = (high | (datum & 0x3ff)) + 0x10000;
             }
@@ -114,19 +113,19 @@ public abstract class EventCodec {
         }
         return buffer;
     }
-    
+
     public static class Word {
         protected int code;
         protected int ucs4[];
         protected String ucs2;
         protected int hashCache;
-        
+
         public Word(int code, int ucs4[]) {
             this.code = code;
             this.ucs4 = ucs4;
             this.hashCache = OTPHash.hash(this.ucs4);
         }
-        
+
         public Word(int code, int ucs4[], int off, int len, String ucs2) {
             if (len < ucs4.length || off > 0) {
                 int shrink[] = new int[len];
@@ -140,22 +139,22 @@ public abstract class EventCodec {
             this.ucs2 = ucs2;
             this.hashCache = OTPHash.hash(this.ucs4);
         }
-        
+
         public Word(int code, String ucs2) {
             this.code = code;
             this.ucs4 = EventEncoder.toUCS4(ucs2);
             this.ucs2 = ucs2;
             this.hashCache = OTPHash.hash(this.ucs4);
         }
-        
+
         public int getCode() {
             return this.code;
         }
-        
+
         public int[] getUCS4() {
             return this.ucs4;
         }
-        
+
         public String getUCS2() {
             if (this.ucs2 != null) {
                 return this.ucs2;
@@ -170,29 +169,29 @@ public abstract class EventCodec {
                 while (in < end) {
                     int value = ucs4[in++]; // never less than zero
                     if (value <= 0xffff) {
-                        buffer.append((char)value);
+                        buffer.append((char) value);
                     } else if (value <= 0x10ffff) {
                         value -= 0x10000;
-                        buffer.append((char)(0xd800 | (value >> 10)));
-                        buffer.append((char)(0xdc00 | (value & 0x3ff)));
+                        buffer.append((char) (0xd800 | (value >> 10)));
+                        buffer.append((char) (0xdc00 | (value & 0x3ff)));
                     } else {
-                        throw new IllegalArgumentException
-                            ("character value out of range: "+value);
+                        throw new IllegalArgumentException(
+                            "character value out of range: " + value);
                     }
                 }
                 return this.ucs2 = buffer.toString();
             }
         }
-        
+
         public String toString() {
             return getUCS2();
         }
-        
+
         public boolean equals(Object other) {
-            return (other instanceof Word) &&
-                Arrays.equals(getUCS4(), ((Word)other).getUCS4());
+            return (other instanceof Word)
+                && Arrays.equals(getUCS4(), ((Word) other).getUCS4());
         }
-        
+
         public boolean equals(int other[], int off, int len) {
             int ucs4[] = getUCS4();
             if (ucs4.length != len) {
@@ -206,10 +205,10 @@ public abstract class EventCodec {
             }
             return true;
         }
-        
+
         public int hashCode() {
             return hashCache;
         }
     }
-    
+
 }
