@@ -21,8 +21,14 @@
 	
 	<target name="release" depends="bin-zip,src-zip"/>
 	
-	<target name="bin-zip" depends="jar">
-		<zip destfile="cca-bin.zip">
+	<target name="timestamp">
+		<tstamp>
+			<format property="release" pattern="yyyyMMdd"/>
+		</tstamp>
+	</target>
+	
+	<target name="bin-zip" depends="jar,timestamp">
+		<zip destfile="cca-${release}-bin.zip">
 			<fileset dir=".">
 				<include name="cca.jar"/>
 				<include name="LICENSE"/>
@@ -31,8 +37,8 @@
 		</zip>
 	</target>
 	
-	<target name="src-zip">
-		<zip destfile="cca-src.zip">
+	<target name="src-zip" depends="timestamp">
+		<zip destfile="cca-${release}-src.zip">
 			<fileset dir=".">
 				<include name="src/**"/>
 				<include name="build.xml"/>
