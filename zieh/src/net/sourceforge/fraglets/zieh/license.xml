@@ -2,9 +2,7 @@
 <dialog name="dialog" icon="/icons/information.gif"
 	  text="Zieh License" modal="true" width="200"
 		columns="1" gap="4" top="4" left="4" bottom="4" right="4">
-  <label text="Zieh License"/>
-  <separator />
- 	<textarea init="loadLicense(this)" editable="false" columns="60" rows="12" weightx="1" weighty="1"/>
+ 	<textarea name="licenseText" editable="false" columns="60" rows="12" weightx="1" weighty="1"/>
   <separator />
  	<button text=" OK " halign="right" action="remove(dialog)"/>
 </dialog>
