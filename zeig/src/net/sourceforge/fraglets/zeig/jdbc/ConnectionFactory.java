@@ -7,7 +7,7 @@
 package net.sourceforge.fraglets.zeig.jdbc;
 
 import java.lang.ref.Reference;
-import java.lang.ref.WeakReference;
+import java.lang.ref.SoftReference;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -21,7 +21,7 @@ import org.apache.log4j.Category;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class ConnectionFactory {
     
@@ -94,7 +94,7 @@ public class ConnectionFactory {
                 }
             }
             synchronized (preparedStatements) {
-                preparedStatements.put(sql, new WeakReference(result));
+                preparedStatements.put(sql, new SoftReference(result));
             }
         }
         
