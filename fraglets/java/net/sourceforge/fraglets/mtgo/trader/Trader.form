@@ -129,7 +129,7 @@
     </Menu>
   </NonVisualComponents>
   <Properties>
-    <Property name="title" type="java.lang.String" value="MGT Trader"/>
+    <Property name="title" type="java.lang.String" value="MTGO Trader"/>
   </Properties>
   <SyntheticProperties>
     <SyntheticProperty name="menuBar" type="java.lang.String" value="menuBar"/>
