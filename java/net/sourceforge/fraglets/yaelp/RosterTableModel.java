@@ -24,7 +24,7 @@ import java.util.Comparator;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class RosterTableModel extends javax.swing.table.AbstractTableModel {
     /** Headers for the roster table. */    
@@ -37,6 +37,10 @@ public class RosterTableModel extends javax.swing.table.AbstractTableModel {
     protected Comparator order;
     /** Inverting order. */
     protected Inverter inverter;
+    
+    /** Holds value of property changed. */
+    private boolean changed;
+    
     /** Inverting comparator. */
     public static class Inverter implements Comparator {
         private Comparator order;
@@ -99,6 +103,7 @@ public class RosterTableModel extends javax.swing.table.AbstractTableModel {
         if (order != null) {
             java.util.Arrays.sort(roster, order);
         }
+        setChanged(false);
         fireTableChanged(new javax.swing.event.TableModelEvent(this));
     }
     
@@ -214,6 +219,21 @@ public class RosterTableModel extends javax.swing.table.AbstractTableModel {
             default:
                 throw new IllegalArgumentException("value not editable");
         }
+        setChanged(true);
+    }
+    
+    /** Getter for property changed.
+     * @return Value of property changed.
+     */
+    public boolean isChanged() {
+        return this.changed;
+    }
+    
+    /** Setter for property changed.
+     * @param changed New value of property changed.
+     */
+    public void setChanged(boolean changed) {
+        this.changed = changed;
     }
     
 }

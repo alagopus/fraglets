@@ -34,7 +34,7 @@ import java.util.zip.GZIPInputStream;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class EqlogParser {
     public static final String PREFIX = "[Sun Apr 01 16:38:57 2001] ";
@@ -92,6 +92,7 @@ public class EqlogParser {
         EqlogParser parser = new EqlogParser(in);
         Line line;
         int n = 0;
+        int i = 0;
         try {
             do {
                 line = parser.readLine();
@@ -100,13 +101,14 @@ public class EqlogParser {
                 } else if (recognizer.parse(line)) {
                     n++;
                 } else {
-                    n++;
+                    i++;
                 }
             } while (line != null);
+            recognizer.setChanged(n > 0 || recognizer.isChanged());
         } catch (IOException ex) {
-            throw new IOException(file + ":" + n + ": " + ex.getMessage());
+            throw new IOException(file + ":" + (n+i) + ": " + ex.getMessage());
         }
-        return n;
+        return n + i;
     }
     
     public static void main(String args[])

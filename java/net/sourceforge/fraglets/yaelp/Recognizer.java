@@ -26,7 +26,7 @@ import java.util.Iterator;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  */
 public class Recognizer {
     /** Known avatars. */
@@ -70,6 +70,9 @@ public class Recognizer {
     /** Pattern for special lines. */
     protected static final char[] PATTERN__IS_NO_LONGER_A_MEMBER =
         " is no longer a member".toCharArray();
+    
+    /** Holds value of property changed. */
+    private boolean changed;
     
     /** Creates new Recognizer */
     public Recognizer() {
@@ -123,8 +126,10 @@ public class Recognizer {
             result = new Avatar(timestamp);
             result.setName(name);
             avatars.put(name.toString(), result);
+            setChanged(true);
         }
         if (guild != null) {
+            setChanged(true);
             result.setGuild(guild, timestamp);
             if (result == active) {
                 guildConfirmed = guild == active.getGuild();
@@ -133,6 +138,7 @@ public class Recognizer {
         if (result.getTimestamp() > timestamp) {
             return result;
         }
+        setChanged(true);
         if (clazz != null) {
             result.setClazz(clazz);
         }
@@ -431,10 +437,30 @@ public class Recognizer {
         return (Avatar[])c.toArray(new Avatar[c.size()]);
     }
     
+    /** Get the number of known avatars. */
+    public int getAvatarCount() {
+        return avatars.size();
+    }
+    
     /** Get the number of who lines recognized until now.
      * @return number of recognized who lines
      */    
     public int getLines() {
         return lines;
     }
+    
+    /** Getter for property changed.
+     * @return Value of property changed.
+     */
+    public boolean isChanged() {
+        return this.changed;
+    }
+    
+    /** Setter for property changed.
+     * @param changed New value of property changed.
+     */
+    public void setChanged(boolean changed) {
+        this.changed = changed;
+    }
+    
 }
