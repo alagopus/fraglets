@@ -33,6 +33,7 @@
 				<include name="cca.jar"/>
 				<include name="LICENSE"/>
 				<include name="README"/>
+				<include name="CHANGES"/>
 			</fileset>
 		</zip>
 	</target>
@@ -44,6 +45,7 @@
 				<include name="build.xml"/>
 				<include name="LICENSE"/>
 				<include name="README"/>
+				<include name="CHANGES"/>
 			</fileset>
 		</zip>
 	</target>
