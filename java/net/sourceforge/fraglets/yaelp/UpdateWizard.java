@@ -6,6 +6,8 @@
 
 package net.sourceforge.fraglets.yaelp;
 
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Window;
@@ -20,6 +22,8 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.text.MessageFormat;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -28,11 +32,18 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
+import javax.swing.DefaultCellEditor;
 import javax.swing.DefaultListModel;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
+import javax.swing.ListSelectionModel;
 import javax.swing.RepaintManager;
 import javax.swing.SwingUtilities;
+import javax.swing.border.LineBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import net.sourceforge.fraglets.yaelp.bean.AvatarCellRenderer;
 import net.sourceforge.fraglets.yaelp.bean.RosterTableModel;
 import net.sourceforge.fraglets.yaelp.model.Avatar;
@@ -61,14 +72,24 @@ import org.xml.sax.Locator;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author  marion@users.sourceforge.net
+ * @version $Revision: 1.3 $
  */
-public class UpdateWizard extends javax.swing.JPanel implements Runnable, Observer, Comparator {
+public class UpdateWizard extends javax.swing.JPanel implements Runnable, Observer, Comparator, ListSelectionListener {
     
     public static final String APPLICATION_NAME = "Yaelp Update Wizard";
     
     public static final String COPYRIGHT_CLAIM =
         "Copyright © 2001, 2002 Klaus Rennecke.\n" +
         "XML parser Copyright © 1997, 1998 James Clark.";
+
+    static {
+        try {
+            javax.swing.UIManager.setLookAndFeel
+                (javax.swing.UIManager.getSystemLookAndFeelClassName());
+        } catch (Exception ex) {
+            // oh well ...
+        }
+    }
     
     /** Creates new form UpdateWizard */
     public UpdateWizard() {
@@ -82,16 +103,25 @@ public class UpdateWizard extends javax.swing.JPanel implements Runnable, Observ
      */
     private void initComponents() {//GEN-BEGIN:initComponents
         javax.swing.JTextArea jTextArea2;
+        javax.swing.JLabel mailLabel;
         javax.swing.JScrollPane jScrollPane1;
         javax.swing.JLabel jLabel1;
         java.awt.GridBagConstraints gridBagConstraints;
+        javax.swing.JLabel rankLabel;
         javax.swing.JLabel jLabel2;
         javax.swing.JScrollPane jScrollPane4;
+        javax.swing.JLabel imLabel;
         javax.swing.JTextArea jTextArea3;
         javax.swing.JScrollPane jScrollPane2;
+        javax.swing.JLabel mageloLabel;
         javax.swing.JPanel parsePanel;
         javax.swing.JPanel introPanel;
+        javax.swing.JButton exitButton;
+        javax.swing.JLabel mainLabel;
         javax.swing.JPanel editPanel;
+        javax.swing.JButton browseButton;
+        javax.swing.JTextArea jTextArea1;
+        javax.swing.JPanel jPanel1;
         javax.swing.JPanel savePanel;
         javax.swing.JPanel buttonPanel;
         javax.swing.JButton aboutButton;
@@ -101,6 +131,8 @@ public class UpdateWizard extends javax.swing.JPanel implements Runnable, Observ
         javax.swing.JButton browseButton1;
 
         chooser = new javax.swing.JFileChooser();
+        defaultMargin = new javax.swing.border.EmptyBorder(new java.awt.Insets(5, 4, 5, 4));
+        blackBorder = new LineBorder(Color.black);
         tabPane = new javax.swing.JTabbedPane();
         introPanel = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
@@ -116,6 +148,19 @@ public class UpdateWizard extends javax.swing.JPanel implements Runnable, Observ
         editPanel = new javax.swing.JPanel();
         jScrollPane3 = new javax.swing.JScrollPane();
         rosterTable = new javax.swing.JTable();
+        jPanel1 = new javax.swing.JPanel();
+        mainLabel = new javax.swing.JLabel();
+        mainField = new javax.swing.JTextField();
+        rankLabel = new javax.swing.JLabel();
+        rankChoice = new javax.swing.JComboBox();
+        mineCheck = new javax.swing.JCheckBox();
+        newButton = new javax.swing.JButton();
+        mageloLabel = new javax.swing.JLabel();
+        mageloField = new javax.swing.JTextField();
+        mailLabel = new javax.swing.JLabel();
+        mailField = new javax.swing.JTextField();
+        imLabel = new javax.swing.JLabel();
+        imField = new javax.swing.JTextField();
         savePanel = new javax.swing.JPanel();
         jTextArea3 = new javax.swing.JTextArea();
         jLabel2 = new javax.swing.JLabel();
@@ -131,21 +176,14 @@ public class UpdateWizard extends javax.swing.JPanel implements Runnable, Observ
         nextButton = new javax.swing.JButton();
         exitButton = new javax.swing.JButton();
 
-        chooser.setFileFilter(new javax.swing.filechooser.FileFilter() {
-            public String getDescription() {
-                return "YAELP save files (*.yxr)";
-            }
-            public boolean accept(File file) {
-                return file.isDirectory() || file.getName().endsWith(".yxr");
-            }
-        });
+        chooser.setFileFilter(filter);
 
         setLayout(new java.awt.GridBagLayout());
 
         setBackground(java.awt.Color.darkGray);
         setBorder(new javax.swing.border.CompoundBorder(new javax.swing.border.EtchedBorder(), new javax.swing.border.EmptyBorder(new java.awt.Insets(0, 72, 0, 0))));
         setMinimumSize(new java.awt.Dimension(400, 180));
-        setPreferredSize(new java.awt.Dimension(520, 360));
+        setPreferredSize(new java.awt.Dimension(580, 360));
         tabPane.setTabLayoutPolicy(javax.swing.JTabbedPane.SCROLL_TAB_LAYOUT);
         tabPane.setTabPlacement(javax.swing.JTabbedPane.BOTTOM);
         tabPane.setEnabled(false);
@@ -155,10 +193,12 @@ public class UpdateWizard extends javax.swing.JPanel implements Runnable, Observ
             }
         });
 
-        introPanel.setLayout(new java.awt.BorderLayout());
+        introPanel.setLayout(new java.awt.BorderLayout(4, 5));
 
         introPanel.setBorder(new javax.swing.border.TitledBorder("Introduction"));
+        jScrollPane2.setBorder(defaultMargin);
         jTextArea1.setBackground((java.awt.Color) javax.swing.UIManager.getDefaults().get("Panel.background"));
+        jTextArea1.setFont(new java.awt.Font("Serif", 0, 14));
         jTextArea1.setLineWrap(true);
         jTextArea1.setText("This wizard will help you create an update for your guild's member roster.\n\nFirst, the previous character information will be loaded, if any. Then the parser will be used on some of your log files to extract recent information. After log files have been parsed, you can edit the information to add properties to characters or filter unwanted entries.\n\nStart by pressing Next >");
         jTextArea1.setWrapStyleWord(true);
@@ -173,8 +213,9 @@ public class UpdateWizard extends javax.swing.JPanel implements Runnable, Observ
         loadPanel.setBorder(new javax.swing.border.TitledBorder("Load Existing Characters"));
         jTextArea2.setBackground((java.awt.Color) javax.swing.UIManager.getDefaults().get("Panel.background"));
         jTextArea2.setEditable(false);
+        jTextArea2.setFont(new java.awt.Font("Serif", 0, 14));
         jTextArea2.setLineWrap(true);
-        jTextArea2.setText("The last saved roster holds the information from previous runs. It is used to detect which information has to be updated.\n\nIf this is the first time you use this wizard, you probably don't have a saved roster. If so, just skip this step.");
+        jTextArea2.setText("The last saved roster holds the information from previous runs. It is used to detect which information has to be updated.\n\nIf this is the first time you use this wizard, you probably don't have a saved roster and you can safely skip this step.");
         jTextArea2.setWrapStyleWord(true);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
@@ -184,8 +225,7 @@ public class UpdateWizard extends javax.swing.JPanel implements Runnable, Observ
         gridBagConstraints.insets = new java.awt.Insets(5, 4, 5, 4);
         loadPanel.add(jTextArea2, gridBagConstraints);
 
-        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("Select the last saved roster");
+        jLabel1.setText("Select the roster to load:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
@@ -231,20 +271,185 @@ public class UpdateWizard extends javax.swing.JPanel implements Runnable, Observ
 
         editPanel.setLayout(new java.awt.BorderLayout());
 
-        editPanel.setBorder(new javax.swing.border.TitledBorder("View Character Information"));
+        editPanel.setBorder(new javax.swing.border.TitledBorder("Edit Character Information"));
         jScrollPane3.setViewportView(rosterTable);
 
         editPanel.add(jScrollPane3, java.awt.BorderLayout.CENTER);
 
-        tabPane.addTab("View", editPanel);
+        jPanel1.setLayout(new java.awt.GridBagLayout());
+
+        mainLabel.setLabelFor(mainField);
+        mainLabel.setText("Main:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 4, 5, 4);
+        jPanel1.add(mainLabel, gridBagConstraints);
+
+        mainField.setColumns(8);
+        mainField.setToolTipText("The main character name.");
+        mainField.setEnabled(false);
+        mainField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                inputFieldActionPerformed(evt);
+            }
+        });
+
+        mainField.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                mainFieldFocusLost(evt);
+            }
+        });
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 0.5;
+        gridBagConstraints.insets = new java.awt.Insets(5, 4, 5, 4);
+        jPanel1.add(mainField, gridBagConstraints);
+
+        rankLabel.setLabelFor(rankChoice);
+        rankLabel.setText("Rank:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 4, 5, 4);
+        jPanel1.add(rankLabel, gridBagConstraints);
+
+        rankChoice.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "", "a regular member", "an officer", "leader", "retired" }));
+        rankChoice.setEnabled(false);
+        rankChoice.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rankChoiceActionPerformed(evt);
+            }
+        });
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 0.5;
+        gridBagConstraints.insets = new java.awt.Insets(5, 4, 5, 4);
+        jPanel1.add(rankChoice, gridBagConstraints);
+
+        mineCheck.setText("Mine");
+        mineCheck.setToolTipText("Check if this is one of your toons.");
+        mineCheck.setEnabled(false);
+        mineCheck.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mineCheckActionPerformed(evt);
+            }
+        });
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.insets = new java.awt.Insets(5, 4, 5, 4);
+        jPanel1.add(mineCheck, gridBagConstraints);
+
+        newButton.setText("New ...");
+        newButton.setToolTipText("Create a new entry.");
+        newButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                newButtonActionPerformed(evt);
+            }
+        });
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.insets = new java.awt.Insets(5, 4, 5, 4);
+        jPanel1.add(newButton, gridBagConstraints);
+
+        mageloLabel.setLabelFor(mageloField);
+        mageloLabel.setText("Magelo:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 4, 5, 4);
+        jPanel1.add(mageloLabel, gridBagConstraints);
+
+        mageloField.setColumns(8);
+        mageloField.setToolTipText("Magelo profile number.");
+        mageloField.setEnabled(false);
+        mageloField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                inputFieldActionPerformed(evt);
+            }
+        });
+
+        mageloField.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                mageloFieldFocusLost(evt);
+            }
+        });
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 0.33;
+        gridBagConstraints.insets = new java.awt.Insets(5, 4, 5, 4);
+        jPanel1.add(mageloField, gridBagConstraints);
+
+        mailLabel.setLabelFor(mailField);
+        mailLabel.setText("Email:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 4, 5, 4);
+        jPanel1.add(mailLabel, gridBagConstraints);
+
+        mailField.setColumns(8);
+        mailField.setToolTipText("Email contact address");
+        mailField.setEnabled(false);
+        mailField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                inputFieldActionPerformed(evt);
+            }
+        });
+
+        mailField.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                mailFieldFocusLost(evt);
+            }
+        });
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 0.33;
+        gridBagConstraints.insets = new java.awt.Insets(5, 4, 5, 4);
+        jPanel1.add(mailField, gridBagConstraints);
+
+        imLabel.setLabelFor(imField);
+        imLabel.setText("IM:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 4, 5, 4);
+        jPanel1.add(imLabel, gridBagConstraints);
+
+        imField.setColumns(4);
+        imField.setToolTipText("Instant messenger handle, like ICQ or Yahoo");
+        imField.setEnabled(false);
+        imField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                inputFieldActionPerformed(evt);
+            }
+        });
+
+        imField.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                imFieldFocusLost(evt);
+            }
+        });
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 0.33;
+        gridBagConstraints.insets = new java.awt.Insets(5, 4, 5, 4);
+        jPanel1.add(imField, gridBagConstraints);
+
+        editPanel.add(jPanel1, java.awt.BorderLayout.SOUTH);
+
+        tabPane.addTab("Edit", editPanel);
 
         savePanel.setLayout(new java.awt.GridBagLayout());
 
         savePanel.setBorder(new javax.swing.border.TitledBorder("Save Updated Characters"));
         jTextArea3.setBackground((java.awt.Color) javax.swing.UIManager.getDefaults().get("Panel.background"));
         jTextArea3.setEditable(false);
+        jTextArea3.setFont(new java.awt.Font("Serif", 0, 14));
         jTextArea3.setLineWrap(true);
-        jTextArea3.setText("The last saved roster holds the information from previous runs. It is used to detect which information has to be updated.\n");
+        jTextArea3.setText("The last saved roster holds the information from previous runs. It is used to detect which information has to be updated.\n\nIdeally you would select the file which was used in the Load step. If this is the first time you are using this wizard, a default file name is chosen for you.");
         jTextArea3.setWrapStyleWord(true);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
@@ -254,8 +459,7 @@ public class UpdateWizard extends javax.swing.JPanel implements Runnable, Observ
         gridBagConstraints.insets = new java.awt.Insets(5, 4, 5, 4);
         savePanel.add(jTextArea3, gridBagConstraints);
 
-        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel2.setText("Select the last saved roster");
+        jLabel2.setText("Select where to save the new roster:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
@@ -283,11 +487,13 @@ public class UpdateWizard extends javax.swing.JPanel implements Runnable, Observ
 
         tabPane.addTab("Save", savePanel);
 
-        sendPanel.setLayout(new java.awt.BorderLayout());
+        sendPanel.setLayout(new java.awt.BorderLayout(4, 5));
 
         sendPanel.setBorder(new javax.swing.border.TitledBorder("Send Updated Characters"));
+        jScrollPane4.setBorder(defaultMargin);
         sendText.setBackground((java.awt.Color) javax.swing.UIManager.getDefaults().get("Panel.background"));
         sendText.setEditable(false);
+        sendText.setFont(new java.awt.Font("Serif", 0, 14));
         sendText.setLineWrap(true);
         sendText.setWrapStyleWord(true);
         jScrollPane4.setViewportView(sendText);
@@ -304,7 +510,8 @@ public class UpdateWizard extends javax.swing.JPanel implements Runnable, Observ
         gridBagConstraints.insets = new java.awt.Insets(5, 4, 5, 4);
         add(tabPane, gridBagConstraints);
 
-        progressBar.setFont(new java.awt.Font("Dialog", 0, 10));
+        progressBar.setBackground(java.awt.Color.darkGray);
+        progressBar.setFont(new java.awt.Font("Serif", 0, 10));
         progressBar.setString("");
         progressBar.setStringPainted(true);
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -362,6 +569,113 @@ public class UpdateWizard extends javax.swing.JPanel implements Runnable, Observ
 
     }//GEN-END:initComponents
 
+    private void newButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newButtonActionPerformed
+        // Add your handling code here:
+        String name = JOptionPane.showInputDialog
+            (this, "Character name", "New Entry",
+             JOptionPane.QUESTION_MESSAGE);
+        if (name != null && name.length() > 0) {
+            Avatar roster[] = model.getRoster();
+            Avatar probe = new Avatar(System.currentTimeMillis());
+            probe.setName(Avatar.normalizeName(name));
+            int index = Arrays.binarySearch(roster, probe, this);
+            if (index < 0) {
+                // new entry
+                Avatar grow[] = new Avatar[roster.length + 1];
+                System.arraycopy(roster, 0, grow, 1, roster.length);
+                grow[0] = probe;
+                model.setRoster(grow);
+                roster = model.getRoster();
+                index = Arrays.binarySearch(roster, probe, this);
+            }
+            if (index >= 0) {
+                // select entry
+                rosterTable.setRowSelectionInterval(index, index);
+                rosterTable.scrollRectToVisible(rosterTable.getCellRect(index, 0, true));
+            }
+        }
+    }//GEN-LAST:event_newButtonActionPerformed
+
+    private void imFieldFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_imFieldFocusLost
+        // Add your handling code here:
+        if (selectedAvatar != null) {
+            updateProperty(selectedAvatar, "IM", imField.getText());
+        }
+    }//GEN-LAST:event_imFieldFocusLost
+
+    private void inputFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_inputFieldActionPerformed
+        // Add your handling code here:
+        Object source = evt.getSource();
+        if (source instanceof Component) {
+            ((Component)source).transferFocus();
+        }
+    }//GEN-LAST:event_inputFieldActionPerformed
+
+    private void mineCheckActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mineCheckActionPerformed
+        // Add your handling code here:
+        if (selectedAvatar != null) {
+            Avatar avatar = selectedAvatar;
+            long now = System.currentTimeMillis();
+            if (mineCheck.isSelected()) {
+                updateProperty(avatar, "Login", "true");
+            } else {
+                updateProperty(avatar, "Login", "false");
+            }
+        }
+    }//GEN-LAST:event_mineCheckActionPerformed
+
+    private void rankChoiceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rankChoiceActionPerformed
+        // Add your handling code here:
+        if (selectedAvatar != null) {
+            updateProperty(selectedAvatar, "Rank",
+                (String)rankChoice.getSelectedItem());
+        }
+    }//GEN-LAST:event_rankChoiceActionPerformed
+
+    private void mageloFieldFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_mageloFieldFocusLost
+        // Add your handling code here:
+        if (selectedAvatar != null) {
+            String value = mageloField.getText();
+            int mark = value.lastIndexOf("num=");
+            if (mark > 0) {
+                int scan = mark = mark + "num=".length();
+                int end = value.length();
+                while (scan < end && Character.isDigit(value.charAt(scan)))
+                    scan++;
+                value = value.substring(mark, scan);
+                mageloField.setText(value);
+            }
+            updateProperty(selectedAvatar, "Magelo", value);
+        }
+    }//GEN-LAST:event_mageloFieldFocusLost
+
+    private void mailFieldFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_mailFieldFocusLost
+        // Add your handling code here:
+        if (selectedAvatar != null) {
+            updateProperty(selectedAvatar, "Mail", mailField.getText());
+        }
+    }//GEN-LAST:event_mailFieldFocusLost
+
+    private void mainFieldFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_mainFieldFocusLost
+        // Add your handling code here:
+        System.err.println("mainFieldFocusLost");
+        if (selectedAvatar != null) {
+            Avatar roster[] = model.getRoster();
+            Avatar probe = new Avatar(0);
+            probe.setName(Avatar.normalizeName(mainField.getText()));
+            int index = Arrays.binarySearch(roster, probe, this);
+            if (index < 0) {
+                mainField.setText(null); // avoid loop
+                JOptionPane.showMessageDialog(this,
+                    "Unknown character name: "+probe.getName(),
+                    "Error setting main character", JOptionPane.ERROR_MESSAGE);
+            } else {
+                updateProperty(selectedAvatar, "Main", probe.getName());
+            }
+            mainField.setText(selectedAvatar.getProperty("Main"));
+        }
+    }//GEN-LAST:event_mainFieldFocusLost
+
     private void aboutButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutButtonActionPerformed
         // Add your handling code here:
         JOptionPane.showMessageDialog(this,
@@ -372,10 +686,13 @@ public class UpdateWizard extends javax.swing.JPanel implements Runnable, Observ
 
     private void browseButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_browseButton1ActionPerformed
         // Add your handling code here:
-        int answer = chooser.showOpenDialog(this);
+        int answer = chooser.showSaveDialog(this);
         if (answer == chooser.APPROVE_OPTION) {
             File file = chooser.getSelectedFile();
-            if (file != null && file.exists()) {
+            if (file != null) {
+                if (!file.getName().endsWith(".yxr")) {
+                    file = new File(file.getParentFile(), file.getName()+".yxr");
+                }
                 saveChoice.addItem(file);
                 saveChoice.setSelectedItem(file);
             }
@@ -457,12 +774,28 @@ public class UpdateWizard extends javax.swing.JPanel implements Runnable, Observ
     }//GEN-LAST:event_exitButtonActionPerformed
 
     private void initLoadChoice() {
+        if (defaultRoster == null) {
+            File files[] = chooser.getCurrentDirectory().listFiles(filter);
+            File last = null;
+            long time = 0;
+            int scan = files.length;
+            while (--scan >= 0) {
+                if (files[scan].lastModified() > time) {
+                    last = files[scan];
+                    time = last.lastModified();
+                }
+            }
+            if (last != null) {
+                defaultRoster = last;
+            } else {
+                defaultRoster = new File(chooser.getCurrentDirectory(), "default.yxr");
+            }
+        }
         if (loadChoice.getModel().getSize() == 0) {
             loadChoice.addItem("<none>");
-            File probe = new File(chooser.getCurrentDirectory(), "default.yxr");
-            if (probe.exists()) {
-                loadChoice.addItem(probe);
-                loadChoice.setSelectedItem(probe);
+            if (defaultRoster.exists()) {
+                loadChoice.addItem(defaultRoster);
+                loadChoice.setSelectedItem(defaultRoster);
             }
         }
     }
@@ -504,25 +837,26 @@ public class UpdateWizard extends javax.swing.JPanel implements Runnable, Observ
         }
     }
     
-    private RosterTableModel model;
-    
     private void initRosterTable() {
         if (recognizer != null) {
             Avatar avatars[] = recognizer.getAvatars();
             int scan = avatars.length;
             HashSet guilds = new HashSet();
             while (--scan >= 0) {
-                if (avatars[scan].getProperty("Login") != null) {
+                if (isTrue(avatars[scan].getProperty("Login"))) {
                     Avatar.Guild guild = avatars[scan].getGuild();
                     String name = guild.getName();
                     if (name.length() > 0 && !name.equals("-")) {
-                        guilds.add(guild);
+                        guilds.add(guild.getName());
                     }
                 }
             }
             int start = 0;
             for (scan = 0; scan < avatars.length; scan++) {
-                if (guilds.contains(avatars[scan].getGuild())) {
+                Avatar.Guild now = avatars[scan].getGuild();
+                String ex = avatars[scan].getProperty("EX");
+                if ((now != null && guilds.contains(now.getName())) ||
+                    (ex != null && guilds.contains(ex))) {
                     if (start == scan) {
                         start += 1;
                     } else {
@@ -544,16 +878,44 @@ public class UpdateWizard extends javax.swing.JPanel implements Runnable, Observ
             rosterTable.setModel(model);
             rosterTable.setDefaultRenderer(Object.class, new AvatarCellRenderer());
             rosterTable.doLayout();
+            ListSelectionModel lsm = rosterTable.getSelectionModel();
+            lsm.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+            lsm.addListSelectionListener(this);
+            
+            initEditor(Avatar.Class.class, Avatar.Class.getValues());
+            initEditor(Avatar.Culture.class, Avatar.Culture.getValues());
+            initEditor(Avatar.Guild.class, Avatar.Guild.getValues());
+            
+            rosterTable.getColumn("Level").setPreferredWidth(20);
+            rosterTable.getColumn("Guild").setPreferredWidth(120);
         }
+    }
+    
+    protected void initEditor(Class editingClass, Collection values) {
+        Object array[] = values.toArray();
+        Arrays.sort(array);
+        JComboBox selection = new JComboBox(array);
+        selection.setBorder(blackBorder);
+        selection.setEditable(true);
+        selection.setFont(rosterTable.getFont());
+        selection.setBackground(rosterTable.getBackground());
+        Component c = selection.getEditor().getEditorComponent();
+        if (c instanceof JComponent) {
+            ((JComponent)c).setBorder(null);
+        }
+        rosterTable.setDefaultEditor(editingClass, new DefaultCellEditor(selection));
     }
     
     private void initSaveChoice() {
         if (saveChoice.getModel().getSize() == 0) {
             saveChoice.addItem("<none>");
-            Object selected = loadChoice.getSelectedItem();
-            if (!(selected instanceof File)) {
-                selected = new File(chooser.getCurrentDirectory(), "default.yxr");
-            }
+        }
+        Object selected = loadChoice.getSelectedItem();
+        if (!(selected instanceof File)) {
+            selected = defaultRoster;
+        }
+        saveChoice.setSelectedItem(selected);
+        if (saveChoice.getSelectedItem() != selected) {
             saveChoice.addItem(selected);
             saveChoice.setSelectedItem(selected);
         }
@@ -575,15 +937,13 @@ public class UpdateWizard extends javax.swing.JPanel implements Runnable, Observ
         }
     }
     
-    private Recognizer recognizer;
-    
     private void loadRoster() {
+        // Clear and allocate new roster
+        recognizer = new Recognizer();
+        recognizer.addObserver(this);
+        // Load the saved roster
         Object selected = loadChoice.getSelectedItem();
         if (selected instanceof File) {
-            if (recognizer == null) {
-                recognizer = new Recognizer();
-                recognizer.addObserver(this);
-            }
             try {
                 progressInput = new FileInputStream((File)selected);
                 progressInput = new BufferedInputStream(progressInput);
@@ -815,11 +1175,6 @@ public class UpdateWizard extends javax.swing.JPanel implements Runnable, Observ
         }
     }
     
-    private Image animation[];
-    private Image animationFrame;
-    private Thread animationThread;
-    private int state;
-    
     protected void initAnimation() {
         if (animation == null) {
             Image frameset;
@@ -939,12 +1294,6 @@ public class UpdateWizard extends javax.swing.JPanel implements Runnable, Observ
     }
     
     public static void main(String args[]) {
-        try {
-            javax.swing.UIManager.setLookAndFeel
-                (javax.swing.UIManager.getSystemLookAndFeelClassName());
-        } catch (Exception ex) {
-            // oh well ...
-        }
         javax.swing.JFrame frame = new javax.swing.JFrame("Update Wizard");
         frame.setIconImage(frame.getToolkit()
             .getImage(UpdateWizard.class.getResource("logo.gif")));
@@ -953,8 +1302,6 @@ public class UpdateWizard extends javax.swing.JPanel implements Runnable, Observ
         frame.pack();
         frame.show();
     }
-    
-    private InputStream progressInput;
     
     /** This method is called whenever the observed object is changed. An
      * application calls an <tt>Observable</tt> object's
@@ -1015,20 +1362,117 @@ public class UpdateWizard extends javax.swing.JPanel implements Runnable, Observ
             .compareTo(((Avatar)b).getName());
     }
     
+    public static boolean isTrue(String value) {
+        return value != null && value.equals("true");
+    }
+    
+    public static void updateProperty(Avatar avatar, String key, String value) {
+        String current = avatar.getProperty(key);
+        if (current == value) return;
+        if (current == null || value == null || !current.equals(value)) {
+            System.err.println("updateProperty(..., "+key+", "+value+")");
+            avatar.setProperty(key, value, System.currentTimeMillis());
+        }
+    }
+    
+    /**
+     * Called whenever the value of the selection changes.
+     * @param e the event that characterizes the change.
+     *
+     */
+    public void valueChanged(ListSelectionEvent e) {
+        if (e != null && e.getValueIsAdjusting()) return;
+        int row = rosterTable.getSelectedRow();
+        if (row < 0) {
+            selectedAvatar = null;
+            mainField.setEnabled(false);
+            rankChoice.setEnabled(false);
+            mineCheck.setEnabled(false);
+            mageloField.setEnabled(false);
+            mailField.setEnabled(false);
+            imField.setEnabled(false);
+        } else {
+            Avatar avatar = selectedAvatar = model.getAvatar(row);
+            mainField.setText(avatar.getProperty("Main"));
+            mainField.setEnabled(true);
+            rankChoice.setSelectedItem(avatar.getProperty("Rank"));
+            rankChoice.setEnabled(true);
+            mineCheck.setSelected(isTrue(avatar.getProperty("Login")));
+            mineCheck.setEnabled(true);
+            mageloField.setText(avatar.getProperty("Magelo"));
+            mageloField.setEnabled(true);
+            mailField.setText(avatar.getProperty("Mail"));
+            mailField.setEnabled(true);
+            imField.setText(avatar.getProperty("IM"));
+            imField.setEnabled(true);
+        }
+    }
+    
+    private RosterTableModel model;
+    private Avatar selectedAvatar;
+    private Recognizer recognizer;
+    
+    private Image animation[];
+    private Image animationFrame;
+    private Thread animationThread;
+    private int state;
+    
+    private Filter filter = new Filter();
+    private File defaultRoster;
+    private InputStream progressInput;
+    
+    public static class Filter extends javax.swing.filechooser.FileFilter
+        implements java.io.FilenameFilter
+    {
+
+        /** Whether the given file is accepted by this filter.
+         *
+         */
+        public boolean accept(File f) {
+            return f.isDirectory() || accept(f.getParentFile(), f.getName());
+        }
+
+        /** Tests if a specified file should be included in a file list.
+         *
+         * @param   dir    the directory in which the file was found.
+         * @param   name   the name of the file.
+         * @return  <code>true</code> if and only if the name should be
+         * included in the file list; <code>false</code> otherwise.
+         *
+         */
+        public boolean accept(File dir, String name) {
+            return name.endsWith(".yxr");
+        }
+
+        /** The description of this filter. For example: "JPG and GIF Images"
+         * @see FileView#getName
+         *
+         */
+        public String getDescription() {
+            return "YAELP save files (*.yxr)";
+        }
+    }
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.border.LineBorder blackBorder;
+    private javax.swing.JButton newButton;
     private javax.swing.JList logfileList;
     private javax.swing.JComboBox loadChoice;
     private javax.swing.JButton backButton;
+    private javax.swing.JCheckBox mineCheck;
     private javax.swing.JComboBox saveChoice;
     private javax.swing.JTextArea sendText;
-    private javax.swing.JButton exitButton;
+    private javax.swing.JComboBox rankChoice;
+    private javax.swing.JTextField mailField;
+    private javax.swing.JTextField mainField;
     private javax.swing.JTable rosterTable;
-    private javax.swing.JButton browseButton;
-    private javax.swing.JTextArea jTextArea1;
     private javax.swing.JFileChooser chooser;
+    private javax.swing.JTextField imField;
     private javax.swing.JProgressBar progressBar;
+    private javax.swing.border.EmptyBorder defaultMargin;
     private javax.swing.JTabbedPane tabPane;
     private javax.swing.JButton nextButton;
+    private javax.swing.JTextField mageloField;
     // End of variables declaration//GEN-END:variables
     
 }
