@@ -15,7 +15,7 @@ import net.sourceforge.fraglets.zeig.jdbc.ConnectionFactory;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class ConnectionContext {
     private ConnectionFactory connectionFactory;
@@ -30,17 +30,17 @@ public class ConnectionContext {
     
     public ConnectionContext open() {
         shares++;
-        Category.getInstance(getClass()).debug("ConnectionContext.open");
+        Category.getInstance(getClass()).debug("open connection context, shares="+shares);
         return this;
     }
     
     public void close() throws SQLException {
-        Category.getInstance(getClass()).debug("ConnectionContext.close");
+        Category.getInstance(getClass()).debug("close connection context, shares="+shares);
         if (--shares <= 0) {
             ConnectionFactory cf = this.connectionFactory;
             this.connectionFactory = null;
             if (cf != null) {
-                connectionFactory.close();
+                cf.close();
             }
         }
     }
