@@ -11,6 +11,9 @@
 			<classpath location="../cruisecontrol/main/lib/log4j.jar"/>
 			<classpath location="../cruisecontrol/main/lib/jdom.jar"/>
 		</javac>
+		<copy todir="bin">
+			<fileset dir="src" includes="**/*.properties"/>
+		</copy>
 	</target>
 	
 	<target name="jar" depends="clean,compile">

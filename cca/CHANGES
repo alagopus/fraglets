@@ -1,3 +1,6 @@
+2004-03-19
+* Fix build.xml to include .properties in jar
+
 2004-03-01
 * Allow to fetch the history from a URL
 * Internationalize messages
