@@ -36,7 +36,7 @@ import org.xml.sax.SAXParseException;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author  kre
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class RosterFrame extends javax.swing.JFrame {
     /** The file chooser used to select files to parse and export.
@@ -387,7 +387,6 @@ public class RosterFrame extends javax.swing.JFrame {
         styleMenu.setText("Style");
         defaultStyleItem.setSelected(true);
         defaultStyleItem.setText("default (page)");
-        styleButtonGroup.add(defaultStyleItem);
         defaultStyleItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 defaultStyleItemActionPerformed(evt);
@@ -396,7 +395,6 @@ public class RosterFrame extends javax.swing.JFrame {
         
         styleMenu.add(defaultStyleItem);
         mwStyleItem.setText("Mad Wanderer");
-        styleButtonGroup.add(mwStyleItem);
         mwStyleItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 mwStyleItemActionPerformed(evt);
@@ -405,7 +403,6 @@ public class RosterFrame extends javax.swing.JFrame {
         
         styleMenu.add(mwStyleItem);
         ssStyleItem.setText("Sovereign Storm");
-        styleButtonGroup.add(ssStyleItem);
         ssStyleItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 ssStyleItemActionPerformed(evt);
@@ -414,7 +411,6 @@ public class RosterFrame extends javax.swing.JFrame {
         
         styleMenu.add(ssStyleItem);
         vlStyleItem.setText("Veterans Legion");
-        styleButtonGroup.add(vlStyleItem);
         vlStyleItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 vlStyleItemActionPerformed(evt);
@@ -472,6 +468,7 @@ public class RosterFrame extends javax.swing.JFrame {
         menuBar.add(helpMenu);
         
         setTitle("YAELP log file parser");
+        setIconImage(getToolkit().getImage(getClass().getResource("logo.gif")));
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 exitForm(evt);
@@ -1223,7 +1220,7 @@ public class RosterFrame extends javax.swing.JFrame {
                 }
             }
             aboutText =
-            "YAELP log file parser, $Revision: 1.1 $.\n"+
+            "YAELP log file parser, $Revision: 1.2 $.\n"+
             "Copyright © 2001 Klaus Rennecke.\n"+
             "XML parser Copyright © 1997, 1998 James Clark.\n"+
             "XSL transformation Copyright © 1998, 1999 James Clark.\n"+

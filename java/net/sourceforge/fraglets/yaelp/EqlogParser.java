@@ -35,7 +35,7 @@ import java.util.zip.GZIPInputStream;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author  kre
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class EqlogParser {
     public static final String PREFIX = "[Sun Apr 01 16:38:57 2001] ";
@@ -60,30 +60,33 @@ public class EqlogParser {
         String line = in.readLine();
         if (line == null) {
             return null;
-        }
-        String timestamp = line.substring(TIMESTAMP_START, TIMESTAMP_END);
-        char rest[] = line.substring(LINE_START).toCharArray();
-        int index = 0;      // index into buffer
-        int start = 0;      // start character
-        int scan = 0;       // current character
-        int end = rest.length;
-        while (scan <= end) {
-            if (scan == end || !Character.isLetterOrDigit(rest[scan])) {
-                if (scan > start) {
-                    if (index >= buffer.length) {
-                        Word grow[] = new Word[buffer.length*2];
-                        System.arraycopy(buffer, 0, grow, 0, buffer.length);
-                        buffer = grow;
+        } else  try {
+            String timestamp = line.substring(TIMESTAMP_START, TIMESTAMP_END);
+            char rest[] = line.substring(LINE_START).toCharArray();
+            int index = 0;      // index into buffer
+            int start = 0;      // start character
+            int scan = 0;       // current character
+            int end = rest.length;
+            while (scan <= end) {
+                if (scan == end || !Character.isLetterOrDigit(rest[scan])) {
+                    if (scan > start) {
+                        if (index >= buffer.length) {
+                            Word grow[] = new Word[buffer.length*2];
+                            System.arraycopy(buffer, 0, grow, 0, buffer.length);
+                            buffer = grow;
+                        }
+                        buffer[index++] = Word.create(rest, start, scan-start);
                     }
-                    buffer[index++] = Word.create(rest, start, scan-start);
+                    start = scan + 1;
                 }
-                start = scan + 1;
+                scan++;
             }
-            scan++;
+            Word words[] = new Word[index];
+            System.arraycopy(buffer, 0, words, 0, index);
+            return new Line(timestamp, words);
+        } catch (StringIndexOutOfBoundsException ex) {
+            throw new IOException("invalid log file format");
         }
-        Word words[] = new Word[index];
-        System.arraycopy(buffer, 0, words, 0, index);
-        return new Line(timestamp, words);
     }
     
     public static int parseFile(String name, Recognizer recognizer)

@@ -25,7 +25,7 @@ import java.util.HashMap;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author  Klaus Rennecke
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class Culture {
 
@@ -52,14 +52,6 @@ public class Culture {
             shared.put(name, result);
         }
         return result;
-    }
-
-    /** Create or reference the culture with the specified name.
-     * @param words name of the culture
-     * @return the created or already existing culture
-     */    
-    public static Culture create(Word words[]) {
-        return create(Word.toString(words));
     }
 
     /** Getter for property name.
