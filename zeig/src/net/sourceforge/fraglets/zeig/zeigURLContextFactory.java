@@ -8,16 +8,15 @@ package net.sourceforge.fraglets.zeig;
 
 import java.util.Hashtable;
 
+import javax.naming.ConfigurationException;
 import javax.naming.Context;
 import javax.naming.Name;
 import javax.naming.NamingException;
 import javax.naming.spi.ObjectFactory;
 
-import net.sourceforge.fraglets.zeig.jndi.DOMContext;
-
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class zeigURLContextFactory implements ObjectFactory {
 
@@ -25,32 +24,38 @@ public class zeigURLContextFactory implements ObjectFactory {
      * @see javax.naming.spi.ObjectFactory#getObjectInstance(java.lang.Object, javax.naming.Name, javax.naming.Context, java.util.Hashtable)
      */
     public Object getObjectInstance(Object obj, Name name, Context nameCtx, Hashtable environment) throws Exception {
-        // TODO no-args
-        if (obj instanceof String) {
-            obj = new String[] { (String)obj };
+        Context ctx = createURLContext(environment);
+        if (obj == null) {
+            return ctx;
         }
-        if (obj instanceof String[]) {
-            Context urlCtx = createURLContext(environment);
-            try {
-                NamingException ne = null;
+        try {
+            if (obj instanceof String) {
+                return ctx.lookup((String)obj);
+            }
+            if (obj instanceof String[]) {
                 String urls[] = (String[])obj;
+                if (urls.length == 0) {
+                    throw new ConfigurationException("empty URL array");
+                }
+                NamingException ne = null;
                 for (int i = 0; i < urls.length; i++) {
                     try {
-                        return urlCtx.lookup(urls[i]);
+                        return ctx.lookup(urls[i]);
                     } catch (NamingException e) {
                         ne = e;
                     }
                 }
                 throw ne;
-            } finally {
-                urlCtx.close();
             }
+        } finally {
+            ctx.close();
         }
-        return null;
+        throw new IllegalArgumentException
+            ("first argument must be String or String[]");
     }
     
     protected Context createURLContext(Hashtable env) throws NamingException {
-        return new DOMContext(env);
+        return new zeigURLContext(env);
     }
 
 }
