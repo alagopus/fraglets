@@ -1,3 +1,7 @@
+2004-05-06
+* Add an ANT publisher
+* Remove unused local in CVSHistory
+
 2004-03-19
 * Fix build.xml to include .properties in jar
 
