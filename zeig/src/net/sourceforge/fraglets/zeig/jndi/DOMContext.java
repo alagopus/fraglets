@@ -48,7 +48,7 @@ import org.xml.sax.SAXException;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.16 $
+ * @version $Revision: 1.17 $
  */
 public class DOMContext implements Context {
     /** Context option. */
@@ -510,11 +510,16 @@ public class DOMContext implements Context {
 
     protected Name getComponents(Name name) throws NamingException {
         if (name instanceof CompositeName) {
-            if (name.size() > 1) {
-                throw new InvalidNameException(name.toString() +
-                " has more components than namespace can handle");
-            }            // All components are eligible, we're terminal for the moment
-            return nameParser.parse(name.get(0));
+            switch (name.size()) {
+                case 1 :
+                    return nameParser.parse(name.get(0));
+                case 0 :
+                    return nameParser.parse("");
+                default :
+                    throw new InvalidNameException(
+                        name.toString()
+                            + " has more components than namespace can handle");
+            }
         } else {
             // Already parsed
             return name;
