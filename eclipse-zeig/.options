@@ -1,0 +1,6 @@
+net.sourceforge.fraglets.zeig.browser/debug = true
+net.sourceforge.fraglets.zeig.browser/info = false
+net.sourceforge.fraglets.zeig.browser/info/dialog = false
+net.sourceforge.fraglets.zeig.browser/warn = true
+net.sourceforge.fraglets.zeig.browser/warn/dialog = false
+net.sourceforge.fraglets.zeig.browser/error/dialog = true
