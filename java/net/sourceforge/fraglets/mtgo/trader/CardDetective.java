@@ -39,6 +39,7 @@ import java.util.Set;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
+import java.util.EmptyStackException;
 
 /**
  * The card detective tries to find an image URL for a given card name.
@@ -82,7 +83,11 @@ public class CardDetective {
             document = (HTMLDocument)kit.createDefaultDocument();
             document.setBase(getIndex());
             document.getDocumentProperties().put("IgnoreCharsetDirective", Boolean.TRUE);
-            kit.read(openURL(getIndex()), document, 0);
+            try {
+                kit.read(openURL(getIndex()), document, 0);
+            } catch (EmptyStackException ex) {
+                // ignore, 1.3 bug
+            }
         }
         return document;
     }
