@@ -27,7 +27,7 @@ import java.util.Observable;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class Recognizer extends Observable {
     /** Known avatars. */
@@ -86,6 +86,21 @@ public class Recognizer extends Observable {
     /** Pattern for special lines. */
     protected static final char[] PATTERN__IS_THE_LEADER_OF_ =
         " is the leader of ".toCharArray();
+    /** Pattern for special lines. */
+    protected static final char[] PATTERN_ANONYMOUS =
+        "ANONYMOUS".toCharArray();
+    /** Pattern for special lines. */
+    protected static final char[] PATTERN_ZONE__ =
+        "ZONE: ".toCharArray();
+    /** Pattern for special lines. */
+    protected static final char[] PATTERN_LFG =
+        "LFG".toCharArray();
+    /** Pattern for special lines. */
+    protected static final char[] PATTERN__AFK__ =
+        " AFK [".toCharArray();
+    /** Pattern for special lines. */
+    protected static final char[] PATTERN___LINKDEAD__ =
+        " <LINKDEAD>[".toCharArray();
     
     /** Holds value of property changed. */
     private boolean changed;
@@ -102,7 +117,17 @@ public class Recognizer extends Observable {
     public static boolean isWhoLine(Line line)
     {
         try {
-            if (line.getChar(0) == '[') switch(line.getChar(1)) {
+            char c;
+            if (line.getChar(0) == '[') {
+                c = line.getChar(1);
+            } else if (line.startsWith(PATTERN__AFK__)) {
+                c = line.getChar(PATTERN__AFK__.length);
+            } else if (line.startsWith(PATTERN___LINKDEAD__)) {
+                c = line.getChar(PATTERN___LINKDEAD__.length);
+            } else {
+                return false;
+            }
+            switch(c) {
                 case '1': case '2': case '3': case '4': case '5':
                 case '6': case '7': case '8': case '9': case 'A':
                     return true;
@@ -317,11 +342,20 @@ public class Recognizer extends Observable {
         public Avatar parse(Line line) {
             this.input = line.getChars();
             this.position = 0;
-            parseCharacter('[');
+            if (input[position] == '[') {
+                parseCharacter('[');
+            } else {
+                parseSpace();
+                if (input[position] == '<') {
+                    parseCharacters(PATTERN___LINKDEAD__, 1, PATTERN___LINKDEAD__.length);
+                } else {
+                    parseCharacters(PATTERN__AFK__, 1, PATTERN__AFK__.length);
+                }
+            }
             int level;
             Avatar.Class clazz;
             if (input[position] == 'A') {
-                parseAnonymous();
+                parseCharacters(PATTERN_ANONYMOUS, 0, PATTERN_ANONYMOUS.length);
                 level = 0;
                 clazz = null;
             } else {
@@ -363,7 +397,7 @@ public class Recognizer extends Observable {
             }
             if (position < input.length) {
                 if (input[position] == 'L') {
-                    parseLFG();
+                    parseCharacters(PATTERN_LFG, 0, PATTERN_LFG.length);
                 }
             }
             if (position < input.length) {
@@ -390,6 +424,13 @@ public class Recognizer extends Observable {
                 throw new SyntaxError("character '"+c+"' expected at "+position);
             }
         }
+        public void parseCharacters(char c[], int off, int end) {
+            while (off < end) {
+                if (input[position++] != c[off++]) {
+                    throw new SyntaxError("character '"+c[off-1]+"' expected at "+position);
+                }
+            }
+        }
         public int parseLevel() {
             int start = position;
             while (Character.isDigit(input[position]))
@@ -411,22 +452,6 @@ public class Recognizer extends Observable {
             }
             return null;
         }
-        public void parseAnonymous() {
-            parseCharacter('A');
-            parseCharacter('N');
-            parseCharacter('O');
-            parseCharacter('N');
-            parseCharacter('Y');
-            parseCharacter('M');
-            parseCharacter('O');
-            parseCharacter('U');
-            parseCharacter('S');
-        }
-        public void parseLFG() {
-            parseCharacter('L');
-            parseCharacter('F');
-            parseCharacter('G');
-        }
         public String parseName() {
             if (Character.isUpperCase(input[position])) {
                 int start = position;
@@ -443,12 +468,7 @@ public class Recognizer extends Observable {
             return null;
         }
         public Avatar.Zone parseZone() {
-            parseCharacter('Z');
-            parseCharacter('O');
-            parseCharacter('N');
-            parseCharacter('E');
-            parseCharacter(':');
-            parseSpace();
+            parseCharacters(PATTERN_ZONE__, 0, PATTERN_ZONE__.length);
             int start = position;
             try {
                 while (Character.isLetterOrDigit(input[position]))
