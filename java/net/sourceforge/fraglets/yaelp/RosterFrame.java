@@ -102,7 +102,7 @@ import net.sourceforge.fraglets.yaelp.model.Tricks;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.33 $
+ * @version $Revision: 1.34 $
  */
 public class RosterFrame extends javax.swing.JFrame implements ActionContext {
     /** The file chooser map used to select files to parse and export.
@@ -1820,38 +1820,6 @@ public class RosterFrame extends javax.swing.JFrame implements ActionContext {
     
     public URL getResource(String name) {
         return RosterFrame.class.getResource(name);
-    }
-    
-    public String getAboutText() {
-        if (aboutText == null) try {
-            //StringBuffer buffer = new StringBuffer("\n");
-            java.io.InputStream stream =
-            getClass().getResource("gpl.txt").openStream();
-            stream.skip(15816);             // HACK
-            byte text[] = new byte[720];    // HACK
-            int count = 0;
-            while (count < text.length) {
-                int n = stream.read(text, count, text.length-count);
-                if (n > 0) {
-                    count += n;
-                } else if (n == -1) {
-                    break;
-                }
-            }
-            String version = java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/version").getString("version");
-            aboutText =
-            "YAELP log file parser, version "+version+".\n"+
-            "Copyright © 2001, 2002 Klaus Rennecke.\n"+
-            "XML parser Copyright © 1997, 1998 James Clark.\n"+
-            "XSL transformation Copyright © 1998, 1999 James Clark.\n"+
-            "\n"+
-            new String(text);
-        } catch (java.io.IOException ex) {
-            aboutText = "<ERROR: text missing>";
-            ex.printStackTrace();
-            doException(ex);
-        }
-        return aboutText;
     }
     
     /** Quote a string, escaping quotes in the original string in the process.
