@@ -22,7 +22,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.  */
 
-package net.sourceforge.shelf.beans;
+package net.sourceforge.fraglets.beans;
 
 import java.awt.BorderLayout;
 import java.awt.Image;
@@ -33,12 +33,12 @@ import java.beans.*;
 import java.util.StringTokenizer;
 import javax.swing.*;
 
-import net.sourceforge.shelf.swing.JMenuAction;
+import net.sourceforge.fraglets.swing.JMenuAction;
 
 /** This class showcases the beans in this package.
  *
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class Showcase extends JApplet {
 
