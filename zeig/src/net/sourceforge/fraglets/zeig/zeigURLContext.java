@@ -2,7 +2,7 @@
  * zeigURLContext.java -
  * Copyright (C) 2003 Klaus Rennecke, all rights reserved.
  *
- * Created on May 18, 2003 by unknown
+ * Created on May 18, 2003 by marion@users.sourceforge.net
  */
 package net.sourceforge.fraglets.zeig;
 
@@ -34,10 +34,8 @@ import org.apache.xml.utils.URI.MalformedURIException;
 import org.w3c.dom.Document;
 
 /**
- * @author unknown
- *
- * To change this generated comment go to 
- * Window>Preferences>Java>Code Generation>Code Template
+ * @author marion@users.sourceforge.net
+ * @version $Revision: 1.4 $
  */
 public class zeigURLContext implements Context, URIResolver {
     private Hashtable env;

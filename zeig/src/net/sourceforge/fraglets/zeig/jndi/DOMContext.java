@@ -48,7 +48,7 @@ import org.xml.sax.SAXException;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.21 $
+ * @version $Revision: 1.22 $
  */
 public class DOMContext implements Context {
     /** Context option. */
@@ -156,7 +156,9 @@ public class DOMContext implements Context {
             }
 
             try {
-                return NamingManager.getObjectInstance
+//                return NamingManager.getObjectInstance
+//                    (in, new CompositeName().add(atom), this, environment);
+                return new DOMObjectFactory().getObjectInstance
                     (in, new CompositeName().add(atom), this, environment);
             } catch (Exception ex) {
                 Category.getInstance(getClass()).error("lookup", ex);

@@ -19,7 +19,7 @@ import org.w3c.dom.NodeList;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class NamedNodeMapImpl implements NamedNodeMap, NodeList {
     private NodeFactory nf;
@@ -136,6 +136,8 @@ public class NamedNodeMapImpl implements NamedNodeMap, NodeList {
     public Node getNamedItem(String name) {
         try {
             return getNamedItem(nf.getName(name));
+        } catch (IllegalArgumentException ex) {
+            return null; // namespace might not exist
         } catch (SQLException ex) {
             return null; // may not be allowed to create name
         }

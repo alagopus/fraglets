@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-    <classpathentry kind="src" path="src"/>
+    <classpathentry kind="src" path="src/"/>
+    <classpathentry exported="true" kind="lib" path="lib/xalan.jar"/>
+    <classpathentry exported="true" kind="lib" path="lib/bsf.jar"/>
+    <classpathentry exported="true" kind="lib" path="lib/log4j-core.jar"/>
+    <classpathentry exported="true" kind="lib" path="lib/activation.jar"/>
+    <classpathentry exported="true" kind="lib" path="lib/mysql-connector-java-3.0.6-stable-bin.jar"/>
+    <classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
     <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-    <classpathentry kind="var" path="MYSQL_J"/>
-    <classpathentry kind="lib"
-        path="/3rd/apache.org/xerces-1_2_0/xerces.jar" sourcepath="/3rd/apache.org/dist/Xerces-J-src.1.2.0.zip"/>
-    <classpathentry kind="src" path="/fraglets-codec"/>
-    <classpathentry kind="src" path="/3rd"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>

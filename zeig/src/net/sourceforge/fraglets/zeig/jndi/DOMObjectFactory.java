@@ -29,7 +29,7 @@ import org.w3c.dom.Element;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.13 $
+ * @version $Revision: 1.14 $
  */
 public class DOMObjectFactory implements ObjectFactory {
 
@@ -94,9 +94,8 @@ public class DOMObjectFactory implements ObjectFactory {
     
     public Object transform(final DOMContext ctx, Object obj, final Name name) {
         String media = ctx.getProperty(DOMContext.PRESENTATION_MEDIA);
-        if (obj instanceof Document && !media.equals("verbatim")
-            && System.getProperty("javax.xml.transform.TransformerFactory")
-                != null) {
+        if (obj instanceof Document
+            && (media == null || !media.equals("verbatim"))) {
             try {
                 // 1. Instantiate the TransformerFactory.
                 TransformerFactory tFactory = TransformerFactory.newInstance();
