@@ -36,7 +36,7 @@ import org.xml.sax.SAXParseException;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author  kre
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class RosterFrame extends javax.swing.JFrame {
     /** The file chooser used to select files to parse and export.
@@ -93,14 +93,21 @@ public class RosterFrame extends javax.swing.JFrame {
         doNameOrder();
         rosterTable.getTableHeader().addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent ev) {
-                javax.swing.table.JTableHeader header = rosterTable.getTableHeader();
-                int index = header.columnAtPoint(ev.getPoint());
-                if (index >= 0) {
-                    doOrder(rosterTable.getColumnModel().getColumn(index)
-                            .getIdentifier().toString());
+                if (isPopupTrigger(ev)) {
+                    contextMenu.show((java.awt.Component)ev.getSource(),
+                                     ev.getX(), ev.getY());
+                } else {
+                    javax.swing.table.JTableHeader header = rosterTable.getTableHeader();
+                    int index = header.columnAtPoint(ev.getPoint());
+                    if (index >= 0) {
+                        doOrder(rosterTable.getColumnModel().getColumn(index)
+                                .getIdentifier().toString());
+                    }
                 }
             }
         });
+        rosterTable.setSelectionMode
+            (javax.swing.ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 
         // attach filters
         level1FilterItem.putClientProperty(FILTER_PROPERTY,
@@ -134,6 +141,14 @@ public class RosterFrame extends javax.swing.JFrame {
         ssStyleItem.addActionListener(styleSelection);
         styleButtonGroup.add(vlStyleItem);
         vlStyleItem.addActionListener(styleSelection);
+        
+        // set editors
+        Avatar.CHANGE.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+            public void propertyChange(java.beans.PropertyChangeEvent ev) {
+                updateEditor(ev.getNewValue());
+            }
+        });
+        initEditors();
     }
 
     /** This method is called from within the constructor to
@@ -152,6 +167,8 @@ public class RosterFrame extends javax.swing.JFrame {
         separator2 = new javax.swing.JSeparator();
         quitItem = new javax.swing.JMenuItem();
         filterMenu = new javax.swing.JMenu();
+        noFilterItem = new javax.swing.JMenuItem();
+        jSeparator2 = new javax.swing.JSeparator();
         level1FilterItem = new javax.swing.JCheckBoxMenuItem();
         separator3 = new javax.swing.JSeparator();
         defaultFilterItem = new javax.swing.JCheckBoxMenuItem();
@@ -163,6 +180,7 @@ public class RosterFrame extends javax.swing.JFrame {
         levelFilterItem = new javax.swing.JMenuItem();
         classFilterItem = new javax.swing.JMenuItem();
         cultureFilterItem = new javax.swing.JMenuItem();
+        afterFilterItem = new javax.swing.JMenuItem();
         styleMenu = new javax.swing.JMenu();
         defaultStyleItem = new javax.swing.JRadioButtonMenuItem();
         separator5 = new javax.swing.JSeparator();
@@ -181,6 +199,12 @@ public class RosterFrame extends javax.swing.JFrame {
         xpLicenseItem = new javax.swing.JMenuItem();
         xtLicenseItem = new javax.swing.JMenuItem();
         styleButtonGroup = new javax.swing.ButtonGroup();
+        contextMenu = new javax.swing.JPopupMenu();
+        newEntryItem = new javax.swing.JMenuItem();
+        hideMenuItem = new javax.swing.JMenuItem();
+        jSeparator1 = new javax.swing.JSeparator();
+        dingMenuItem = new javax.swing.JMenuItem();
+        dohMenuItem = new javax.swing.JMenuItem();
         tableScroll = new javax.swing.JScrollPane();
         rosterTable = new javax.swing.JTable();
         status = new javax.swing.JTextField();
@@ -236,6 +260,16 @@ public class RosterFrame extends javax.swing.JFrame {
         menuBar.add(fileMenu);
         filterMenu.setToolTipText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("filterMenu.tooltip"));
         filterMenu.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("filterMenu.text"));
+        noFilterItem.setToolTipText("Disable all filters.");
+        noFilterItem.setText("no filter");
+        noFilterItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                noFilterItemActionPerformed(evt);
+            }
+        });
+        
+        filterMenu.add(noFilterItem);
+        filterMenu.add(jSeparator2);
         level1FilterItem.setToolTipText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("level1FilterItem.tooltip"));
         level1FilterItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("level1FilterItem.text"));
         level1FilterItem.addActionListener(new java.awt.event.ActionListener() {
@@ -308,6 +342,15 @@ public class RosterFrame extends javax.swing.JFrame {
         });
         
         newFilterMenu.add(cultureFilterItem);
+        afterFilterItem.setToolTipText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("afterFilterItem.tooltip"));
+        afterFilterItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("afterFilterItem.text"));
+        afterFilterItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                afterFilterItemActionPerformed(evt);
+            }
+        });
+        
+        newFilterMenu.add(afterFilterItem);
         filterMenu.add(newFilterMenu);
         menuBar.add(filterMenu);
         styleMenu.setToolTipText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("styleMenu.tooltip"));
@@ -349,12 +392,6 @@ public class RosterFrame extends javax.swing.JFrame {
         optionsMenu.add(displayHTMLItem);
         menuBar.add(optionsMenu);
         helpMenu.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("helpMenu.text"));
-        helpMenu.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                helpMenuActionPerformed(evt);
-            }
-        });
-        
         aboutItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("aboutItem.text"));
         aboutItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -388,6 +425,43 @@ public class RosterFrame extends javax.swing.JFrame {
         
         helpMenu.add(xtLicenseItem);
         menuBar.add(helpMenu);
+        contextMenu.setLabel("Edit");
+        newEntryItem.setToolTipText("Create a new entry.");
+        newEntryItem.setText("new entry");
+        newEntryItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                newEntryItemActionPerformed(evt);
+            }
+        });
+        
+        contextMenu.add(newEntryItem);
+        hideMenuItem.setText("hide selected");
+        hideMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                hideMenuItemActionPerformed(evt);
+            }
+        });
+        
+        contextMenu.add(hideMenuItem);
+        contextMenu.add(jSeparator1);
+        dingMenuItem.setToolTipText("Increase level by one.");
+        dingMenuItem.setText("DING!");
+        dingMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                dingMenuItemActionPerformed(evt);
+            }
+        });
+        
+        contextMenu.add(dingMenuItem);
+        dohMenuItem.setToolTipText("Decrease level by one.");
+        dohMenuItem.setText("DOH :(");
+        dohMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                dohMenuItemActionPerformed(evt);
+            }
+        });
+        
+        contextMenu.add(dohMenuItem);
         
         setTitle("YAELP log file parser");
         setIconImage(getToolkit().getImage(getClass().getResource("logo.gif")));
@@ -399,6 +473,12 @@ public class RosterFrame extends javax.swing.JFrame {
         
         rosterTable.setModel(model);
         rosterTable.setPreferredScrollableViewportSize(new java.awt.Dimension(650, 200));
+        rosterTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                rosterTableMouseClicked(evt);
+            }
+        });
+        
         tableScroll.setViewportView(rosterTable);
         
         getContentPane().add(tableScroll, java.awt.BorderLayout.CENTER);
@@ -413,12 +493,140 @@ public class RosterFrame extends javax.swing.JFrame {
         pack();
     }//GEN-END:initComponents
 
-    private void helpMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpMenuActionPerformed
-        // Add your handling code here:
-    }//GEN-LAST:event_helpMenuActionPerformed
+    private void dohMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dohMenuItemActionPerformed
+        int rows[] = rosterTable.getSelectedRows();
+        for (int i = 0; i < rows.length; i++) {
+            Avatar avatar = model.getAvatar(rows[i]);
+            int level = avatar.getLevel();
+            if (level > 1) {
+                avatar.setLevel(level - 1);
+                model.fireTableCellUpdated(rows[i], 3); // HACK
+            }
+        }
+    }//GEN-LAST:event_dohMenuItemActionPerformed
+
+    private void dingMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dingMenuItemActionPerformed
+        int rows[] = rosterTable.getSelectedRows();
+        for (int i = 0; i < rows.length; i++) {
+            Avatar avatar = model.getAvatar(rows[i]);
+            int level = avatar.getLevel();
+            if (level > 0) {
+                avatar.setLevel(level + 1);
+                model.fireTableCellUpdated(rows[i], 3); // HACK
+            }
+        }
+    }//GEN-LAST:event_dingMenuItemActionPerformed
+
+    private void afterFilterItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_afterFilterItemActionPerformed
+        DateInput input;
+        int row = rosterTable.getSelectedRow();
+        if (row >= 0) {
+            input = new DateInput(model.getAvatar(row).getTimestamp());
+        } else {
+            input = new DateInput();
+        }
+        input.setLabel("After Date: ");
+        int result = javax.swing.JOptionPane.showConfirmDialog
+            (this, input, "New Timestamp Filter",
+             javax.swing.JOptionPane.OK_CANCEL_OPTION,
+             javax.swing.JOptionPane.QUESTION_MESSAGE);
+        if (result == javax.swing.JOptionPane.OK_OPTION) {
+            AvatarFilter filter =
+                new AvatarFilter.Time(input.getTime(), false);
+            doNewFilter(filter.toString(), filter);
+        }
+    }//GEN-LAST:event_afterFilterItemActionPerformed
+
+    private void noFilterItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_noFilterItemActionPerformed
+        int scan = filterMenu.getItemCount();
+        while (--scan >= 0) {
+            javax.swing.JMenuItem item = filterMenu.getItem(scan);
+            if (item != null && item.isSelected()) {
+                item.setSelected(false);
+            }
+        }
+        refreshFilter();
+    }//GEN-LAST:event_noFilterItemActionPerformed
+
+    private void newEntryItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newEntryItemActionPerformed
+        String name = javax.swing.JOptionPane.showInputDialog
+            (this, "Character name", "New Entry",
+             javax.swing.JOptionPane.QUESTION_MESSAGE);
+        fixBackingStore();
+        if (name != null && name.length() > 0) {
+            Avatar avatar = recognizer.updateAvatar
+                (0, name, 0, null, null, null, null);
+            if (avatarFilter != null && !avatarFilter.accept(avatar)) {
+                // hidden by filter
+                javax.swing.JOptionPane.showMessageDialog
+                    (this, "New entry is hidden, disabling all filters.",
+                     "New Entry", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+                noFilterItemActionPerformed(evt);
+            } else if (avatar.getTimestamp() == 0) {
+                // really a new entry, will have to refresh roster
+                avatar.setTimestamp(System.currentTimeMillis());
+                setRoster(recognizer.getAvatars(), recognizer.getLines());
+            }
+            // search position in current roster
+            Avatar roster[] = model.getRoster();
+            int index = java.util.Arrays
+                .binarySearch(roster, avatar, model.getOrder());
+            if (index < 0) {
+                doException(new RuntimeException("new entry not ound in roster"));
+            } else {
+                rosterTable.setRowSelectionInterval(index, index);
+                rosterTable.scrollRectToVisible(rosterTable.getCellRect(index, 0, true));
+            }
+        }
+    }//GEN-LAST:event_newEntryItemActionPerformed
+
+    private void hideMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hideMenuItemActionPerformed
+        // find the set filter menu entry
+        AvatarFilter.Set setFilter = null;
+        javax.swing.JMenuItem filterItem = null;
+        int scan = filterMenu.getItemCount();
+        while (--scan >= 0) {
+            javax.swing.JMenuItem item = filterMenu.getItem(scan);
+            if (item != null) {
+                Object filter = item.getClientProperty(FILTER_PROPERTY);
+                if (filter instanceof AvatarFilter.Not) {
+                    filter = ((AvatarFilter.Not)filter).getFilter();
+                }
+                if (filter instanceof AvatarFilter.Set) {
+                    setFilter = (AvatarFilter.Set)filter;
+                    filterItem = item;
+                    if (!item.isSelected()) {
+                        setFilter.getSet().clear();
+                    }
+                    break; // found
+                }
+            }
+        }
+        if (setFilter == null) {
+            setFilter = new AvatarFilter.Set();
+        }
+        int rows[] = rosterTable.getSelectedRows();
+        for (int i = 0; i < rows.length; i++) {
+            setFilter.add(model.getAvatar(rows[i]));
+        }
+        if (rosterTable.isEditing()) {
+            rosterTable.getCellEditor().cancelCellEditing();
+        }
+        if (filterItem != null) {
+            filterItem.setSelected(true);
+            refreshFilter();
+        } else {
+            doNewFilter("hide selection", new AvatarFilter.Not(setFilter));
+        }
+    }//GEN-LAST:event_hideMenuItemActionPerformed
+
+    private void rosterTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_rosterTableMouseClicked
+        if (isPopupTrigger(evt)) {
+            contextMenu.show(rosterTable, evt.getX(), evt.getY());
+        }
+    }//GEN-LAST:event_rosterTableMouseClicked
 
     private void cultureFilterItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cultureFilterItemActionPerformed
-        // Add your handling code here:
         Object values[] = Avatar.Culture.getValues().toArray();
         java.util.Arrays.sort(values, Avatar.Culture.getComparator());
         Object input = javax.swing.JOptionPane.showInputDialog
@@ -431,7 +639,6 @@ public class RosterFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_cultureFilterItemActionPerformed
 
     private void classFilterItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_classFilterItemActionPerformed
-        // Add your handling code here:
         Object values[] = Avatar.Class.getValues().toArray();
         java.util.Arrays.sort(values, Avatar.Class.getComparator());
         Object input = javax.swing.JOptionPane.showInputDialog
@@ -444,7 +651,6 @@ public class RosterFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_classFilterItemActionPerformed
 
     private void levelFilterItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_levelFilterItemActionPerformed
-        // Add your handling code here:
         String input = javax.swing.JOptionPane.showInputDialog(this, "Minimum Level");
         if (input != null) try {
             int level = Integer.parseInt(input);
@@ -456,7 +662,6 @@ public class RosterFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_levelFilterItemActionPerformed
 
     private void newGuildFilterItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newGuildFilterItemActionPerformed
-        // Add your handling code here:
         Object values[] = Avatar.Guild.getValues().toArray();
         java.util.Arrays.sort(values, Avatar.Guild.getComparator());
         Object input = javax.swing.JOptionPane.showInputDialog
@@ -469,7 +674,6 @@ public class RosterFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_newGuildFilterItemActionPerformed
 
     private void styleFileItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_styleFileItemActionPerformed
-        // Add your handling code here:
         chooser = getChooser();
         chooser.setApproveButtonText("Use Style");
         chooser.setDialogTitle("Use New Style");
@@ -495,22 +699,18 @@ public class RosterFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_styleFileItemActionPerformed
 
     private void xtLicenseItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_xtLicenseItemActionPerformed
-        // Add your handling code here:
         doShowDocument("XSL Transformation License", "copying_xt.txt");
     }//GEN-LAST:event_xtLicenseItemActionPerformed
 
     private void xpLicenseItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_xpLicenseItemActionPerformed
-        // Add your handling code here:
         doShowDocument("XML Parser License", "copying_xp.txt");
     }//GEN-LAST:event_xpLicenseItemActionPerformed
 
     private void filterItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_filterItemActionPerformed
-        // Add your handling code here:
         refreshFilter();
     }//GEN-LAST:event_filterItemActionPerformed
 
     private void exportHTMLItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportHTMLItemActionPerformed
-        // Add your handling code here:
         chooser = getChooser();
         chooser.setApproveButtonText("Export");
         chooser.setDialogTitle("Export HTML");
@@ -535,7 +735,6 @@ public class RosterFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_exportHTMLItemActionPerformed
 
     private void exportXMLItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportXMLItemActionPerformed
-        // Add your handling code here:
         chooser = getChooser();
         chooser.setApproveButtonText("Export");
         chooser.setDialogTitle("Export XML");
@@ -565,14 +764,12 @@ public class RosterFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_licenseItemActionPerformed
 
     private void aboutItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutItemActionPerformed
-        // Add your handling code here:
         javax.swing.JOptionPane.showMessageDialog
             (RosterFrame.this, getAboutText(), "About YAELP", javax.swing.JOptionPane.INFORMATION_MESSAGE);
         fixBackingStore();
     }//GEN-LAST:event_aboutItemActionPerformed
 
     private void exportTableItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportTableItemActionPerformed
-        // Add your handling code here:
         chooser = getChooser();
         chooser.setApproveButtonText("Export");
         chooser.setDialogTitle("Export table");
@@ -603,7 +800,6 @@ public class RosterFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_quitItemActionPerformed
 
     private void parseFileItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_parseFileItemActionPerformed
-        // Add your handling code here:
         chooser = getChooser();
         chooser.setApproveButtonText("Parse");
         chooser.setDialogTitle("Parse files");
@@ -667,6 +863,47 @@ public class RosterFrame extends javax.swing.JFrame {
         setRoster(recognizer.getAvatars(), recognizer.getLines());
     }
     
+    /** Initialize editors for enumerated values. */
+    protected void initEditors() {
+        javax.swing.border.LineBorder blackBorder =
+            new javax.swing.border.LineBorder(java.awt.Color.black);
+        Class editingClass[] = {
+            Avatar.Class.class,
+            Avatar.Culture.class,
+            Avatar.Guild.class,
+            Avatar.Zone.class,
+        };
+        
+        for (int i = 0; i < editingClass.length; i++) {
+            javax.swing.JComboBox selection = new javax.swing.JComboBox();
+            selection.setBorder(blackBorder);
+            selection.setEditable(true);
+            rosterTable.setDefaultEditor(editingClass[i],
+                new javax.swing.DefaultCellEditor(selection));
+        }
+    }
+    
+    /** Update the editor for the new instance. */
+    protected void updateEditor(Object newInstance) {
+        javax.swing.table.TableCellEditor editor = rosterTable
+            .getDefaultEditor(newInstance.getClass());
+        java.awt.Component editorComponent = editor
+            .getTableCellEditorComponent(rosterTable, newInstance, false, 0, 0);
+        javax.swing.DefaultComboBoxModel editorModel =
+            (javax.swing.DefaultComboBoxModel)
+            ((javax.swing.JComboBox)editorComponent).getModel();
+        if (newInstance instanceof Comparable) {
+            Comparable c = (Comparable)newInstance;
+            int end = editorModel.getSize();
+            int scan = 0;
+            while (scan < end && c.compareTo(editorModel.getElementAt(scan)) > 0)
+                scan++;
+            editorModel.insertElementAt(newInstance, scan);
+        } else {
+            editorModel.addElement(newInstance);
+        }
+    }
+    
     protected static AvatarFilter appendFilterOr(AvatarFilter list, AvatarFilter filter) {
         if (list == null) {
             return filter;
@@ -698,6 +935,7 @@ public class RosterFrame extends javax.swing.JFrame {
      * @param lines lines parsed to create the provided list
      */    
     protected void setRoster(Avatar avatars[], int lines) {
+        int hidden = 0;
         if (avatarFilter != null) {
             int end = avatars.length;
             int i0 = 0;
@@ -716,6 +954,7 @@ public class RosterFrame extends javax.swing.JFrame {
                 System.arraycopy(avatars, 0, shrink, 0, i1);
                 avatars = shrink;
             }
+            hidden = i0 - i1;
         }
         
         if (model == null) {
@@ -724,7 +963,10 @@ public class RosterFrame extends javax.swing.JFrame {
         } else {
             model.setRoster(avatars);
         }
-        status.setText(model.getRowCount() + " characters, " + lines + " lines parsed.");
+        status.setText(
+            model.getRowCount() + " characters, " +
+            (hidden>0 ? hidden + " hidden, " : "") +
+            lines + " lines parsed");
     }
     
     protected void doNameOrder() {
@@ -1087,6 +1329,12 @@ public class RosterFrame extends javax.swing.JFrame {
         fixBackingStore();
     }
     
+    /** Fix for the broken MouseEvent.isPopupTrigger(). */
+    public static boolean isPopupTrigger(java.awt.event.MouseEvent evt) {
+        return evt.isPopupTrigger() ||
+            (evt.getModifiers() & evt.BUTTON3_MASK) > 0;
+    }
+    
     protected javax.swing.JFileChooser getChooser() {
         if (chooser == null) {
             chooser = new javax.swing.JFileChooser();
@@ -1097,7 +1345,8 @@ public class RosterFrame extends javax.swing.JFrame {
             for (int i = 0; i < alternatives.length; i++) {
                 java.io.File eq = new java.io.File(alternatives[i]);
                 if (eq.exists() && eq.isDirectory()) {
-                    chooser.setCurrentDirectory(eq);
+                    System.setProperty("user.home", eq.getAbsolutePath());
+                    // chooser.setCurrentDirectory(eq);
                     break;
                 }
             }
@@ -1126,7 +1375,7 @@ public class RosterFrame extends javax.swing.JFrame {
                 }
             }
             aboutText =
-            "YAELP log file parser, $Revision: 1.7 $.\n"+
+            "YAELP log file parser, $Revision: 1.8 $.\n"+
             "Copyright © 2001 Klaus Rennecke.\n"+
             "XML parser Copyright © 1997, 1998 James Clark.\n"+
             "XSL transformation Copyright © 1998, 1999 James Clark.\n"+
@@ -1230,6 +1479,8 @@ public class RosterFrame extends javax.swing.JFrame {
     private javax.swing.JSeparator separator2;
     private javax.swing.JMenuItem quitItem;
     private javax.swing.JMenu filterMenu;
+    private javax.swing.JMenuItem noFilterItem;
+    private javax.swing.JSeparator jSeparator2;
     private javax.swing.JCheckBoxMenuItem level1FilterItem;
     private javax.swing.JSeparator separator3;
     private javax.swing.JCheckBoxMenuItem defaultFilterItem;
@@ -1241,6 +1492,7 @@ public class RosterFrame extends javax.swing.JFrame {
     private javax.swing.JMenuItem levelFilterItem;
     private javax.swing.JMenuItem classFilterItem;
     private javax.swing.JMenuItem cultureFilterItem;
+    private javax.swing.JMenuItem afterFilterItem;
     private javax.swing.JMenu styleMenu;
     private javax.swing.JRadioButtonMenuItem defaultStyleItem;
     private javax.swing.JSeparator separator5;
@@ -1259,6 +1511,12 @@ public class RosterFrame extends javax.swing.JFrame {
     private javax.swing.JMenuItem xpLicenseItem;
     private javax.swing.JMenuItem xtLicenseItem;
     private javax.swing.ButtonGroup styleButtonGroup;
+    private javax.swing.JPopupMenu contextMenu;
+    private javax.swing.JMenuItem newEntryItem;
+    private javax.swing.JMenuItem hideMenuItem;
+    private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JMenuItem dingMenuItem;
+    private javax.swing.JMenuItem dohMenuItem;
     private javax.swing.JScrollPane tableScroll;
     private javax.swing.JTable rosterTable;
     private javax.swing.JTextField status;
