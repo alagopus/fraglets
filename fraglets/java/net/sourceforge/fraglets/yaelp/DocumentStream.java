@@ -24,19 +24,22 @@ package net.sourceforge.fraglets.yaelp;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author Klaus Rennecke
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class DocumentStream extends java.io.OutputStream {
 
-    /** The target document to write to.
-     */    
+    /** The target document to write to. */    
     protected javax.swing.text.Document target;
-    /** The component associated with the document, if any.
-     */    
+    
+    /** The component associated with the document, if any. */    
     protected javax.swing.text.JTextComponent component;
-    /** Clear the document on next output.
-     */    
+    
+    /** Clear the document on next output. */    
     protected boolean clear = true;
+    
+    /** The system encoding. */
+    protected String encoding =
+        new java.io.OutputStreamWriter(System.out).getEncoding(); //HACK
     
     /** Creates new DocumentStream
      * @param target the target document to write to
@@ -84,5 +87,47 @@ public class DocumentStream extends java.io.OutputStream {
     /** OutputStream protocol implementation. */
     public void close() {
         target = null;
+    }
+    
+    /** OutputStream protocol implementation.
+     * @param values bytes to write
+     * @param off offset into values
+     * @param len portion of values
+     * @throws IOException on error
+     */
+    public void write(byte[] values, int off, int len) throws java.io.IOException {
+        try {
+            if (clear) {
+                target.remove(0, target.getLength());
+                clear = false;
+            }
+            int scan = off + len;
+            while (--scan >= off) {
+                switch (values[scan] & 0xff) {
+                    case '\n':
+                    case '\r':
+                        clear = true;
+                        continue;
+                }
+                break;
+            }
+            int mark = ++scan;
+            while (--scan >= off) {
+                switch (values[scan] & 0xff) {
+                    case '\n':
+                    case '\r':
+                        break;
+                    default:
+                        continue;
+                }
+                break;
+            }
+            if (++scan < mark) {
+                target.insertString(target.getLength(),
+                    new String(values, scan, mark-scan, encoding), null);
+            }
+        } catch (javax.swing.text.BadLocationException ex) {
+            throw new RuntimeException(ex.toString());
+        }
     }
 }
