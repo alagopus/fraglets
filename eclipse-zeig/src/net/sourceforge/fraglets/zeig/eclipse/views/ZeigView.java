@@ -3,18 +3,21 @@
  */
 package net.sourceforge.fraglets.zeig.eclipse.views;
 
-import java.util.Hashtable;
-
 import javax.naming.Context;
-import javax.naming.NamingException;
+
+import net.sourceforge.fraglets.zeig.eclipse.BrowserPlugin;
 
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.dialogs.DialogSettings;
+import org.eclipse.jface.dialogs.IDialogSettings;
+import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -26,6 +29,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
@@ -55,6 +59,7 @@ public class ZeigView extends ViewPart {
     private TreeViewer viewer;
     private DrillDownAdapter drillDownAdapter;
     private Action connectAction;
+    private Action openAction;
     private Action action2;
     private OpenFileAction doubleClickAction;
 
@@ -130,6 +135,7 @@ public class ZeigView extends ViewPart {
 
     private void fillContextMenu(IMenuManager manager) {
         manager.add(connectAction);
+        manager.add(openAction);
         manager.add(action2);
         manager.add(new Separator());
         drillDownAdapter.addNavigationActions(manager);
@@ -147,40 +153,83 @@ public class ZeigView extends ViewPart {
     private void makeActions(final ZeigContentProvider vcp) {
         connectAction = new Action() {
             public void run() {
-                if (MessageDialog.openConfirm(viewer.getControl().getShell(),
-                    "Zeig Editing", "Connect database?")) {
+                IDialogSettings settings = getSection("connectAction");
+                InputDialog id = new InputDialog(getShell(), "Connect",
+                    "Provider URL: ", settings.get(Context.PROVIDER_URL), null);
+                id.setBlockOnOpen(true);
+                if (id.open() == InputDialog.CANCEL) {
+                    return;
+                }
+                String url = id.getValue();
+                settings.put(Context.PROVIDER_URL, url);
+                vcp.addRoot(new ZeigDatabaseNode(url));
+            }
+        };
+        connectAction.setText("Connect database...");
+        connectAction.setToolTipText("Connect a zeig XML database");
+        connectAction.setImageDescriptor(
+            PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(
+                ISharedImages.IMG_TOOL_NEW_WIZARD));
+                
+        openAction = new Action() {
+            public void run() {
+                IStructuredSelection selection = (IStructuredSelection)
+                    viewer.getSelection();
+                if (selection.getFirstElement() instanceof ZeigDatabaseNode) {
+                    ZeigDatabaseNode node = (ZeigDatabaseNode)selection
+                        .getFirstElement();
+                    String url = node.getName();
+                    IDialogSettings settings = getSection("openAction");
+                    InputDialog id = new InputDialog(getShell(), "Open",
+                        "Principal: ", settings.get(Context.SECURITY_PRINCIPAL), null);
+                    id.setBlockOnOpen(true);
+                    if (id.open() == InputDialog.CANCEL) {
+                        return;
+                    }
+                    String principal = id.getValue();
+                    String credentials = null;
+                    if (settings.get(Context.SECURITY_PRINCIPAL) != null) {
+                        if (principal.equals(settings.get(Context.SECURITY_PRINCIPAL))) {
+                            credentials = settings.get(Context.SECURITY_CREDENTIALS);
+                        } else {
+                            settings.put(Context.SECURITY_CREDENTIALS, (String)null);
+                        }
+                    }
+                    settings.put(Context.SECURITY_PRINCIPAL, principal);
+                    node.setProperty(Context.SECURITY_PRINCIPAL, principal);
+                    node.setProperty(Context.SECURITY_AUTHENTICATION, "simple");
+                    if (credentials != null) {
+                        node.setProperty(Context.SECURITY_CREDENTIALS, credentials);
+                    } else {
+                        try {
+                            // try without credentials
+                            node.open(null);
+                            return; // fine
+                        } catch (CoreException ex) {
+                            // we probably need credentials
+                            id = new InputDialog(getShell(), "Open",
+                                "Credentials: ", null, null);
+                            id.setBlockOnOpen(true);
+                            if (id.open() == InputDialog.CANCEL) {
+                                return;
+                            }
+                            credentials = id.getValue();
+                            node.setProperty(Context.SECURITY_CREDENTIALS, credentials);
+                        }
+                    }
                     try {
-                        String url = "zeig://simpel@tukan/";
-                        Hashtable env = new Hashtable();
-                        env.put(Context.PROVIDER_URL, url);
-                        env.put(Context.URL_PKG_PREFIXES, "net.sourceforge.fraglets");
-//                        env.put(Context.INITIAL_CONTEXT_FACTORY, "net.sourceforge.fraglets.zeig.jndi.DOMContextFactory");
-                        env.put(Context.SECURITY_AUTHENTICATION, "simple");
-                        env.put(Context.SECURITY_PRINCIPAL, "simpel");
-                        env.put(Context.SECURITY_CREDENTIALS, "simpel");
-//                        env.put(Context.OBJECT_FACTORIES, "net.sourceforge.fraglets.zeig.jndi.DOMObjectFactory");
-//                        env.put(Context.STATE_FACTORIES, "net.sourceforge.fraglets.zeig.jndi.DOMStateFactory");
-                        vcp.addRoot(new ZeigDatabaseNode(env));
-                    } catch (Error ex) {
-                        ex.printStackTrace();
-                        throw ex;
-                    } catch (RuntimeException ex) {
-                        ex.printStackTrace();
-                        throw ex;
-                    } catch (NamingException ex) {
-                        ex.printStackTrace();
+                        // try without credentials
+                        node.open(null);
+                        settings.put(Context.SECURITY_CREDENTIALS, credentials);
+                        return; // fine
+                    } catch (CoreException ex) {
+                        BrowserPlugin.error("open", ex);
                     }
                 }
             }
         };
-        connectAction.setImageDescriptor(
-            PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(
-                ISharedImages.IMG_TOOL_NEW_WIZARD));
-        connectAction.setText("Connect database...");
-        connectAction.setToolTipText("Connect to a zeig XML database");
-        connectAction.setImageDescriptor(
-            PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(
-                ISharedImages.IMG_TOOL_NEW_WIZARD));
+        openAction.setText("Open database...");
+        openAction.setToolTipText("Open a zeig XML database");
 
         action2 = new Action() {
             public void run() {
@@ -199,9 +248,14 @@ public class ZeigView extends ViewPart {
     private void hookDoubleClickAction() {
         viewer.addDoubleClickListener(new IDoubleClickListener() {
             public void doubleClick(DoubleClickEvent event) {
-                doubleClickAction.selectionChanged
-                    ((IStructuredSelection)viewer.getSelection());
-                doubleClickAction.run();
+                IStructuredSelection selection = (IStructuredSelection)
+                    viewer.getSelection();
+                if (selection.getFirstElement() instanceof ZeigDatabaseNode) {
+                    openAction.run();
+                } else {
+                    doubleClickAction.selectionChanged(selection);
+                    doubleClickAction.run();
+                }
             }
         });
     }
@@ -218,5 +272,27 @@ public class ZeigView extends ViewPart {
      */
     public void setFocus() {
         viewer.getControl().setFocus();
+    }
+    
+    protected IDialogSettings getSection(String name) {
+        IDialogSettings settings = BrowserPlugin.getDefault()
+            .getDialogSettings();
+        IDialogSettings result = settings.getSection(getClass().getName());
+        if (result == null) {
+            result = new DialogSettings(getClass().getName());
+            settings.addSection(result);
+        }
+        settings = result;
+        result = settings.getSection(name);
+        if (result == null) {
+            result = new DialogSettings(name);
+            settings.addSection(result);
+        }
+        return result;
+    }
+    
+    protected Shell getShell() {
+        return BrowserPlugin.getDefault().getWorkbench()
+            .getActiveWorkbenchWindow().getShell();
     }
 }

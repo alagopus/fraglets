@@ -64,7 +64,6 @@ class ZeigContentProvider
      */
     protected void addRoot(ZeigContainerNode root) {
         invisibleRoot.addChild(root);
-        viewer.refresh();
     }
     /**
      * @return

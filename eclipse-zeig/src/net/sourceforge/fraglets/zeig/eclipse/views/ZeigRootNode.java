@@ -7,10 +7,14 @@
 package net.sourceforge.fraglets.zeig.eclipse.views;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+
+import net.sourceforge.fraglets.zeig.eclipse.BrowserPlugin;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -64,18 +68,27 @@ public class ZeigRootNode extends ZeigContainerNode implements IWorkspaceRoot {
     public int getType() {
         return ROOT;
     }
-    /* (non-Javadoc)
+    /**
      * @see org.eclipse.core.resources.IWorkspaceRoot#delete(boolean, boolean, org.eclipse.core.runtime.IProgressMonitor)
      */
-    public void delete(boolean deleteContent, boolean force, IProgressMonitor monitor) throws CoreException {
-        // TODO Auto-generated method stub
-        
+    public void delete(
+        boolean deleteContent,
+        boolean force,
+        IProgressMonitor monitor)
+        throws CoreException {
+        delete(
+            (deleteContent
+                ? IResource.ALWAYS_DELETE_PROJECT_CONTENT
+                : IResource.NEVER_DELETE_PROJECT_CONTENT)
+                | (force ? FORCE : IResource.NONE),
+            monitor);
     }
     /* (non-Javadoc)
      * @see org.eclipse.core.resources.IWorkspaceRoot#findContainersForLocation(org.eclipse.core.runtime.IPath)
      */
     public IContainer[] findContainersForLocation(IPath location) {
         // TODO Auto-generated method stub
+        BrowserPlugin.warn("findContainersForLocation(IPath location)", null);
         return null;
     }
     /* (non-Javadoc)
@@ -83,6 +96,7 @@ public class ZeigRootNode extends ZeigContainerNode implements IWorkspaceRoot {
      */
     public IFile[] findFilesForLocation(IPath location) {
         // TODO Auto-generated method stub
+        BrowserPlugin.warn("findFilesForLocation(IPath location)", null);
         return null;
     }
     /* (non-Javadoc)
@@ -90,6 +104,7 @@ public class ZeigRootNode extends ZeigContainerNode implements IWorkspaceRoot {
      */
     public IContainer getContainerForLocation(IPath location) {
         // TODO Auto-generated method stub
+        BrowserPlugin.warn("getContainerForLocation(IPath location)", null);
         return null;
     }
     /* (non-Javadoc)
@@ -97,21 +112,37 @@ public class ZeigRootNode extends ZeigContainerNode implements IWorkspaceRoot {
      */
     public IFile getFileForLocation(IPath location) {
         // TODO Auto-generated method stub
+        BrowserPlugin.warn("getFileForLocation(IPath location)", null);
         return null;
     }
-    /* (non-Javadoc)
+    /**
      * @see org.eclipse.core.resources.IWorkspaceRoot#getProject(java.lang.String)
      */
     public IProject getProject(String name) {
-        // TODO Auto-generated method stub
-        return null;
+        ZeigDatabaseNode result;
+        for (Iterator i = children.iterator(); i.hasNext();) {
+            result = (ZeigDatabaseNode)i.next();
+            if (name.equals(result.getName())) {
+                return result;
+            }
+        }
+        result = new ZeigDatabaseNode(name);
+        addChild(result);
+        return result;
     }
-    /* (non-Javadoc)
+    /**
      * @see org.eclipse.core.resources.IWorkspaceRoot#getProjects()
      */
     public IProject[] getProjects() {
-        // TODO Auto-generated method stub
-        return null;
+        return (IProject[])children.toArray(new IProject[children.size()]);
+    }
+
+    /**
+     * @see net.sourceforge.fraglets.zeig.eclipse.views.ZeigContainerNode#addChild(net.sourceforge.fraglets.zeig.eclipse.views.ZeigNode)
+     */
+    public void addChild(ZeigNode child) {
+        super.addChild(child);
+        getViewer().refresh(); // refresh completely
     }
 
 }
