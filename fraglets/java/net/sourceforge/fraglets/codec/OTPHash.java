@@ -32,8 +32,6 @@ import java.io.ObjectOutputStream;
 import java.io.ObjectStreamClass;
 import java.io.OutputStream;
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.Random;
 
 /**
  * This hashing library uses a mechanism analogous to OTP cryptography.
