@@ -36,7 +36,7 @@ import org.xml.sax.SAXParseException;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author  kre
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class RosterFrame extends javax.swing.JFrame {
     /** The file chooser used to select files to parse and export.
@@ -61,170 +61,6 @@ public class RosterFrame extends javax.swing.JFrame {
     /** Client property key for style property. */
     public static final String STYLE_PROPERTY = "RosterFrame.style";
     
-    /** Interface for a filter on the roster.
-     */    
-    public static interface AvatarFilter {
-        /** Determine whether the given avatar is accepted by this filter.
-         * @param avatar the avatar to examine
-         * @return true iff the given avatar is accepted by this filter
-         */        
-        public boolean accept(Avatar avatar);
-    }
-    
-    /** Simple or-combination of avatar filters.
-     */    
-    public static class AvatarFilterOr implements AvatarFilter {
-        /** First filter.
-         */        
-        protected AvatarFilter f0;
-        /** Second filter.
-         */        
-        protected AvatarFilter f1;
-        /** Create an or-combination of the given filters.
-         * @param f0 first filter to use
-         * @param f1 second filter to use
-         */        
-        public AvatarFilterOr(AvatarFilter f0, AvatarFilter f1) {
-            this.f0 = f0;
-            this.f1 = f1;
-        }
-        /** Determine whether one of the filters accepts the given avatar.
-         * @param avatar the avatar to examine
-         * @return true iff the first or the second filter accept the given avatar
-         */        
-        public boolean accept(Avatar avatar) {
-            return f0.accept(avatar) || f1.accept(avatar);
-        }
-    }
-    
-    /** Simple and-combination of avatar filters.
-     */    
-    public static class AvatarFilterAnd implements AvatarFilter {
-        /** First filter.
-         */        
-        protected AvatarFilter f0;
-        /** Second filter.
-         */        
-        protected AvatarFilter f1;
-        /** Create an and-combination of the given filters.
-         * @param f0 first filter to use
-         * @param f1 second filter to use
-         */        
-        public AvatarFilterAnd(AvatarFilter f0, AvatarFilter f1) {
-            this.f0 = f0;
-            this.f1 = f1;
-        }
-        /** Determine whether both filters accept the given avatar.
-         * @param avatar the avatar to examine
-         * @return true iff the first and the second filter accept the given avatar
-         */        
-        public boolean accept(Avatar avatar) {
-            return f0.accept(avatar) && f1.accept(avatar);
-        }
-    }
-    
-    /** Avatar filter based on guild.
-     */    
-    public static class AvatarFilterGuild implements AvatarFilter {
-        /** The guild an avatar must be in to be accepted by this filter.
-         */        
-        protected Guild guild;
-        /** Create a new avatar filter based on the given guild.
-         * @param guild the guild avatars must be in to be accepted
-         */        
-        public AvatarFilterGuild(String guild) {
-            this.guild = Guild.create(guild);
-        }
-        /** Create a new avatar filter based on the given guild.
-         * @param guild the guild avatars must be in to be accepted
-         */        
-        public AvatarFilterGuild(Guild guild) {
-            this.guild = guild;
-        }
-        /** Determine whether the given avatar is in the guild.
-         * @param avatar the avatar to examine
-         * @return true iff the given avatar is in the guild for this filter
-         */        
-        public boolean accept(Avatar avatar) {
-            return avatar.getGuild() == guild;
-        }
-    }
-    
-    
-    /** Avatar filter based on level.
-     */    
-    public static class AvatarFilterLevel implements AvatarFilter {
-        /** The minimum level for an avatar to be accepted.
-         */        
-        protected int minLevel;
-        /** Create a new avatar filter based on the given level.
-         * @param minLevel the minimum level for an avatar to be accepted
-         */        
-        public AvatarFilterLevel(int minLevel) {
-            this.minLevel = minLevel;
-        }
-        /** Determine whether the given avatar is at least minLevel.
-         * @param avatar the avatar to examine
-         * @return true iff the given avatar is at least minLevel
-         */        
-        public boolean accept(Avatar avatar) {
-            return avatar.getLevel() >= minLevel;
-        }
-    }
-    
-    /** Avatar filter based on class.
-     */    
-    public static class AvatarFilterClass implements AvatarFilter {
-        /** Class the avatar has to be to be accepted.
-         */        
-        protected Clazz clazz;
-        /** Create a new avatar filter based on the given class.
-         * @param clazz the class for an avatar to be accepted
-         */        
-        public AvatarFilterClass(String clazz) {
-            this.clazz = Clazz.create(clazz);
-        }
-        /** Create a new avatar filter based on the given class.
-         * @param clazz the class for an avatar to be accepted
-         */        
-        public AvatarFilterClass(Clazz clazz) {
-            this.clazz = clazz;
-        }
-        /** Determine whether the given avatar is of the required class.
-         * @param avatar the avatar to examine
-         * @return true iff the given avatar is of class
-         */        
-        public boolean accept(Avatar avatar) {
-            return avatar.getClazz() == clazz;
-        }
-    }
-    
-    /** Avatar filter based on class.
-     */    
-    public static class AvatarFilterCulture implements AvatarFilter {
-        /** The culture an avatar must belong to be accepted by this filter.
-         */        
-        protected Culture culture;
-        /** Create a new avatar filter based on the given culture.
-         * @param culture the culture for an avatar to be accepted
-         */        
-        public AvatarFilterCulture(String culture) {
-            this.culture = Culture.create(culture);
-        }
-        /** Create a new avatar filter based on the given culture.
-         * @param culture the culture for an avatar to be accepted
-         */        
-        public AvatarFilterCulture(Culture culture) {
-            this.culture = culture;
-        }
-        /** Determine whether the given avatar belongs to culture.
-         * @param avatar the avatar to examine
-         * @return true iff the given avatar is in culture
-         */        
-        public boolean accept(Avatar avatar) {
-            return avatar.getCulture() == culture;
-        }
-    }
     
     public static class StyleSelection extends javax.swing.AbstractAction {
         private java.net.URL selectedStyle;
@@ -268,13 +104,13 @@ public class RosterFrame extends javax.swing.JFrame {
 
         // attach filters
         level1FilterItem.putClientProperty(FILTER_PROPERTY,
-            new AvatarFilterLevel(1));
+            new AvatarFilter.Level(1));
         defaultFilterItem.putClientProperty(FILTER_PROPERTY,
-            new AvatarFilterGuild("Mad Wanderer"));
+            new AvatarFilter.Guild("Mad Wanderer"));
         alliedFilterItem.putClientProperty(FILTER_PROPERTY,
-            new AvatarFilterGuild("Sovereign Storm"));
+            new AvatarFilter.Guild("Sovereign Storm"));
         friendFilterItem.putClientProperty(FILTER_PROPERTY,
-            new AvatarFilterGuild("Veterans Legion"));
+            new AvatarFilter.Guild("Veterans Legion"));
         
         // attach styles
         defaultStyleItem.putClientProperty(STYLE_PROPERTY,
@@ -583,27 +419,27 @@ public class RosterFrame extends javax.swing.JFrame {
 
     private void cultureFilterItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cultureFilterItemActionPerformed
         // Add your handling code here:
-        Object values[] = Culture.getValues().toArray();
-        java.util.Arrays.sort(values, Culture.getComparator());
+        Object values[] = Avatar.Culture.getValues().toArray();
+        java.util.Arrays.sort(values, Avatar.Culture.getComparator());
         Object input = javax.swing.JOptionPane.showInputDialog
             (this, "Culture", "New Culture Filter", javax.swing.JOptionPane.QUESTION_MESSAGE,
              null, values, null);
         if (input != null) {
-            Culture culture = (Culture)input;
-            doNewFilter(culture.getName(), new AvatarFilterCulture(culture));
+            Avatar.Culture culture = (Avatar.Culture)input;
+            doNewFilter(culture.getName(), new AvatarFilter.Culture(culture));
         }
     }//GEN-LAST:event_cultureFilterItemActionPerformed
 
     private void classFilterItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_classFilterItemActionPerformed
         // Add your handling code here:
-        Object values[] = Clazz.getValues().toArray();
-        java.util.Arrays.sort(values, Clazz.getComparator());
+        Object values[] = Avatar.Class.getValues().toArray();
+        java.util.Arrays.sort(values, Avatar.Class.getComparator());
         Object input = javax.swing.JOptionPane.showInputDialog
             (this, "Class", "New Class Filter", javax.swing.JOptionPane.QUESTION_MESSAGE,
              null, values, null);
         if (input != null) {
-            Clazz clazz = (Clazz)input;
-            doNewFilter(clazz.getName(), new AvatarFilterClass(clazz));
+            Avatar.Class clazz = (Avatar.Class)input;
+            doNewFilter(clazz.getName(), new AvatarFilter.Class(clazz));
         }
     }//GEN-LAST:event_classFilterItemActionPerformed
 
@@ -612,7 +448,7 @@ public class RosterFrame extends javax.swing.JFrame {
         String input = javax.swing.JOptionPane.showInputDialog(this, "Minimum Level");
         if (input != null) try {
             int level = Integer.parseInt(input);
-            doNewFilter("min level "+level, new AvatarFilterLevel(level));
+            doNewFilter("min level "+level, new AvatarFilter.Level(level));
         } catch (NumberFormatException ex) {
             ex.printStackTrace();
             doException(new NumberFormatException("invalid number: "+ex.getMessage()));
@@ -621,14 +457,14 @@ public class RosterFrame extends javax.swing.JFrame {
 
     private void newGuildFilterItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newGuildFilterItemActionPerformed
         // Add your handling code here:
-        Object values[] = Guild.getValues().toArray();
-        java.util.Arrays.sort(values, Guild.getComparator());
+        Object values[] = Avatar.Guild.getValues().toArray();
+        java.util.Arrays.sort(values, Avatar.Guild.getComparator());
         Object input = javax.swing.JOptionPane.showInputDialog
             (this, "Guild", "New Guild Filter", javax.swing.JOptionPane.QUESTION_MESSAGE,
              null, values, null);
         if (input != null) {
-            Guild guild = (Guild)input;
-            doNewFilter(guild.getName(), new AvatarFilterGuild(guild));
+            Avatar.Guild guild = (Avatar.Guild)input;
+            doNewFilter(guild.getName(), new AvatarFilter.Guild(guild));
         }
     }//GEN-LAST:event_newGuildFilterItemActionPerformed
 
@@ -813,12 +649,12 @@ public class RosterFrame extends javax.swing.JFrame {
             javax.swing.JMenuItem item = filterMenu.getItem(scan);
             if (item != null && item.isSelected()) {
                 Object filter = item.getClientProperty(FILTER_PROPERTY);
-                if (filter instanceof AvatarFilterGuild) {
-                    guildFilter = appendFilterOr(guildFilter, (AvatarFilterGuild)filter);
-                } else if (filter instanceof AvatarFilterClass) {
-                    classFilter = appendFilterOr(classFilter, (AvatarFilterClass)filter);
-                } else if (filter instanceof AvatarFilterCulture) {
-                    cultureFilter = appendFilterOr(cultureFilter, (AvatarFilterCulture)filter);
+                if (filter instanceof AvatarFilter.Guild) {
+                    guildFilter = appendFilterOr(guildFilter, (AvatarFilter.Guild)filter);
+                } else if (filter instanceof AvatarFilter.Class) {
+                    classFilter = appendFilterOr(classFilter, (AvatarFilter.Class)filter);
+                } else if (filter instanceof AvatarFilter.Culture) {
+                    cultureFilter = appendFilterOr(cultureFilter, (AvatarFilter.Culture)filter);
                 } else if (filter instanceof AvatarFilter) {
                     avatarFilter = appendFilterAnd(avatarFilter, (AvatarFilter)filter);
                 }
@@ -837,7 +673,7 @@ public class RosterFrame extends javax.swing.JFrame {
         } else if (filter == null) {
             return list;
         } else {
-            return new AvatarFilterOr(list, filter);
+            return new AvatarFilter.Or(list, filter);
         }
     }
     
@@ -847,7 +683,7 @@ public class RosterFrame extends javax.swing.JFrame {
         } else if (filter == null) {
             return list;
         } else {
-            return new AvatarFilterAnd(list, filter);
+            return new AvatarFilter.And(list, filter);
         }
     }
     
@@ -1290,7 +1126,7 @@ public class RosterFrame extends javax.swing.JFrame {
                 }
             }
             aboutText =
-            "YAELP log file parser, $Revision: 1.6 $.\n"+
+            "YAELP log file parser, $Revision: 1.7 $.\n"+
             "Copyright © 2001 Klaus Rennecke.\n"+
             "XML parser Copyright © 1997, 1998 James Clark.\n"+
             "XSL transformation Copyright © 1998, 1999 James Clark.\n"+

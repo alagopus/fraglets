@@ -27,7 +27,7 @@ import java.util.Iterator;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author  Klaus Rennecke
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class Recognizer {
     /** Known avatars. */
@@ -78,9 +78,9 @@ public class Recognizer {
      * @param zone zone the avatar was last seen in
      * @return the updated or created avatar
      */    
-    protected Avatar updateAvatar(long timestamp, String name,
-                                  int level, Clazz clazz, Culture culture,
-                                  Guild guild, Zone zone) {
+    protected Avatar updateAvatar(long timestamp, String name, int level,
+                                  Avatar.Class clazz, Avatar.Culture culture,
+                                  Avatar.Guild guild, Avatar.Zone zone) {
         Avatar result = (Avatar)avatars.get(name.toString());
         if (result == null) {
             result = new Avatar(timestamp);
@@ -139,7 +139,7 @@ public class Recognizer {
             this.position = 0;
             parseCharacter('[');
             int level;
-            Clazz clazz;
+            Avatar.Class clazz;
             if (input[position] == 'A') {
                 parseAnonymous();
                 level = 0;
@@ -147,7 +147,7 @@ public class Recognizer {
             } else {
                 level = parseLevel();
                 parseSpace();
-                clazz = parseClazz();
+                clazz = parseClass();
             }
             parseCharacter(']');
             parseSpace();
@@ -157,21 +157,21 @@ public class Recognizer {
                 return null;
             }
             skipSpace();
-            Culture culture = null;
+            Avatar.Culture culture = null;
             if (position < input.length) {
                 if (input[position] == '(') {
                     culture = parseCulture();
                     skipSpace();
                 }
             }
-            Guild guild = null;
+            Avatar.Guild guild = null;
             if (position < input.length) {
                 if (input[position] == '<') {
                     guild = parseGuild();
                     skipSpace();
                 }
             }
-            Zone zone = null;
+            Avatar.Zone zone = null;
             if (position < input.length) {
                 if (input[position] == 'Z') {
                     zone = parseZone();
@@ -217,13 +217,13 @@ public class Recognizer {
                 return Integer.parseInt(new String(input, start, position-start));
             }
         }
-        public Clazz parseClazz() {
+        public Avatar.Class parseClass() {
             if (Character.isUpperCase(input[position])) {
                 int start = position;
                 while (Character.isLetter(input[position]) || input[position] == ' ')
                     position++;
                 if (start < position) {
-                    return Clazz.create(new String(input, start, position-start));
+                    return Avatar.Class.create(new String(input, start, position-start));
                 }
             }
             return null;
@@ -259,7 +259,7 @@ public class Recognizer {
             }
             return null;
         }
-        public Zone parseZone() {
+        public Avatar.Zone parseZone() {
             parseCharacter('Z');
             parseCharacter('O');
             parseCharacter('N');
@@ -276,24 +276,24 @@ public class Recognizer {
             if (start == position) {
                 return null;
             } else {
-                return Zone.create(new String(input, start, position-start));
+                return Avatar.Zone.create(new String(input, start, position-start));
             }
         }
-        public Culture parseCulture() {
+        public Avatar.Culture parseCulture() {
             parseCharacter('(');
             int start = position;
             while (Character.isLetter(input[position]) || input[position] == ' ')
                 position++;
             parseCharacter(')');
-            return Culture.create(new String(input, start, position-start-1));
+            return Avatar.Culture.create(new String(input, start, position-start-1));
         }
-        public Guild parseGuild() {
+        public Avatar.Guild parseGuild() {
             parseCharacter('<');
             int start = position;
             while (input[position] != '>')
                 position++;
             parseCharacter('>');
-            return Guild.create(new String(input, start, position-start-1));
+            return Avatar.Guild.create(new String(input, start, position-start-1));
         }
     }
     
