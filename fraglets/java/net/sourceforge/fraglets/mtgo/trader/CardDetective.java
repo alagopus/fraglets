@@ -40,6 +40,7 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.EmptyStackException;
+import java.io.FilterInputStream;
 
 /**
  * The card detective tries to find an image URL for a given card name.
@@ -207,10 +208,20 @@ public class CardDetective {
         return index;
     }
     
-    public static Reader openURL(URL url) throws IOException {
+    protected ProgressListener progressListener;
+    
+    public void setProgressListener(ProgressListener progressListener) {
+        this.progressListener = progressListener;
+    }
+    
+    public Reader openURL(URL url) throws IOException {
         URLConnection uc = url.openConnection();
         String encoding = uc.getContentEncoding();
         InputStream in = uc.getInputStream();
+        if (progressListener != null) {
+            progressListener.setObjective("Loading: "+url);
+            in = new ProgressInputStream(in, progressListener, uc.getContentLength());
+        }
         Reader reader;
         try {
             if (encoding != null) {
