@@ -34,7 +34,7 @@ import org.w3c.dom.Text;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class DocumentImpl extends NodeImpl implements Document {
     public static final int ROOT;
@@ -171,9 +171,10 @@ public class DocumentImpl extends NodeImpl implements Document {
             AttrImpl attr = (AttrImpl)atts.getNamedItem(id);
             if (attr != null && attr.getV() == v) {
                 result = (Element)child;
-            } else {
-                result = getElementById(child, id, v);
             }
+        }
+        for (int i = 0; result == null && i < nl.getLength(); i++) {
+            result = getElementById(nl.item(i), id, v);
         }
         return result;
     }
