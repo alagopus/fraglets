@@ -10,6 +10,7 @@ import java.io.File;
 import java.sql.SQLException;
 import java.util.Stack;
 
+import net.sourceforge.fraglets.zeig.cache.SensorCache;
 import net.sourceforge.fraglets.zeig.jdbc.ConnectionFactory;
 
 import org.xml.sax.Attributes;
@@ -166,7 +167,7 @@ public class SAXFactory implements ContentHandler {
             }
         } else {
             try {
-                System.out.println("reading "+file.getName()+" ...");
+//                System.out.println("reading "+file.getName()+" ...");
                 reader.parse(file.toURL().toExternalForm());
             } catch (SAXException ex) {
 //                ex.printStackTrace();
@@ -193,6 +194,7 @@ public class SAXFactory implements ContentHandler {
             for (int i = 0; i < result.length; i++) {
                 System.out.println("result["+i+"]="+result[i]);
             }
+            SensorCache.printStatistics(System.out);
         } catch (SAXException ex) {
             ex.printStackTrace();
             if (ex.getException() != null) {
