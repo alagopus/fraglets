@@ -1,5 +1,5 @@
 /*
- * $Id: CVSHistoryTest.java,v 1.2 2004-03-01 14:47:03 marion Exp $
+ * $Id: CVSHistoryTest.java,v 1.3 2004-03-01 21:26:15 marion Exp $
  * Copyright (C) 2004 Klaus Rennecke, all rights reserved.
  * 
  * Permission is hereby granted, free of charge, to any person
@@ -39,7 +39,7 @@ import junit.framework.TestCase;
  * Test case for CVSHistory.
  * 
  * @author  Klaus Rennecke
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class CVSHistoryTest extends TestCase {
 
@@ -72,7 +72,7 @@ public class CVSHistoryTest extends TestCase {
         } catch (CruiseControlException e) {
             assertEquals(
                 "error message",
-                "The 'historyfilename' attribute is required on cvshistory",
+                Messages.getString("CVSHistory.history_required"),
                 e.getMessage());
         }
     }
@@ -179,13 +179,21 @@ public class CVSHistoryTest extends TestCase {
         assertEquals("modification type", "deleted", modification.type);
         assertEquals("timestamp", expect, modification.modifiedTime);
     }
+    
+    public void testHistoryUrl() throws ParseException {
+        cvsHistory = new CVSHistory();
+        String url = CVSHistoryTest.class.getResource("testfile.txt").toString();
+        cvsHistory.setHistoryUrl(url);
+        testBroadRange();
+        testMultipleModules();
+    }
 
     /**
      * @see junit.framework.TestCase#setUp()
      */
     protected void setUp() throws Exception {
         cvsHistory = new CVSHistory();
-        String filename = getClass().getResource("testfile.txt").toString();
+        String filename = CVSHistoryTest.class.getResource("testfile.txt").toString();
         if (filename.startsWith("file:/")) {
             filename = filename.substring("file:/".length());
         }

@@ -1,0 +1,6 @@
+2004-03-01
+* Allow to fetch the history from a URL
+* Internationalize messages
+* Add ANT bootstrapper
+* Allow multiple modules
+* Allow module selection

@@ -1,5 +1,5 @@
 /*
- * $Id: CVSHistory.java,v 1.3 2004-03-01 14:47:03 marion Exp $
+ * $Id: CVSHistory.java,v 1.4 2004-03-01 21:26:15 marion Exp $
  * Copyright (C) 2004 Klaus Rennecke, all rights reserved.
  * 
  * Permission is hereby granted, free of charge, to any person
@@ -29,6 +29,11 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
@@ -46,7 +51,7 @@ import org.apache.log4j.Logger;
  * Perform modification check based on a plain history file.
  * 
  * @author  Klaus Rennecke
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class CVSHistory implements SourceControl {
     /** The properties set for ANT. */
@@ -60,6 +65,9 @@ public class CVSHistory implements SourceControl {
 
     /** The file name of the history file to read. */
     private String historyFileName;
+
+    /** The URL where to fetch the history. */
+    private String historyUrl;
 
     /** The module name to check for. */
     private List modules = new ArrayList();
@@ -90,7 +98,22 @@ public class CVSHistory implements SourceControl {
     public List getModifications(Date lastBuild, Date now) {
         List result = new ArrayList();
         try {
-            FileReader fin = new FileReader(historyFileName);
+            Reader fin;
+            if (historyFileName != null) {
+                fin = new FileReader(historyFileName);
+            } else {
+                URLConnection connection = new URL(historyUrl).openConnection();
+                String encoding = connection.getContentEncoding();
+                String charset;
+                if (encoding == null) {
+                    fin = new InputStreamReader(connection.getInputStream());
+                } else {
+                    fin =
+                        new InputStreamReader(
+                            connection.getInputStream(),
+                            encoding);
+                }
+            }
             try {
                 BufferedReader in = new BufferedReader(fin);
                 String line;
@@ -99,16 +122,17 @@ public class CVSHistory implements SourceControl {
                 }
 
                 if (onModifiedName != null && result.size() > 0) {
-                    properties.put(onModifiedName, "true");
+                    properties.put(onModifiedName, "true"); //$NON-NLS-1$
                 }
                 if (onDeletedName != null && deletionSeen) {
-                    properties.put(onDeletedName, "true");
+                    properties.put(onDeletedName, "true"); //$NON-NLS-1$
                 }
             } finally {
                 fin.close();
             }
         } catch (IOException e) {
-            log.error("Failed to read history file", e);
+            log.error(Messages.getString(
+                "CVSHistory.Failed_to_read_history_file"), e); //$NON-NLS-1$
         }
         return result;
     }
@@ -128,13 +152,13 @@ public class CVSHistory implements SourceControl {
             String type;
             switch (line.charAt(0)) {
                 case 'A' :
-                    type = "added";
+                    type = "added"; //$NON-NLS-1$
                     break;
                 case 'M' :
-                    type = "modified";
+                    type = "modified"; //$NON-NLS-1$
                     break;
                 case 'R' :
-                    type = "deleted";
+                    type = "deleted"; //$NON-NLS-1$
                     break;
                 default :
                     // other entries ignored
@@ -151,10 +175,8 @@ public class CVSHistory implements SourceControl {
             }
 
             try {
-                StringTokenizer tok =
-                    new StringTokenizer(
-                        line.substring(TIMESTAMP_END + 1),
-                        "|",
+                    StringTokenizer tok = new StringTokenizer(
+                        line.substring(TIMESTAMP_END + 1), "|", //$NON-NLS-1$
                         true);
                 String userName = tok.nextToken();
                 tok.nextToken(); // delimiter
@@ -176,16 +198,18 @@ public class CVSHistory implements SourceControl {
                 tok.nextToken(); // delimiter
                 modification.fileName = tok.nextToken();
 
-                if (type.equals("deleted")) {
+                if (type.equals("deleted")) { //$NON-NLS-1$
                     deletionSeen = true;
                 }
                 result.add(modification);
             } catch (NoSuchElementException e) {
-                log.warn("Invalid history format: \"" + line + "\"");
+                log.warn(Messages.getString(
+                    "CVSHistory.Invalid_history_format") //$NON-NLS-1$
+                    + line + "\""); //$NON-NLS-1$
             }
         }
     }
-    
+
     /**
      * Check of the given folder name is in the set of modules configured.
      * @param folderName the folder name to check.
@@ -196,7 +220,7 @@ public class CVSHistory implements SourceControl {
         if (scan == 0) {
             return true; // no modules set
         }
-        
+
         while (--scan >= 0) {
             String moduleName = ((Module)modules.get(scan)).getName();
             if (!folderName.startsWith(moduleName)) {
@@ -209,7 +233,7 @@ public class CVSHistory implements SourceControl {
                 return true;
             }
         }
-        
+
         return false; // not found
     }
 
@@ -218,11 +242,25 @@ public class CVSHistory implements SourceControl {
      */
     public void validate() throws CruiseControlException {
         if (historyFileName == null) {
-            throw new CruiseControlException(
-                "The 'historyfilename' attribute is required on cvshistory");
+            if (historyUrl == null) {
+                throw new CruiseControlException(Messages.getString(
+                    "CVSHistory.history_required")); //$NON-NLS-1$
+            } else {
+                try {
+                    new URL(historyUrl).toExternalForm();
+                } catch (MalformedURLException e) {
+                    throw new CruiseControlException(Messages.getString(
+                        "CVSHistory.Malformed_historyurl"), e); //$NON-NLS-1$
+                }
+            }
+        } else if (historyUrl != null) {
+            throw new CruiseControlException(Messages.getString(
+                "CVSHistory.Either_historyfilename_or_historyurl")); //$NON-NLS-1$
         } else if (!new File(historyFileName).isFile()) {
-            throw new CruiseControlException(
-                "History file \"" + historyFileName + "\" does not exist!");
+            // changed to warning to allow bootstrapping the history
+            log.warn(Messages.getString("CVSHistory.History_file") //$NON-NLS-1$
+                + historyFileName
+                + Messages.getString("CVSHistory.does_not_exist")); //$NON-NLS-1$
         }
     }
 
@@ -264,12 +302,26 @@ public class CVSHistory implements SourceControl {
     }
 
     /**
+     * @return the history url
+     */
+    public String getHistoryUrl() {
+        return historyUrl;
+    }
+
+    /**
+     * @param string the new history url
+     */
+    public void setHistoryUrl(String string) {
+        historyUrl = string;
+    }
+
+    /**
      * @param string the new module name
      */
     public void setModule(String string) {
         createModule().setName(string);
     }
-    
+
     /**
      * Create a new sub-element for a module.
      * @return the new module sub-element.
@@ -284,13 +336,13 @@ public class CVSHistory implements SourceControl {
      * Bean implementation for the module sub-element.
      * @since 01.03.2004
      * @author Klaus Rennecke
-     * @version $Revision: 1.3 $
+     * @version $Revision: 1.4 $
      */
     public static class Module {
-        
+
         /** The module name. */
         private String name;
-        
+
         /**
          * @return the name
          */
