@@ -29,6 +29,7 @@
 package net.sourceforge.fraglets.zieh;
 
 import java.awt.AWTEvent;
+import java.awt.EventQueue;
 import java.awt.FontMetrics;
 import java.awt.Window;
 import java.awt.event.MouseEvent;
@@ -65,7 +66,7 @@ import thinlet.Thinlet;
  * </ul> 
  * 
  * @author Klaus Rennecke
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class Main extends Thinlet implements Comparator {
     
@@ -86,7 +87,7 @@ public class Main extends Thinlet implements Comparator {
     private String sftpListingPath;
     private ArrayList sftpListing;
     
-    private Thread shuffler;
+    private Runnable updater;
     private FontMetrics metrics;
     
     private String queue[];
@@ -101,6 +102,7 @@ public class Main extends Thinlet implements Comparator {
     private boolean remoteChanges;
     private boolean localChanges;
     private String multiListing;
+    private StringBuffer chatOutput = new StringBuffer();
     
     private int mouseX;
     private int mouseY;
@@ -114,6 +116,12 @@ public class Main extends Thinlet implements Comparator {
             ex.printStackTrace();
         }
         parseArgs(args);
+        
+        updater = new Runnable() {
+            public void run() {
+                updateChat();
+            }
+        };
     }
     
     protected void parseArgs(String args[]) {
@@ -175,23 +183,26 @@ public class Main extends Thinlet implements Comparator {
     
     protected void findBackend() {
         File[] roots = File.listRoots();
+        String guess[] = new String[] {
+            "Program Files\\PuTTY", "Programme\\PuTTY", "PuTTY"
+        };
+        
+        // guessing
         for (int i = 0; i < roots.length; i++) {
-            try {
-                // shortcut
-                if (Thread.currentThread().isInterrupted()) return;
-                if (sftpCommand != null) return;
-                findBackend(new File(roots[i], "Program Files\\PuTTY"));
-            } catch (Exception ex) {
-                // ignore
+            for (int j = 0; j < guess.length; j++) {
+                try {
+                    // shortcut
+                    if (Thread.currentThread().isInterrupted()) return;
+                    if (sftpCommand != null) return;
+                    findBackend(new File(roots[i], guess[j]));
+                } catch (Exception ex) {
+                    // ignore
+                }
             }
-            try {
-                // shortcut
-                if (Thread.currentThread().isInterrupted()) return;
-                if (sftpCommand != null) return;
-                findBackend(new File(roots[i], "Programme\\PuTTY"));
-            } catch (Exception ex) {
-                // ignore
-            }
+        }
+        
+        // brute force
+        for (int i = 0; i < roots.length; i++) {
             try {
                 if (Thread.currentThread().isInterrupted()) return;
                 if (sftpCommand != null) return;
@@ -241,7 +252,7 @@ public class Main extends Thinlet implements Comparator {
 
     public void actionAbout() {
         add("about.xml");
-        setString(find("revisionLabel"), "text", "$Revision: 1.6 $");
+        setString(find("revisionLabel"), "text", "$Revision: 1.7 $");
     }
     
     public void actionHelp() {
@@ -935,11 +946,30 @@ public class Main extends Thinlet implements Comparator {
     }
     
     protected void appendChat(String line, boolean newline) {
-        Object chat = find("sessionChat");
-        StringBuffer buffer = new StringBuffer(getString(chat, "text"));
-        buffer.append(line);
-        if (newline && buffer.charAt(buffer.length() - 1) != '\n') {
-            buffer.append('\n');
+        if (line != null && line.length() > 0) {
+            synchronized(chatOutput) {
+                chatOutput.append(line);
+                if (newline && line.charAt(line.length() - 1) != '\n') {
+                    chatOutput.append('\n');
+                }
+            }
+        }
+        if (isShowing()) {
+            EventQueue.invokeLater(updater);
+        }
+    }
+    
+    protected void updateChat() {
+        StringBuffer buffer;
+        Object chat;
+        synchronized (chatOutput) {
+            if (chatOutput.length() == 0) {
+                return;
+            }
+            chat = find("sessionChat");
+            buffer = new StringBuffer(getString(chat, "text"));
+            buffer.append(chatOutput);
+            chatOutput.setLength(0);
         }
         if (buffer.length() > scrollbackSize) {
             int end = buffer.length();
@@ -1287,6 +1317,16 @@ public class Main extends Thinlet implements Comparator {
      */
     public int compare(File f1, File f2) {
         return f1.getName().toLowerCase().compareTo(f2.getName().toLowerCase());
+    }
+
+    /**
+     * @see java.awt.Component#addNotify()
+     */
+    public void addNotify() {
+        super.addNotify();
+        if (chatOutput.length() > 0) {
+            EventQueue.invokeLater(updater);
+        }
     }
 
 }
