@@ -18,7 +18,7 @@ import java.util.ResourceBundle;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class ConnectionFactory {
     
@@ -35,6 +35,10 @@ public class ConnectionFactory {
     
     protected ConnectionFactory() throws ClassNotFoundException {
         Class.forName("com.mysql.jdbc.Driver");
+    }
+    
+    public ConnectionFactory(String connectionUrl) {
+        this.connectionUrl = connectionUrl;
     }
     
     public static ConnectionFactory getInstance() throws SQLException {
@@ -106,10 +110,6 @@ public class ConnectionFactory {
                     ("unexpected number of rows updated: "+rows+", expected: "+count);
             }
         }
-    }
-    
-    public static Connection createConnection() throws SQLException {
-        return getInstance().getConnection();
     }
     
     /**

@@ -47,7 +47,7 @@ import net.sourceforge.fraglets.zeig.model.VersionFactory;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class DOMContext implements Context {
     /** Context option. */
@@ -61,6 +61,7 @@ public class DOMContext implements Context {
     
     public static final String BINDING_TAGNAME = "binding";
     
+    protected SharedContext sharedContext;
     private Properties environment;
     private NameParser nameParser;
     private DOMContext parent;
@@ -74,7 +75,7 @@ public class DOMContext implements Context {
         this.nameParser = new SimpleNameParser(environment);
         this.ve = getRoot();
         try {
-            this.binding = new DocumentImpl(VersionFactory.getInstance().getValue(ve));
+            this.binding = new DocumentImpl(sharedContext.getVersionFactory().getValue(ve), sharedContext.getNodeFactory());
         } catch (SQLException ex) {
             throw namingException("root not found", ex);
         }
@@ -83,6 +84,7 @@ public class DOMContext implements Context {
     
     protected DOMContext(DOMContext blueprint) {
         this.environment = new Properties(blueprint.environment);
+        this.sharedContext = blueprint.sharedContext;
         this.nameParser = blueprint.nameParser;
         this.binding = blueprint.binding;
         this.parent = blueprint.parent;
@@ -92,6 +94,7 @@ public class DOMContext implements Context {
     
     protected DOMContext(DOMContext parent, String atom, Document binding, int ve) {
         this.environment = new Properties(parent.environment);
+        this.sharedContext = parent.sharedContext;
         this.nameParser = parent.nameParser;
         this.binding = binding;
         this.parent = parent;
@@ -102,6 +105,7 @@ public class DOMContext implements Context {
     protected void init(Hashtable defaults) {
         environment = new Properties();
         environment.putAll(defaults);
+        sharedContext = new SharedContext(environment);
     }
     
     /**
@@ -265,7 +269,7 @@ public class DOMContext implements Context {
     public NamingEnumeration list(Name name) throws NamingException {
         if (name.isEmpty()) {
             // listing this context
-            return new DOMNames(binding.getDocumentElement());
+            return new DOMNames(binding.getDocumentElement(), this);
         } 
 
         // Perhaps 'name' names a context
@@ -345,7 +349,11 @@ public class DOMContext implements Context {
         Element in = lookupElement(atom);
 
         if (nm.size() == 1) {
-            rebind(new DocumentImpl(getEmpty()), in, atom);
+            try {
+                rebind(new DocumentImpl(getEmpty(), sharedContext.getNodeFactory()), in, atom);
+            } catch (SQLException ex) {
+                namingException("create subcontext "+atom, ex);
+            }
             return getSubContext(atom);
         } else {
             return getSubContext(atom).createSubcontext(nm.getSuffix(1));
@@ -454,7 +462,7 @@ public class DOMContext implements Context {
         if (obj != old) {
             try {
                 binding.getDocumentElement().replaceChild((Node)obj, old);
-                VersionFactory.getInstance()
+                sharedContext.getVersionFactory()
                     .addVersion(ve, ((DocumentImpl)binding).getId(), 0);
             } catch (SQLException ex) {
                 throw namingException(ex);
@@ -496,12 +504,14 @@ public class DOMContext implements Context {
         try {
             try {
                 // lookup root
-                return VersionFactory.getInstance().getVersions(getEmpty())[0];
+                return sharedContext.getVersionFactory()
+                    .getVersions(getEmpty())[0];
             } catch (ArrayIndexOutOfBoundsException ex) {
                 int root = getEmpty();
-                int comment = PlainTextFactory.getInstance()
+                int comment = sharedContext.getPlainTextFactory()
                     .getPlainText("naming root");
-                return VersionFactory.getInstance().createVersion(root, comment);
+                return sharedContext.getVersionFactory()
+                    .createVersion(root, comment);
             }
         } catch (NamingException ex) {
             throw ex;
@@ -512,33 +522,26 @@ public class DOMContext implements Context {
     
     private static int emptyId;
     
-    public static int getEmpty() throws NamingException {
+    protected int getEmpty() throws NamingException {
         if (emptyId != 0) {
             return emptyId;
         }
         
         try  {
-            SAXFactory sf = new SAXFactory(ConnectionFactory.getInstance());
+            SAXFactory sf = new SAXFactory(sharedContext.getNodeFactory());
             return emptyId = sf.parse("<ctx:"+CONTEXT_TAGNAME+" xmlns:ctx=\""+CONTEXT_NAMESPACE+"\"/>");
         } catch (Exception ex) {
             throw namingException(ex);
         }
     }
     
-    public static int getLatest(int ve) throws NamingException {
-        try {
-            return VersionFactory.getInstance().getValue(ve);
-        } catch (SQLException ex) {
-            throw namingException(ex);
-        }
-    }
-    
     private static int veTag;
     
-    public static int getVe(Element el) throws NamingException {
+    public int getVe(Element el) throws NamingException {
         if (veTag == 0) {
             try {
-                veTag = NodeFactory.getInstance().getName(CONTEXT_NAMESPACE, "ve");
+                veTag = sharedContext.getNodeFactory()
+                    .getName(CONTEXT_NAMESPACE, "ve");
             } catch (SQLException ex) {
                 throw namingException(ex);
             }
@@ -551,10 +554,10 @@ public class DOMContext implements Context {
     
     private static int idTag;
     
-    public static int getId() throws NamingException {
+    public int getId() throws NamingException {
         if (idTag == 0) {
             try {
-                idTag = NodeFactory.getInstance().getName("", "id");
+                idTag = sharedContext.getNodeFactory().getName("", "id");
             } catch (SQLException ex) {
                 throw namingException(ex);
             }
@@ -579,10 +582,10 @@ public class DOMContext implements Context {
         private int index;
         private NodeList nl;
         
-        public DOMNames(Node node) throws NamingException {
+        public DOMNames(Node node, DOMContext ctx) throws NamingException {
             this.nl = node.getChildNodes();
             this.index = 0;
-            this.idTag = getId();
+            this.idTag = ctx.getId();
         }
 
         /**
@@ -643,7 +646,7 @@ public class DOMContext implements Context {
          * @throws NamingException
          */
         public DOMBindings(Node node, DOMContext ctx) throws NamingException {
-            super(node);
+            super(node, ctx);
             this.ctx = ctx;
         }
         
@@ -707,6 +710,65 @@ public class DOMContext implements Context {
             Category.getInstance(SimpleNameParser.class)
                 .debug("parsing name '"+name+"'");
             return new CompoundName(name, syntax);
+        }
+    }
+    
+    public class SharedContext {
+        private ConnectionFactory connectionFactory;
+        private VersionFactory versionFactory;
+        private NodeFactory nodeFactory;
+        
+        public SharedContext(Properties environment) {
+            if (environment.containsKey(ConnectionFactory.RESOURCE_CONNECTION_URL)) {
+                connectionFactory = new ConnectionFactory(environment
+                    .getProperty(ConnectionFactory.RESOURCE_CONNECTION_URL));
+            }
+        }
+        
+        /**
+         * @return
+         */
+        public ConnectionFactory getConnectionFactory() throws SQLException {
+            if (connectionFactory == null) {
+                synchronized(this) {
+                    if (connectionFactory == null) {
+                        connectionFactory = ConnectionFactory.getInstance();
+                    }
+                }
+            }
+            return connectionFactory;
+        }
+        
+        /**
+         * @return
+         */
+        public NodeFactory getNodeFactory() throws SQLException {
+            if (nodeFactory == null) {
+                synchronized(this) {
+                    if (nodeFactory == null) {
+                        nodeFactory = new NodeFactory(getConnectionFactory());
+                    }
+                }
+            }
+            return nodeFactory;
+        }
+
+        /**
+         * @return
+         */
+        public VersionFactory getVersionFactory() throws SQLException {
+            if (versionFactory == null) {
+                synchronized(this) {
+                    if (versionFactory == null) {
+                        versionFactory = new VersionFactory(getConnectionFactory());
+                    }
+                }
+            }
+            return versionFactory;
+        }
+
+        public PlainTextFactory getPlainTextFactory() throws SQLException {
+            return getNodeFactory().getPlainTextFactory();
         }
     }
 }

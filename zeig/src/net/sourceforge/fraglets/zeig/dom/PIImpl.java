@@ -8,8 +8,6 @@ package net.sourceforge.fraglets.zeig.dom;
 
 import java.sql.SQLException;
 
-import net.sourceforge.fraglets.zeig.model.PlainTextFactory;
-
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Node;
 import org.w3c.dom.ProcessingInstruction;
@@ -33,7 +31,7 @@ public class PIImpl extends NodeImpl implements ProcessingInstruction {
      */
     public String getData() {
         try {
-            return PlainTextFactory.getInstance().getPlainText(getV());
+            return getNodeFactory().getPlainTextFactory().getPlainText(getV());
         } catch (SQLException ex) {
             throw domException(ex);
         }
@@ -44,7 +42,7 @@ public class PIImpl extends NodeImpl implements ProcessingInstruction {
      */
     public String getTarget() {
         try {
-            return PlainTextFactory.getInstance().getPlainText(getId());
+            return getNodeFactory().getPlainTextFactory().getPlainText(getId());
         } catch (SQLException ex) {
             throw domException(ex);
         }

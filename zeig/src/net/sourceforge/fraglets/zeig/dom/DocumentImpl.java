@@ -12,8 +12,6 @@ import java.sql.SQLException;
 
 import net.sourceforge.fraglets.zeig.model.NodeBuffer;
 import net.sourceforge.fraglets.zeig.model.NodeFactory;
-import net.sourceforge.fraglets.zeig.model.PlainTextFactory;
-import net.sourceforge.fraglets.zeig.model.VersionFactory;
 
 import org.apache.xml.serialize.OutputFormat;
 import org.apache.xml.serialize.XMLSerializer;
@@ -34,22 +32,18 @@ import org.w3c.dom.Text;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class DocumentImpl extends NodeImpl implements Document {
-    public static final int ROOT;
+    protected NodeFactory nf;
     
-    static {
-        try {
-            ROOT = NodeFactory.getInstance().getRoot();
-        } catch (SQLException ex) {
-            // TODO: fixme
-            throw new RuntimeException(ex.toString());
-        }
+    public DocumentImpl(int id, int v, NodeFactory nf) {
+        super(null, id, v);
+        this.nf = nf;
     }
-    
-    public DocumentImpl(int id) {
-        super(null, id, ROOT);
+
+    public DocumentImpl(int id, NodeFactory nf) throws SQLException {
+        this(id, nf.getRoot(), nf);
     }
 
     /**
@@ -91,7 +85,6 @@ public class DocumentImpl extends NodeImpl implements Document {
      */
     public Element createElement(String tagName) throws DOMException {
         try {
-            NodeFactory nf = NodeFactory.getInstance();
             int nm = nf.getName(tagName);
             int id = nf.getNode(nm, NodeBuffer.MT);
             return new ElementImpl(null, id, nm);
@@ -105,7 +98,6 @@ public class DocumentImpl extends NodeImpl implements Document {
      */
     public Element createElementNS(String namespaceURI, String qualifiedName) throws DOMException {
         try {
-            NodeFactory nf = NodeFactory.getInstance();
             int nm = nf.getName(namespaceURI, qualifiedName);
             int id = nf.getNode(nm, NodeBuffer.MT);
             return new ElementImpl(null, id, nm);
@@ -154,8 +146,8 @@ public class DocumentImpl extends NodeImpl implements Document {
      */
     public Element getElementById(String elementId) {
         try {
-            int nm = NodeFactory.getInstance().getName("", "id");
-            int v = PlainTextFactory.getInstance().getPlainText(elementId);
+            int nm = nf.getName("", "id");
+            int v = nf.getPlainTextFactory().getPlainText(elementId);
             return getElementById(this, nm, v);
         } catch (SQLException ex) {
             throw domException(ex);
@@ -215,21 +207,6 @@ public class DocumentImpl extends NodeImpl implements Document {
         return DOCUMENT_NODE;
     }
     
-    public static void main(String args[]) {
-        try {
-            OutputFormat of = new OutputFormat();
-            of.setIndent(1);
-            XMLSerializer handler = new XMLSerializer(System.out, of);
-            for (int i = 0; i < args.length; i++) {
-                int id = Integer.parseInt(args[i]);
-                id = VersionFactory.getInstance().getValue(id);
-                handler.serialize(new DocumentImpl(id));
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
-    
     public String toString() {
         try {
             OutputFormat of = new OutputFormat();
@@ -247,7 +224,10 @@ public class DocumentImpl extends NodeImpl implements Document {
      * @see org.w3c.dom.Node#cloneNode(boolean)
      */
     public Node cloneNode(boolean deep) {
-        return new DocumentImpl(getId());
+        return new DocumentImpl(getId(), getV(), nf);
     }
 
+    protected NodeFactory getNodeFactory() {
+        return nf;
+    }
 }

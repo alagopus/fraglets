@@ -9,8 +9,6 @@ package net.sourceforge.fraglets.zeig.dom;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import net.sourceforge.fraglets.zeig.model.NodeFactory;
-
 import org.w3c.dom.Attr;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Element;
@@ -19,7 +17,7 @@ import org.w3c.dom.NodeList;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class ElementImpl extends NodeImpl implements Element {
     
@@ -60,7 +58,7 @@ public class ElementImpl extends NodeImpl implements Element {
      */
     public NodeList getElementsByTagName(String name) {
         try {
-            int nm = NodeFactory.getInstance().getName(name);
+            int nm = getNodeFactory().getName(name);
             return new Traversal(this, nm);
         } catch (SQLException ex) {
             throw domException(ex);
@@ -74,7 +72,7 @@ public class ElementImpl extends NodeImpl implements Element {
         String namespaceURI,
         String localName) {
         try {
-            int nm = NodeFactory.getInstance().getName(namespaceURI, localName);
+            int nm = getNodeFactory().getName(namespaceURI, localName);
             return new Traversal(this, nm);
         } catch (SQLException ex) {
             throw domException(ex);

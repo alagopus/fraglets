@@ -8,15 +8,13 @@ package net.sourceforge.fraglets.zeig.dom;
 
 import java.sql.SQLException;
 
-import net.sourceforge.fraglets.zeig.model.PlainTextFactory;
-
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Node;
 import org.w3c.dom.Text;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class TextImpl extends NodeImpl implements Text {
 
@@ -55,7 +53,7 @@ public class TextImpl extends NodeImpl implements Text {
      */
     public String getData() throws DOMException {
         try {
-            return PlainTextFactory.getInstance().getPlainText(getV());
+            return getNodeFactory().getPlainTextFactory().getPlainText(getV());
         } catch (SQLException ex) {
             throw domException(ex);
         }

@@ -6,6 +6,7 @@
  */
 package net.sourceforge.fraglets.zeig.jndi;
 
+import java.sql.SQLException;
 import java.util.Hashtable;
 
 import javax.naming.Context;
@@ -20,7 +21,7 @@ import net.sourceforge.fraglets.zeig.dom.DocumentImpl;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class DOMObjectFactory implements ObjectFactory {
 
@@ -30,21 +31,30 @@ public class DOMObjectFactory implements ObjectFactory {
     public Object getObjectInstance(Object obj, Name name,
         Context ctx, Hashtable environment) throws NamingException {
         if (ctx instanceof DOMContext) {
-            int ve = DOMContext.getVe((Element)obj);
-            int id = DOMContext.getLatest(ve);
-            Document doc = new DocumentImpl(id);
-            if (isDOMContext(doc)) {
-                return new DOMContext((DOMContext)ctx, name.get(0), doc, ve);
-            } else {
-                return doc;
+            try {
+                DOMContext dctx = (DOMContext)ctx;
+                int ve = dctx.getVe((Element)obj);
+                int id = getLatest(ve, dctx);
+                Document doc = new DocumentImpl(id, dctx.sharedContext.getNodeFactory());
+                if (isDOMContext(doc)) {
+                    return new DOMContext(dctx, name.get(0), doc, ve);
+                } else {
+                    return doc;
+                }
+            } catch (SQLException ex) {
+                throw DOMContext.namingException(ex);
             }
         } else {
             return null;
         }
     }
     
-    public static boolean isDOMContext(int id) {
-        return isDOMContext(new DocumentImpl(id));
+    public static boolean isDOMContext(int id, DOMContext ctx) {
+        try {
+            return isDOMContext(new DocumentImpl(id, ctx.sharedContext.getNodeFactory()));
+        } catch (SQLException e) {
+            return false;
+        }
     }
 
     public static boolean isDOMContext(Document d) {
@@ -60,4 +70,13 @@ public class DOMObjectFactory implements ObjectFactory {
             return false;
         }
     }
+    
+    public static int getLatest(int ve, DOMContext ctx) throws NamingException {
+        try {
+            return ctx.sharedContext.getVersionFactory().getValue(ve);
+        } catch (SQLException ex) {
+            throw DOMContext.namingException(ex);
+        }
+    }
+    
 }

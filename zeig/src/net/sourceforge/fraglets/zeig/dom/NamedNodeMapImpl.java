@@ -11,7 +11,6 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 import net.sourceforge.fraglets.zeig.model.NodeFactory;
-import net.sourceforge.fraglets.zeig.model.XMLTextFactory;
 
 import org.w3c.dom.DOMException;
 import org.w3c.dom.NamedNodeMap;
@@ -20,10 +19,11 @@ import org.w3c.dom.NodeList;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class NamedNodeMapImpl implements NamedNodeMap, NodeList {
-    NodeImpl nodes[];
+    private NodeFactory nf;
+    private NodeImpl nodes[];
     
     public NamedNodeMapImpl(NodeImpl node, boolean atts) throws DOMException {
         init(node, atts);
@@ -31,7 +31,7 @@ public class NamedNodeMapImpl implements NamedNodeMap, NodeList {
     
     public void init(NodeImpl node, boolean atts) throws DOMException {
         try {
-            NodeFactory nf = NodeFactory.getInstance();
+            nf = node.getNodeFactory();
             int nodeIds[] = nf.getNodes(node.getId());
             int length = 0;
             int start = 0;
@@ -67,10 +67,10 @@ public class NamedNodeMapImpl implements NamedNodeMap, NodeList {
                     this.nodes[i] = new TextImpl(node, id, v);
                 } else if (id == nodeTag) {
                     id = v;
-                    v = XMLTextFactory.getInstance().getName(v);
+                    v = node.getXMLTextFactory().getName(v);
                     this.nodes[i] = new ElementImpl(node, id, v);
                 } else if (id == piTag) {
-                    int pi[] = XMLTextFactory.getInstance().getNodes(v);
+                    int pi[] = node.getXMLTextFactory().getNodes(v);
                     this.nodes[i] = new PIImpl(node, pi[0], pi[1]);
                 } else {
                     this.nodes[i] = new AttrImpl(node, id, v);
@@ -122,7 +122,7 @@ public class NamedNodeMapImpl implements NamedNodeMap, NodeList {
      */
     public Node getNamedItem(String name) {
         try {
-            return getNamedItem(NodeFactory.getInstance().getName(name));
+            return getNamedItem(nf.getName(name));
         } catch (SQLException ex) {
             throw NodeImpl.domException(ex);
         }
@@ -133,7 +133,7 @@ public class NamedNodeMapImpl implements NamedNodeMap, NodeList {
      */
     public Node getNamedItemNS(String namespaceURI, String localName) {
         try {
-            return getNamedItem(NodeFactory.getInstance().getName(namespaceURI, localName));
+            return getNamedItem(nf.getName(namespaceURI, localName));
         } catch (SQLException ex) {
             throw NodeImpl.domException(ex);
         }

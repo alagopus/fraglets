@@ -24,7 +24,7 @@ import org.xml.sax.SAXException;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class NodeImpl implements Node {
     private int id;
@@ -66,7 +66,7 @@ public class NodeImpl implements Node {
     
     protected void validate() throws SAXException, SQLException {
         id = 0;
-        id = NodeFactory.getInstance().getId(this);
+        id = getNodeFactory().getId(this);
     }
     
     /**
@@ -74,7 +74,7 @@ public class NodeImpl implements Node {
      */
     public Node appendChild(Node newChild) throws DOMException {
         try {
-            NodeFactory nf = NodeFactory.getInstance();
+            NodeFactory nf = getNodeFactory();
             NodeBuffer buffer = new NodeBuffer(nf.getNodes(getId()));
             buffer.append(nf.getNode()).append(nf.getId(newChild));
             children = null;
@@ -143,7 +143,7 @@ public class NodeImpl implements Node {
     
     public int getNm() {
         try {
-            return XMLTextFactory.getInstance().getName(id);
+            return getXMLTextFactory().getName(id);
         } catch (SQLException ex) {
             throw domException(ex);
         }
@@ -151,7 +151,7 @@ public class NodeImpl implements Node {
     
     public int getLocalNm() {
         try {
-            return NameFactory.getInstance().getValue(getNm());
+            return getNameFactory().getValue(getNm());
         } catch (SQLException ex) {
             throw domException(ex);
         }
@@ -162,7 +162,7 @@ public class NodeImpl implements Node {
      */
     public String getLocalName() {
         try {
-            return PlainTextFactory.getInstance().getPlainText(getLocalNm());
+            return getPlainTextFactory().getPlainText(getLocalNm());
         } catch (SQLException ex) {
             throw domException(ex);
         }
@@ -170,7 +170,7 @@ public class NodeImpl implements Node {
     
     public int getNamespace() {
         try {
-            return NameFactory.getInstance().getNamespace(getNm());
+            return getNameFactory().getNamespace(getNm());
         } catch (SQLException ex) {
             throw domException(ex);
         }
@@ -178,7 +178,7 @@ public class NodeImpl implements Node {
     
     public int getNamespaceURIId() {
         try {
-            return NamespaceFactory.getInstance().getUri(getNamespace());
+            return getNamespaceFactory().getUri(getNamespace());
         } catch (SQLException ex) {
             throw domException(ex);
         }
@@ -189,7 +189,7 @@ public class NodeImpl implements Node {
      */
     public String getNamespaceURI() {
         try {
-            return PlainTextFactory.getInstance().getPlainText(getNamespaceURIId());
+            return getPlainTextFactory().getPlainText(getNamespaceURIId());
         } catch (SQLException ex) {
             throw domException(ex);
         }
@@ -232,7 +232,7 @@ public class NodeImpl implements Node {
      */
     public String getNodeValue() throws DOMException {
         try {
-            return PlainTextFactory.getInstance().getPlainText(v);
+            return getPlainTextFactory().getPlainText(v);
         } catch (SQLException ex) {
             throw domException(ex);
         }
@@ -243,7 +243,7 @@ public class NodeImpl implements Node {
      */
     public Document getOwnerDocument() {
         Node scan = this;
-        while (!(scan instanceof Document)) {
+        while (!(scan instanceof Document || scan == null)) {
             scan = (Node)scan.getParentNode();
         }
         return (Document)scan;
@@ -258,7 +258,7 @@ public class NodeImpl implements Node {
 
     public int getNamespacePrefixId() {
         try {
-            return NamespaceFactory.getInstance().getValue(getNamespace());
+            return getNamespaceFactory().getValue(getNamespace());
         } catch (SQLException ex) {
             throw domException(ex);
         }
@@ -269,7 +269,7 @@ public class NodeImpl implements Node {
      */
     public String getPrefix() {
         try {
-            return PlainTextFactory.getInstance().getPlainText(getNamespacePrefixId());
+            return getPlainTextFactory().getPlainText(getNamespacePrefixId());
         } catch (SQLException ex) {
             throw domException(ex);
         }
@@ -333,7 +333,7 @@ public class NodeImpl implements Node {
             NodeImpl newNode = (NodeImpl)newChild;
             NodeImpl oldNode = (NodeImpl)oldChild;
             
-            NodeFactory nf = NodeFactory.getInstance();
+            NodeFactory nf = getNodeFactory();
             NodeList newNodes = null;
             int nodes[] = nf.getNodes(getId());
             int length = nodes.length;
@@ -415,4 +415,23 @@ public class NodeImpl implements Node {
         return false;
     }
 
+    protected NodeFactory getNodeFactory() {
+        return ((DocumentImpl)getOwnerDocument()).getNodeFactory();
+    }
+    
+    protected NameFactory getNameFactory() {
+        return getNodeFactory().getNameFactory();
+    }
+    
+    protected NamespaceFactory getNamespaceFactory() {
+        return getNodeFactory().getNamespaceFactory();
+    }
+    
+    protected PlainTextFactory getPlainTextFactory() {
+        return getNodeFactory().getPlainTextFactory();
+    }
+    
+    public XMLTextFactory getXMLTextFactory() {
+        return getNodeFactory().getXMLTextFactory();
+    }
 }
