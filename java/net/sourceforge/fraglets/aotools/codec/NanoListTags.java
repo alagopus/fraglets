@@ -9,13 +9,19 @@ package net.sourceforge.fraglets.aotools.codec;
 /** XML tag constant definitions for XML encoding and decoding.
  *
  * @author kre
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public interface NanoListTags {
     /** Element name */
     public static final String BASE_NANO_CLUSTER = "base-nano-cluster";
     /** Element name */    
     public static final String BASE_NANO_LIST = "base-nano-list";
+    /** Element name */
+    public static final String PRESENT_NANO_CLUSTER = "present-nano-cluster";
+    /** Element name */    
+    public static final String PRESENT_NANO_LIST = "present-nano-list";
+    /** Element name */    
+    public static final String PRESENT_NANO_TYPE = "present-nano-type";
     /** Attribute name */
     public static final String BODY_LOC = "body-loc";
     /** Attribute name */    
