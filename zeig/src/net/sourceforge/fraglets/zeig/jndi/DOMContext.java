@@ -6,11 +6,12 @@
  */
 package net.sourceforge.fraglets.zeig.jndi;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.SQLException;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Properties;
 
@@ -42,12 +43,11 @@ import net.sourceforge.fraglets.zeig.jdbc.ConnectionFactory;
 import net.sourceforge.fraglets.zeig.model.NodeFactory;
 import net.sourceforge.fraglets.zeig.model.PlainTextFactory;
 import net.sourceforge.fraglets.zeig.model.SAXFactory;
-import net.sourceforge.fraglets.zeig.model.SAXSerializer;
 import net.sourceforge.fraglets.zeig.model.VersionFactory;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class DOMContext implements Context {
     /** Context option. */
@@ -75,7 +75,6 @@ public class DOMContext implements Context {
             throw namingException("root not found", ex);
         }
         this.atom = "";
-        report();
     }
     
     protected DOMContext(DOMContext blueprint) {
@@ -85,17 +84,15 @@ public class DOMContext implements Context {
         this.parent = blueprint.parent;
         this.atom = blueprint.atom;
         this.ve = blueprint.ve;
-        report();
     }
     
-    protected DOMContext(DOMContext parent, String name, Document binding, int ve) {
+    protected DOMContext(DOMContext parent, String atom, Document binding, int ve) {
         this.environment = new Properties(parent.environment);
         this.nameParser = parent.nameParser;
         this.binding = binding;
         this.parent = parent;
-        this.atom = name;
+        this.atom = atom;
         this.ve = ve;
-        report();
     }
     
     protected void init(Hashtable defaults) {
@@ -103,18 +100,6 @@ public class DOMContext implements Context {
         environment.putAll(defaults);
     }
     
-    protected void report() {
-        try {
-            int id = ((DocumentImpl)binding).getId();
-            Category.getInstance(DOMContext.class)
-                .debug("DOMContext '"+atom+"' binding["+ve+"="+id+"]: DB="
-                    +SAXSerializer.toString(id)+" DOM="+binding);
-        } catch (Exception ex) {
-            Category.getInstance(DOMContext.class)
-                .error("reporting", ex);
-        }
-    }
-
     /**
      * @see javax.naming.Context#lookup(javax.naming.Name)
      */
@@ -152,7 +137,7 @@ public class DOMContext implements Context {
      * @see javax.naming.Context#lookup(java.lang.String)
      */
     public Object lookup(String name) throws NamingException {
-        return lookup(new CompositeName(name));
+        return lookup(toName(name));
     }
 
     /**
@@ -174,7 +159,7 @@ public class DOMContext implements Context {
                 throw new NameAlreadyBoundException(name.toString());
             }
 
-            bind(obj, in, atom);
+            rebind(obj, in, atom);
         } else {
             if (in == null) {
                 throw new NamingException("no subcontext: "+atom);
@@ -187,7 +172,7 @@ public class DOMContext implements Context {
      * @see javax.naming.Context#bind(java.lang.String, java.lang.Object)
      */
     public void bind(String name, Object obj) throws NamingException {
-        bind(new CompositeName(name), obj);
+        bind(toName(name), obj);
     }
 
     /**
@@ -204,9 +189,9 @@ public class DOMContext implements Context {
         Element in = lookupElement(atom);
 
         if (nm.size() == 1) {
-            bind(obj, in, atom);
+            rebind(obj, in, atom);
         } else {
-            getSubContext(atom).bind(nm.getSuffix(1), obj);
+            getSubContext(atom).rebind(nm.getSuffix(1), obj);
         }
     }
 
@@ -214,7 +199,7 @@ public class DOMContext implements Context {
      * @see javax.naming.Context#rebind(java.lang.String, java.lang.Object)
      */
     public void rebind(String name, Object obj) throws NamingException {
-        rebind(new CompositeName(name), obj);
+        rebind(toName(name), obj);
     }
 
     /**
@@ -245,7 +230,7 @@ public class DOMContext implements Context {
      * @see javax.naming.Context#unbind(java.lang.String)
      */
     public void unbind(String name) throws NamingException {
-        unbind(new CompositeName(name));
+        unbind(toName(name));
     }
 
     /**
@@ -267,7 +252,7 @@ public class DOMContext implements Context {
      * @see javax.naming.Context#rename(java.lang.String, java.lang.String)
      */
     public void rename(String oldName, String newName) throws NamingException {
-        rename(new CompositeName(oldName), new CompositeName(newName));
+        rename(toName(oldName), toName(newName));
     }
 
     /**
@@ -296,7 +281,7 @@ public class DOMContext implements Context {
      * @see javax.naming.Context#list(java.lang.String)
      */
     public NamingEnumeration list(String name) throws NamingException {
-        return list(new CompositeName(name));
+        return list(toName(name));
     }
 
     /**
@@ -325,7 +310,7 @@ public class DOMContext implements Context {
      * @see javax.naming.Context#listBindings(java.lang.String)
      */
     public NamingEnumeration listBindings(String name) throws NamingException {
-        return listBindings(new CompositeName(name));
+        return listBindings(toName(name));
     }
 
     /**
@@ -339,7 +324,7 @@ public class DOMContext implements Context {
      * @see javax.naming.Context#destroySubcontext(java.lang.String)
      */
     public void destroySubcontext(String name) throws NamingException {
-        destroySubcontext(new CompositeName(name));
+        destroySubcontext(toName(name));
     }
 
     /**
@@ -356,7 +341,7 @@ public class DOMContext implements Context {
         Element in = lookupElement(atom);
 
         if (nm.size() == 1) {
-            bind(new DocumentImpl(getEmpty()), in, atom);
+            rebind(new DocumentImpl(getEmpty()), in, atom);
             return getSubContext(atom);
         } else {
             return getSubContext(atom).createSubcontext(nm.getSuffix(1));
@@ -367,7 +352,7 @@ public class DOMContext implements Context {
      * @see javax.naming.Context#createSubcontext(java.lang.String)
      */
     public Context createSubcontext(String name) throws NamingException {
-        return createSubcontext(new CompositeName(name));
+        return createSubcontext(toName(name));
     }
 
     /**
@@ -381,7 +366,7 @@ public class DOMContext implements Context {
      * @see javax.naming.Context#lookupLink(java.lang.String)
      */
     public Object lookupLink(String name) throws NamingException {
-        return lookupLink(new CompositeName(name));
+        return lookupLink(toName(name));
     }
 
     /**
@@ -395,7 +380,7 @@ public class DOMContext implements Context {
      * @see javax.naming.Context#getNameParser(java.lang.String)
      */
     public NameParser getNameParser(String name) throws NamingException {
-        return getNameParser(new CompositeName(name));
+        return getNameParser(toName(name));
     }
 
     /**
@@ -409,25 +394,21 @@ public class DOMContext implements Context {
     /**
      * @see javax.naming.Context#composeName(java.lang.String, java.lang.String)
      */
-    public String composeName(String name, String prefix)
-        throws NamingException {
-            return composeName(new CompositeName(name),
-                new CompositeName(prefix)).toString();
+    public String composeName(String name, String prefix) throws NamingException {
+            return composeName(toName(name), toName(prefix)).toString();
     }
 
     /**
      * @see javax.naming.Context#addToEnvironment(java.lang.String, java.lang.Object)
      */
-    public Object addToEnvironment(String propName, Object propVal)
-        throws NamingException {
+    public Object addToEnvironment(String propName, Object propVal) throws NamingException {
         return environment.put(propName, propVal);
     }
 
     /**
      * @see javax.naming.Context#removeFromEnvironment(java.lang.String)
      */
-    public Object removeFromEnvironment(String propName)
-        throws NamingException {
+    public Object removeFromEnvironment(String propName) throws NamingException {
         return environment.remove(propName);
     }
 
@@ -462,7 +443,7 @@ public class DOMContext implements Context {
         return name.toString();
     }
     
-    protected void bind(Object obj, Element old, String atom) throws NamingException {
+    protected void rebind(Object obj, Element old, String atom) throws NamingException {
         // Call getStateToBind for using any state factories
         obj = NamingManager.getStateToBind(obj,
             new CompositeName().add(atom), this, environment);
@@ -471,7 +452,6 @@ public class DOMContext implements Context {
                 binding.getDocumentElement().appendChild((Node)obj);
                 VersionFactory.getInstance()
                     .addVersion(ve, ((DocumentImpl)binding).getId(), 0);
-                report();
             } catch (SQLException ex) {
                 throw namingException(ex);
             }
@@ -492,17 +472,16 @@ public class DOMContext implements Context {
 
     protected Name getComponents(Name name) throws NamingException {
         if (name instanceof CompositeName) {
-            if (name.size() > 1) {
-                throw new InvalidNameException(name.toString() +
-                    " has more components than namespace can handle");
-            }
-
-            // Turn component that belongs to you into a compound name
-            return nameParser.parse(name.get(0));
+            // All components are eligible, we're terminal for the moment
+            return nameParser.parse(name.toString());
         } else {
             // Already parsed
             return name;
         }
+    }
+    
+    protected Name toName(String name) throws InvalidNameException {
+        return new CompositeName(name);
     }
     
     protected Document getBinding() {
@@ -687,21 +666,40 @@ public class DOMContext implements Context {
         }
         
         protected void init(Properties defaults) {
+            Category.getInstance(SimpleNameParser.class)
+                .debug("loading syntax");
+            InputStream in = SimpleNameParser.class
+                .getResourceAsStream("jndiprovider.properties");
+            try {
+                defaults = new Properties(defaults);
+                defaults.load(in);
+            } catch (IOException ex) {
+                Category.getInstance(SimpleNameParser.class)
+                    .error("loading syntax", ex);
+            } finally {
+                try { in.close(); } catch (IOException ex) {}
+            }
             syntax = new Properties();
-            for (Iterator i = defaults.entrySet().iterator(); i.hasNext();) {
-                Map.Entry element = (Map.Entry)i.next();
-                String key = element.getKey().toString();
+            for (Enumeration e = defaults.propertyNames(); e.hasMoreElements();) {
+                String key = e.nextElement().toString();
                 if (key.startsWith(SYNTAX_PREFIX)) {
                     syntax.setProperty(key.substring(LENGTH_PREFIX),
-                        element.getValue().toString());
+                        defaults.getProperty(key));
+                } else {
+                    Category.getInstance(SimpleNameParser.class)
+                        .debug("ignore property: "+key+"="+defaults.getProperty(key));
                 }
             }
+            Category.getInstance(SimpleNameParser.class)
+                .debug("syntax: "+syntax);
         }
         
         /**
          * @see javax.naming.NameParser#parse(java.lang.String)
          */
         public Name parse(String name) throws NamingException {
+            Category.getInstance(SimpleNameParser.class)
+                .debug("parsing name '"+name+"'");
             return new CompoundName(name, syntax);
         }
     }
