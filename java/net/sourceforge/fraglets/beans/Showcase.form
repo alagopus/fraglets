@@ -14,20 +14,18 @@
           </AuxValues>
           <SubComponents>
             <MenuItem class="javax.swing.JMenuItem" name="jMenuItem2">
-              <Properties>
-                <Property name="action" type="javax.swing.Action" editor="com.netbeans.developer.modules.loaders.form.RADConnectionPropertyEditor">
-                  <Connection code="getAction (ACTION_NEW_BEAN)" type="code"/>
-                </Property>
-              </Properties>
+
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new JMenuAction(getAction(ACTION_NEW_BEAN));"/>
+              </AuxValues>
             </MenuItem>
             <MenuItem class="javax.swing.JSeparator" name="jSeparator1">
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="jMenuItem1">
-              <Properties>
-                <Property name="action" type="javax.swing.Action" editor="com.netbeans.developer.modules.loaders.form.RADConnectionPropertyEditor">
-                  <Connection code="getAction (ACTION_QUIT)" type="code"/>
-                </Property>
-              </Properties>
+
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new JMenuAction(getAction(ACTION_QUIT));"/>
+              </AuxValues>
             </MenuItem>
           </SubComponents>
         </Menu>
@@ -42,11 +40,10 @@
           </AuxValues>
           <SubComponents>
             <MenuItem class="javax.swing.JMenuItem" name="jMenuItem3">
-              <Properties>
-                <Property name="action" type="javax.swing.Action" editor="com.netbeans.developer.modules.loaders.form.RADConnectionPropertyEditor">
-                  <Connection code="getAction (ACTION_CREATE_INT_VALUE_EDITOR)" type="code"/>
-                </Property>
-              </Properties>
+
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new JMenuAction(getAction(ACTION_CREATE_INT_VALUE_EDITOR));"/>
+              </AuxValues>
             </MenuItem>
           </SubComponents>
         </Menu>
@@ -60,11 +57,10 @@
           </AuxValues>
           <SubComponents>
             <MenuItem class="javax.swing.JMenuItem" name="jMenuItem4">
-              <Properties>
-                <Property name="action" type="javax.swing.Action" editor="com.netbeans.developer.modules.loaders.form.RADConnectionPropertyEditor">
-                  <Connection code="getAction (ACTION_ABOUT)" type="code"/>
-                </Property>
-              </Properties>
+
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new JMenuAction(getAction(ACTION_ABOUT));"/>
+              </AuxValues>
             </MenuItem>
           </SubComponents>
         </Menu>
@@ -90,11 +86,11 @@
   <SubComponents>
     <Container class="javax.swing.JScrollPane" name="jScrollPane1">
       <Constraints>
-        <Constraint layoutClass="com.netbeans.developerx.loaders.form.formeditor.layouts.DesignBorderLayout" value="com.netbeans.developerx.loaders.form.formeditor.layouts.DesignBorderLayout$BorderConstraintsDescription">
-          <BorderConstraints direction="Center"/>
-        </Constraint>
         <Constraint layoutClass="com.netbeans.developerx.loaders.form.formeditor.layouts.support.JLayeredPaneSupportLayout" value="com.netbeans.developerx.loaders.form.formeditor.layouts.support.JLayeredPaneSupportLayout$JLayeredPaneConstraintsDescription">
           <JLayeredPaneConstraints height="-1" layer="0" position="-1" width="-1" x="55" y="41"/>
+        </Constraint>
+        <Constraint layoutClass="com.netbeans.developerx.loaders.form.formeditor.layouts.DesignBorderLayout" value="com.netbeans.developerx.loaders.form.formeditor.layouts.DesignBorderLayout$BorderConstraintsDescription">
+          <BorderConstraints direction="Center"/>
         </Constraint>
       </Constraints>
 
