@@ -40,7 +40,6 @@ public class SpoilerParser {
     /** Creates a new instance of SpoilerParser */
     public SpoilerParser(DefaultTableModel model) {
         this.model = model;
-        model.setColumnCount(2);
         model.setColumnIdentifiers(new Object[] { "Name", "Color", "Rarity", "Mana", "Type", "P/T" });
     }
     
