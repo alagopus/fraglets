@@ -48,6 +48,7 @@ public class EqXMLParser implements DocumentHandler {
     protected int avatarLevel;
     protected String avatarGuild;
     protected String avatarZone;
+    protected String avatarHistory;
     
     protected StringBuffer buffer = new StringBuffer();
     
@@ -84,6 +85,9 @@ public class EqXMLParser implements DocumentHandler {
                 Avatar.Zone.create(avatarZone);
             Avatar avatar = recognizer.updateAvatar
                 (avatarTimestamp, avatarName, avatarLevel, clazz, culture, guild, zone);
+            if (avatarHistory != null) {
+                avatar.setHistory(avatarHistory);
+            }
             clearAvatar();
         } else if (name.equals("name")) {
             avatarName = buffer.toString();
@@ -107,6 +111,8 @@ public class EqXMLParser implements DocumentHandler {
                 avatarTimestamp = java.sql.Date
                     .valueOf(buffer.toString()).getTime();
             }
+        } else if (name.equals("history")) {
+            avatarHistory = buffer.toString();
         }
         buffer.setLength(0);
     }
@@ -153,6 +159,7 @@ public class EqXMLParser implements DocumentHandler {
         avatarClass = null;
         avatarCulture = null;
         avatarGuild = null;
+        avatarHistory = null;
         avatarName = null;
         avatarZone = null;
     }
