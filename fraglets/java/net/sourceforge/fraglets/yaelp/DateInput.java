@@ -1,14 +1,28 @@
 /*
  * DateInput.java
- *
- * Created on 23. Juni 2001, 15:50
+ * Copyright (C) 2001, 2002 Klaus Rennecke.
  */
 
 package net.sourceforge.fraglets.yaelp;
 
 /**
  *
- * @author  Klaus Rennecke
+ * <p>This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * <p>This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * <p>You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *
+ * @author marion@users.sourceforge.net
+ * @version $Revision: 1.2 $
  */
 public class DateInput extends javax.swing.JPanel {
 
@@ -58,67 +72,67 @@ public class DateInput extends javax.swing.JPanel {
         monthField = new javax.swing.JTextField();
         dash2 = new javax.swing.JLabel();
         dayField = new javax.swing.JTextField();
-        
+
         setLayout(new javax.swing.BoxLayout(this, javax.swing.BoxLayout.X_AXIS));
-        
-        label.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("DateInput.label"));
+
         label.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        label.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("DateInput.label"));
         add(label);
-        
+
         inputPanel.setLayout(new javax.swing.BoxLayout(inputPanel, javax.swing.BoxLayout.X_AXIS));
-        
+
         inputPanel.setBorder(javax.swing.UIManager.getBorder("TextField.border"));
-        yearField.setToolTipText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("DateInput.year.tooltip"));
         yearField.setColumns(4);
         yearField.setFont(new java.awt.Font("DialogInput", 0, 12));
+        yearField.setToolTipText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("DateInput.year.tooltip"));
         yearField.setBorder(null);
         yearField.setMaximumSize(yearField.getPreferredSize());
         yearField.setMinimumSize(yearField.getPreferredSize());
         inputPanel.add(yearField);
-        
-        dash1.setText("-");
-        dash1.setForeground(yearField.getForeground());
+
         dash1.setBackground(yearField.getBackground());
         dash1.setFont(yearField.getFont());
+        dash1.setForeground(yearField.getForeground());
+        dash1.setText("-");
         dash1.setOpaque(true);
         inputPanel.add(dash1);
-        
-        monthField.setToolTipText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("DateInput.month.tooltip"));
+
         monthField.setColumns(2);
         monthField.setFont(new java.awt.Font("DialogInput", 0, 12));
+        monthField.setToolTipText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("DateInput.month.tooltip"));
         monthField.setBorder(null);
         monthField.setMaximumSize(monthField.getPreferredSize());
         monthField.setMinimumSize(monthField.getPreferredSize());
         inputPanel.add(monthField);
-        
-        dash2.setText("-");
-        dash2.setForeground(yearField.getForeground());
+
         dash2.setBackground(yearField.getBackground());
         dash2.setFont(yearField.getFont());
+        dash2.setForeground(yearField.getForeground());
+        dash2.setText("-");
         dash2.setOpaque(true);
         inputPanel.add(dash2);
-        
-        dayField.setToolTipText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("DateInput.day.tooltip"));
+
         dayField.setColumns(2);
         dayField.setFont(new java.awt.Font("DialogInput", 0, 12));
+        dayField.setToolTipText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("DateInput.day.tooltip"));
         dayField.setBorder(null);
         dayField.setMaximumSize(dayField.getPreferredSize());
         dayField.setMinimumSize(dayField.getPreferredSize());
         inputPanel.add(dayField);
-        
+
         add(inputPanel);
-        
+
     }//GEN-END:initComponents
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel label;
-    private javax.swing.JPanel inputPanel;
+    private javax.swing.JTextField dayField;
     private javax.swing.JTextField yearField;
+    private javax.swing.JLabel label;
+    private javax.swing.JLabel dash2;
     private javax.swing.JLabel dash1;
     private javax.swing.JTextField monthField;
-    private javax.swing.JLabel dash2;
-    private javax.swing.JTextField dayField;
+    private javax.swing.JPanel inputPanel;
     // End of variables declaration//GEN-END:variables
 
 }

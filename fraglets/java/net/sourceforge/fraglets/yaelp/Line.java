@@ -1,7 +1,6 @@
 /*
  * Line.java
- * Copyright (C) 2001 Klaus Rennecke, all rights reserved.
- * Created on 28. April 2001, 06:20
+ * Copyright (C) 2001, 2002 Klaus Rennecke.
  */
 
 package net.sourceforge.fraglets.yaelp;
@@ -27,8 +26,8 @@ import java.util.Locale;
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * @author  kre
- * @version $Revision: 1.4 $
+ * @author marion@users.sourceforge.net
+ * @version $Revision: 1.5 $
  */
 public class Line {
     /** Temporary time stamp specification until first parse. */

@@ -1,7 +1,6 @@
 /*
  * Avatar.java
- * Copyright (C) 2001 Klaus Rennecke, all rights reserved.
- * Created on 30. April 2001, 10:07
+ * Copyright (C) 2001, 2002 Klaus Rennecke.
  */
 
 package net.sourceforge.fraglets.yaelp;
@@ -34,8 +33,8 @@ import java.util.Iterator;
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * @author Klaus Rennecke
- * @version $Revision: 1.6 $
+ * @author marion@users.sourceforge.net
+ * @version $Revision: 1.7 $
  */
 public class Avatar {
     public static final PropertyChangeSupport CHANGE =
@@ -125,21 +124,18 @@ public class Avatar {
                 this.timestamp = timestamp;
             }
         } else {
-            if (properties == null) {
-                properties = new HashMap();
-            }
-            System.err.println("set property '"+name+"'='"+value+"' ...");
-            TimestampEntry entry = (TimestampEntry)properties.get(name);
-            if (entry == null) {
-                System.err.println("... new entry.");
-                entry = new TimestampEntry(value, timestamp);
-                properties.put(name, entry);
-            } else if (timestamp >= entry.timestamp) {
-                System.err.println("... new timestamp : "+timestamp+">="+entry.timestamp);
-                entry.value = value;
-                entry.timestamp = timestamp;
-            } else {
-                System.err.println("... old timestamp : "+timestamp+"<"+entry.timestamp);
+            synchronized (this) {
+                if (properties == null) {
+                    properties = new HashMap();
+                }
+                TimestampEntry entry = (TimestampEntry)properties.get(name);
+                if (entry == null) {
+                    entry = new TimestampEntry(value, timestamp);
+                    properties.put(name, entry);
+                } else if (timestamp >= entry.timestamp) {
+                    entry.value = value;
+                    entry.timestamp = timestamp;
+                }
             }
         }
     }
@@ -147,6 +143,11 @@ public class Avatar {
     public Iterator getProperties() {
         return properties == null ? null :
             properties.entrySet().iterator();
+    }
+    
+    public int getPropertyCount() {
+        return properties == null ? 0 :
+            properties.size();
     }
 
     /** Getter for property level.
@@ -236,6 +237,11 @@ public class Avatar {
     /** Fire a property change event signaling that a new instance was created. */
     public static void fireNewInstance(Object instance) {
         CHANGE.firePropertyChange(instance.getClass().getName(), null, instance);
+    }
+    
+    /** Fire a property change event signaling that a new property was introduced. */
+    public static void fireNewProperty(Object instance, String name) {
+        CHANGE.firePropertyChange("Avatar.property", instance, name);
     }
     
     /** Convert this Avatar to a user-presentable string representation.

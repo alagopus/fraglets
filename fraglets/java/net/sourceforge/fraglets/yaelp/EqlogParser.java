@@ -1,7 +1,6 @@
 /*
  * EqlogParser.java
- * Copyright (C) 2001 Klaus Rennecke, all rights reserved.
- * Created on 28. April 2001, 05:36
+ * Copyright (C) 2001, 2002 Klaus Rennecke.
  */
 
 package net.sourceforge.fraglets.yaelp;
@@ -34,8 +33,8 @@ import java.util.zip.GZIPInputStream;
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * @author  kre
- * @version $Revision: 1.7 $
+ * @author marion@users.sourceforge.net
+ * @version $Revision: 1.8 $
  */
 public class EqlogParser {
     public static final String PREFIX = "[Sun Apr 01 16:38:57 2001] ";

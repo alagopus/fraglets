@@ -1,7 +1,6 @@
 /*
  * Recognizer.java
- * Copyright (C) 2001 Klaus Rennecke, all rights reserved.
- * Created on 30. April 2001, 09:30
+ * Copyright (C) 2001, 2002 Klaus Rennecke.
  */
 
 package net.sourceforge.fraglets.yaelp;
@@ -26,8 +25,8 @@ import java.util.Iterator;
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * @author  Klaus Rennecke
- * @version $Revision: 1.8 $
+ * @author marion@users.sourceforge.net
+ * @version $Revision: 1.9 $
  */
 public class Recognizer {
     /** Known avatars. */

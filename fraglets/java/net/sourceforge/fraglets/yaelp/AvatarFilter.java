@@ -1,15 +1,42 @@
 /*
  * AvatarFilter.java
+ * Copyright (C) 2001, 2002 Klaus Rennecke.
  *
- * Created on 23. Juni 2001, 09:47
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
 package net.sourceforge.fraglets.yaelp;
 
 /** Abstract class for a filter on the roster. 
  *
- * @author  Klaus Rennecke
- * @version 
+ * <p>This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * <p>This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * <p>You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *
+ * @author marion@users.sourceforge.net
+ * @version $Revision: 1.2 $
  */
 public abstract class AvatarFilter {
     /** Determine whether the given avatar is accepted by this filter.
@@ -228,6 +255,21 @@ public abstract class AvatarFilter {
         public String toString() {
             return (before?"before ":"after ")+
                 new java.sql.Date(time).toString();
+        }
+    }
+    
+    /** Avatar filter requiring avatar properties, i.e. avatars with skills. */    
+    public static class Main extends AvatarFilter {
+        /** Create a new avatar filter based properties
+         */        
+        public Main() {
+        }
+        /** Determine whether the given avatar belongs to culture.
+         * @param avatar the avatar to examine
+         * @return true iff the given avatar is in culture
+         */        
+        public boolean accept(Avatar avatar) {
+            return avatar.getPropertyCount() > 0;
         }
     }
 }
