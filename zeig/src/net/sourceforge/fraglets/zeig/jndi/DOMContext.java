@@ -47,7 +47,7 @@ import net.sourceforge.fraglets.zeig.model.VersionFactory;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class DOMContext implements Context {
     /** Context option. */
@@ -107,8 +107,8 @@ public class DOMContext implements Context {
         try {
             int id = ((DocumentImpl)binding).getId();
             Category.getInstance(DOMContext.class)
-                .debug("DOMContext '"+atom+"' binding["+ve+"="+id+"]: "
-                    +SAXSerializer.toString(id));
+                .debug("DOMContext '"+atom+"' binding["+ve+"="+id+"]: DB="
+                    +SAXSerializer.toString(id)+" DOM="+binding);
         } catch (Exception ex) {
             Category.getInstance(DOMContext.class)
                 .error("reporting", ex);
@@ -140,7 +140,7 @@ public class DOMContext implements Context {
                 throw namingException("getObjectInstance", ex);
             }
         } else {
-            return getSubContext(in, atom).lookup(nm.getSuffix(1));
+            return getSubContext(atom).lookup(nm.getSuffix(1));
         }
     }
     
@@ -179,7 +179,7 @@ public class DOMContext implements Context {
             if (in == null) {
                 throw new NamingException("no subcontext: "+atom);
             }
-            getSubContext(in, atom).bind(nm.getSuffix(1), obj);
+            getSubContext(atom).bind(nm.getSuffix(1), obj);
         }
     }
     
@@ -206,7 +206,7 @@ public class DOMContext implements Context {
         if (nm.size() == 1) {
             bind(obj, in, atom);
         } else {
-            getSubContext(in, atom).bind(nm.getSuffix(1), obj);
+            getSubContext(atom).bind(nm.getSuffix(1), obj);
         }
     }
 
@@ -237,7 +237,7 @@ public class DOMContext implements Context {
                 context.remove(atom);
             }
         } else {
-            getSubContext(in, atom).unbind(nm.getSuffix(1));
+            getSubContext(atom).unbind(nm.getSuffix(1));
         }
     }
 
@@ -357,9 +357,9 @@ public class DOMContext implements Context {
 
         if (nm.size() == 1) {
             bind(new DocumentImpl(getEmpty()), in, atom);
-            return getSubContext(lookupElement(atom), atom);
+            return getSubContext(atom);
         } else {
-            return getSubContext(in, atom).createSubcontext(nm.getSuffix(1));
+            return getSubContext(atom).createSubcontext(nm.getSuffix(1));
         }
     }
 
@@ -478,15 +478,13 @@ public class DOMContext implements Context {
         }
     }
 
-    protected DOMContext getSubContext(Element in, String atom) throws NumberFormatException, DOMException, NamingException {
+    protected DOMContext getSubContext(String atom) throws NumberFormatException, DOMException, NamingException {
         if (context == null) {
             context = new HashMap();
         }
         DOMContext sub = (DOMContext)context.get(atom);
         if (sub == null) {
-            int subVe = getVe(in);
-            int subId = getLatest(ve);
-            sub = new DOMContext(this, atom, new DocumentImpl(subId), subVe);
+            sub = (DOMContext)lookup(atom);
             context.put(atom, sub);
         }
         return sub;
