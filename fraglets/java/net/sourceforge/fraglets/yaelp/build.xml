@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir="..\..\..\.." default="all" name="yaelp">
+
+    <target depends="jars" name="all">
+        <!-- WRITEME -->
+    </target>
+    
+    <target depends="init" name="compile">
+        <javac classpath=".;../jars/sax.jar;../jars/xp.jar;../jars/xt.jar" debug="false" includes="${package}/*.java" optimize="true" srcdir="." verbose="false"/>
+    </target>
+    
+    <target depends="compile" name="jars">
+        <jar basedir="." excludes="**/*.java" includes="${package}/**" jarfile="../jars/yaelp-${version}.jar" manifest="${package}/yaelp.mf"/>
+        
+    </target>
+    
+    <target name="init">
+        <property name="package" value="net/sourceforge/fraglets/yaelp"/>
+        <property name="version" value="1.10"/>
+    </target>
+    
+    <target depends="jars" name="release">
+        <zip basedir="../jars" includes="yaelp-${version}.jar,sax.jar,xp.jar,xt.jar" zipfile="../jars/yaelp-${version}.zip">
+            <fileset dir="${package}" includes="*.txt"/>
+        </zip>
+        <zip basedir="." excludes="**/*.class" includes="${package}/**" zipfile="../jars/yaelp-${version}-source.zip"/>
+    </target>
+</project>
