@@ -1,5 +1,5 @@
 /*
- * $Id: CVSHistory.java,v 1.8 2004-07-30 12:34:45 marion Exp $
+ * $Id: CVSHistory.java,v 1.9 2004-07-30 12:39:23 marion Exp $
  * Copyright (C) 2004 Klaus Rennecke, all rights reserved.
  * 
  * Permission is hereby granted, free of charge, to any person
@@ -53,7 +53,7 @@ import org.apache.log4j.Logger;
  * Perform modification check based on a plain history file.
  * 
  * @author  Klaus Rennecke
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class CVSHistory implements SourceControl {
     /** The properties set for ANT. */
@@ -430,7 +430,7 @@ public class CVSHistory implements SourceControl {
                 || c == '_'
                 || c == '.'
                 || c == '*'
-                || Character.isLetterOrDigit(c)) {
+                || (c < 127 && Character.isLetterOrDigit(c))) {
                 if (buffer != null) {
                     buffer.append(c);
                 }
@@ -605,7 +605,7 @@ public class CVSHistory implements SourceControl {
      * Bean implementation for the module sub-element.
      * @since 01.03.2004
      * @author Klaus Rennecke
-     * @version $Revision: 1.8 $
+     * @version $Revision: 1.9 $
      */
     public static class Module {
         
