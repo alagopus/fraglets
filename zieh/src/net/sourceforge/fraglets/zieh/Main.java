@@ -66,7 +66,7 @@ import thinlet.Thinlet;
  * </ul> 
  * 
  * @author Klaus Rennecke
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public class Main extends Thinlet implements Comparator {
     
@@ -162,8 +162,8 @@ public class Main extends Thinlet implements Comparator {
     public void init () {
         ChatStream cs = new ChatStream();
         PrintStream ps = new PrintStream(cs);
-        System.setErr(ps);
-        System.setOut(ps);
+//        System.setErr(ps);
+//        System.setOut(ps);
         
         setString(find("localPath"), "text", System.getProperty("user.dir"));
         initLocal(find("localList"));
@@ -252,7 +252,7 @@ public class Main extends Thinlet implements Comparator {
 
     public void actionAbout() {
         add("about.xml");
-        setString(find("revisionLabel"), "text", "$Revision: 1.10 $");
+        setString(find("revisionLabel"), "text", "$Revision: 1.11 $");
     }
     
     public void actionHelp() {
@@ -1090,9 +1090,12 @@ public class Main extends Thinlet implements Comparator {
     }
     
     protected void setColumns(Object table, int width[]) {
+        Object header = getNode(table, "@header");
         for (int i = 0; i < width.length; i++) {
-            setInteger(getItem(table, "column", i), "width", width[i] + 10);
+            setInteger(getItem(header, i), "width", width[i] + 10);
         }
+        invalidate();
+        validate();
     }
     
     public static int max(int a, int b) {
@@ -1208,7 +1211,12 @@ public class Main extends Thinlet implements Comparator {
 
     public static void main(String[] args) {
         Main main = new Main(args);
-        new FrameLauncher("Zieh", main, 620, 440);
+        try {
+            new FrameLauncher("Zieh", main, 620, 440);
+        } catch (RuntimeException ex) {
+            ex.printStackTrace();
+            System.exit(1);
+        }
     }
     
     /////
@@ -1367,6 +1375,119 @@ public class Main extends Thinlet implements Comparator {
         if (chatOutput.length() > 0) {
             EventQueue.invokeLater(updater);
         }
+    }
+    
+    protected Object getNode(Object root, String path) {
+        StringTokenizer tok = new StringTokenizer(path, "/");
+        String pathList[] = new String[tok.countTokens()];
+        int index = 0;
+        while (tok.hasMoreTokens()) {
+            pathList[index++] = tok.nextToken();
+        }
+        try {
+            return getNode(new Object[] {root}, pathList)[0];
+        } catch (ArrayIndexOutOfBoundsException ex) {
+            return null;
+        }
+    }
+    
+    protected Object[] getNode(Object roots[], String[] path) {
+        int index = 0;
+        do {
+            String key = path[index];
+            int count = 0;
+            for (int i = 0; i < roots.length; i++) {
+                Object root = roots[i];
+                Object node[] = null;
+                int bracket = key.indexOf('[');
+                String condition = null;
+                if (bracket >= 0) {
+                    condition = key.substring(bracket);
+                    key = key.substring(0, bracket);
+                }
+                if (key.startsWith("@")) {
+                    key = key.substring(1).intern();
+                    Object scan[] = (Object[])root;
+                    while (scan != null) {
+                        if ("*" == key || scan[0] == key) {
+                            if (condition == null || isCondition(scan, condition)) {
+                                node = new Object[] { scan[1], node };
+                                count++;
+                            }
+                        }
+                        scan = (Object[])scan[2];
+                    }
+                } else if (key.equals(".")) {
+                    if (condition == null || isCondition(root, condition)) {
+                        node = new Object[] { root, node };
+                        count++;
+                    }
+                } else if (key.equals("..")) {
+                    root = getParent(root);
+                    if (condition == null || isCondition(root, condition)) {
+                        node = new Object[] { root, node };
+                        count++;
+                    }
+                } else {
+                    key = key.intern();
+                    Object items[] = getItems(root);
+                    for (int j = 0; j < items.length; j++) {
+                        Object object = items[j];
+                        if ("*" == key || getClass(object) == key) {
+                            if (condition == null || isCondition(object, condition)) {
+                                node = new Object[] { object, node };
+                                count++;
+                            }
+                        }
+                    }
+                }
+                roots[i] = node;
+            }
+            Object result[] = new Object[count];
+            int scan = 0;
+            for (int i = 0; i < roots.length; i++) {
+                Object object = roots[i];
+                while (object != null) {
+                    Object node[] = (Object[])object;
+                    result[scan++] = node[0];
+                    object = node[1];
+                }
+            }
+            roots = result;
+        } while (++index < path.length);
+        return roots;
+    }
+    
+    protected boolean isCondition(Object candidate, String condition) {
+        try {
+            if (condition.startsWith("[") && condition.endsWith("]")) {
+                condition = condition.substring(1, condition.length()-1);
+            }
+            int eq = condition.indexOf('=');
+            if (eq < 0) {
+                return false;
+            }
+            String name = condition.substring(0, eq);
+            String value = condition.substring(eq+1);
+            if (name.startsWith("@")) {
+                String key = condition.substring(1).intern();
+                Object scan[] = (Object[])candidate;
+                while (scan != null) {
+                    if ("*" == key || scan[0] == key) {
+                        if (scan[1].equals(value)) {
+                            return true;
+                        }
+                    }
+                    scan = (Object[])scan[2];
+                }
+            } else if (name.startsWith(".")) {
+                return value.equals(getProperty
+                    (candidate, name.substring(1).intern()));
+            }
+        } catch (RuntimeException ex) {
+            return false;
+        }
+        return false;
     }
 
 }
