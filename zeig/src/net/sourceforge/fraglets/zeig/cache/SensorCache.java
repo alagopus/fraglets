@@ -6,6 +6,7 @@
  */
 package net.sourceforge.fraglets.zeig.cache;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -14,7 +15,7 @@ import org.apache.log4j.Priority;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class SensorCache implements SimpleCache {
     private String name;
@@ -35,11 +36,13 @@ public class SensorCache implements SimpleCache {
     }
     
     protected SensorCache(String name, LazyCache delegate) {
+        Category.getInstance(name).info("cache create: "+delegate);
         this.name = name;
         this.sensor = new int[3];
         this.delegate = delegate;
-        instances.add(this);
+        instances.add(new WeakReference(this));
     }
+    
     /**
      * @param hash
      * @param key
@@ -73,7 +76,15 @@ public class SensorCache implements SimpleCache {
      */
     public void put(CacheEntry entry) {
         sensor[PUT_SENSOR]++;
+        int sizeBefore = delegate.getSize();
+        int fillBefore = delegate.getFill();
         delegate.put(entry);
+        int sizeAfter = delegate.getSize();
+        if (sizeAfter != sizeBefore) {
+            Category.getInstance(name).debug(
+                "grow: fill=" + fillBefore + ", size=" + sizeBefore +
+                ", more=" + sizeAfter + ", count=" + delegate.getFill());
+        }
     }
 
     protected int[] getSensor() {
@@ -85,23 +96,26 @@ public class SensorCache implements SimpleCache {
     }
     
     public static void logStatistics(Priority priority) {
-        Category category = Category.getInstance(SensorCache.class);
         for (Iterator i = instances.iterator(); i.hasNext();) {
-            SensorCache element = (SensorCache)i.next();
+            SensorCache element = (SensorCache)((WeakReference)i.next()).get();
+            if (element == null) {
+                continue;
+            }
             int[] sensor = element.getSensor();
             String name = element.getName();
-            category.log(priority, name + ".get: "+sensor[GET_SENSOR]);
-            category.log(priority, name + ".hit: "+sensor[HIT_SENSOR]);
-            category.log(priority, name + ".put: "+sensor[PUT_SENSOR]);
+            Category category = Category.getInstance(name);
+            category.log(priority, ".get: "+sensor[GET_SENSOR]);
+            category.log(priority, ".hit: "+sensor[HIT_SENSOR]);
+            category.log(priority, ".put: "+sensor[PUT_SENSOR]);
             if (sensor[GET_SENSOR] > 0) {
-                category.log(priority, name + " hit rate: "
+                category.log(priority, " hit rate: "
                     + percent(sensor[HIT_SENSOR], sensor[GET_SENSOR]) + "%");
             }
-            category.log(priority, name + ".size: " + element.getSize());
-            category.log(priority, name + ".fill: " + element.getFill());
-            category.log(priority, name + ".drop: " + element.getDrop());
+            category.log(priority, ".size: " + element.getSize());
+            category.log(priority, ".fill: " + element.getFill());
+            category.log(priority, ".drop: " + element.getDrop());
             if (element.getSize() > 0) {
-                category.log(priority, name + " fill rate: "
+                category.log(priority, " fill rate: "
                     + percent(element.getFill(), element.getSize()) + "%");
             }
         }
@@ -137,6 +151,17 @@ public class SensorCache implements SimpleCache {
      */
     public int getDrop() {
         return delegate.getDrop();
+    }
+
+    /**
+     * @see java.lang.Object#finalize()
+     */
+    protected void finalize() throws Throwable {
+        try {
+            Category.getInstance(name).info("cache finalize: "+delegate);
+        } catch (Exception ex) {
+            Category.getInstance(name).error("cache finalize", ex);
+        }
     }
 
 }
