@@ -10,8 +10,8 @@ package net.sourceforge.fraglets.codec;
 import junit.framework.*;
 
 /**
- *
  * @author marion@users.sourceforge.net
+ * @version $Revision: 1.4 $
  */
 public class UTF8DecoderTest extends TestCase {
     
@@ -96,13 +96,10 @@ public class UTF8DecoderTest extends TestCase {
             test = encoder.toByteArray();
             decoder.setBuffer(test);
             check = decoder.decodeUCS2(check, 0, check.length);
-            if (sample.length != check.length) {
-                assertEquals("result length", test.length, check.length);
-            } else {
-                int scan = sample.length;
-                while (--scan >= 0) {
-                    assertEquals("result data", sample[scan], check[scan]);
-                }
+            assertEquals("result length", sample.length, check.length);
+            int scan = sample.length;
+            while (--scan >= 0) {
+                assertEquals("result data", sample[scan], check[scan]);
             }
         }
     }
