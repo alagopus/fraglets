@@ -8,7 +8,7 @@
 
 # USER		= (getprop "user.name");
 USER		= "marion";
-SERVER		= "shelf.sourceforge.net";
+SERVER		= "fraglets.sourceforge.net";
 
 JAVA_HOME	= (getprop "java.home");
 JAR		= (cat JAVA_HOME "/bin/jar");

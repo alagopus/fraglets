@@ -1,4 +1,4 @@
-This directory contains utilities used to build or deploy the shelf to
+This directory contains utilities used to build or deploy fraglets to
 its web site.  All software here is open source and bears its own
 copyright.  Please refer to the individual packages for more
 information.
@@ -14,6 +14,6 @@ jmk.jar.  Documentation and source is included in the jar.  See
 http://www.ccs.neu.edu/home/ramsdell/make/edu/neu/ccs/jmk/ for more
 information.
 
-To deploy jars from the shelf I use the Java SSH client MindTerm.
+To deploy jars from fraglets I use the Java SSH client MindTerm.
 Since this software includes encryption, I save the Forge trouble by
 just referring to it by URL: see http://www.mindbright.se/mindterm/
