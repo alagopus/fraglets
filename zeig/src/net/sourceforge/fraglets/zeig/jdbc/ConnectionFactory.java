@@ -18,6 +18,7 @@ import java.util.ResourceBundle;
 
 /**
  * @author marion@users.sourceforge.net
+ * @version $Revision: 1.2 $
  */
 public class ConnectionFactory {
     

@@ -8,14 +8,23 @@ package net.sourceforge.fraglets.zeig.model;
 
 /**
  * @author unknown
+ * @version $Revision: 1.2 $
  */
 public class NodeBuffer {
     public static final int MT[] = new int[0];
     
     int buffer[];
     int size;
-    int atts;
     int id;
+    
+    public NodeBuffer() {
+    }
+    
+    public NodeBuffer(int initial[]) {
+        if (initial != null && initial.length > 0) {
+            buffer = initial;
+        }
+    }
     
     public NodeBuffer append(int value) {
         if (buffer == null) {
@@ -48,6 +57,10 @@ public class NodeBuffer {
         }
     }
     
+    public int getSize() {
+        return size;
+    }
+    
     /**
      * @return
      */
@@ -60,20 +73,6 @@ public class NodeBuffer {
      */
     public void setId(int i) {
         id = i;
-    }
-
-    /**
-     * @return
-     */
-    public int getAtts() {
-        return atts;
-    }
-
-    /**
-     * @param i
-     */
-    public void setAtts(int i) {
-        atts = i;
     }
 
 }

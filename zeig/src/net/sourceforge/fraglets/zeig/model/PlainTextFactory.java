@@ -19,6 +19,7 @@ import net.sourceforge.fraglets.zeig.jdbc.ConnectionFactory;
 
 /**
  * @author marion@users.sourceforge.net
+ * @version $Revision: 1.3 $
  */
 public class PlainTextFactory {
     private ConnectionFactory cf;
@@ -30,6 +31,20 @@ public class PlainTextFactory {
         this.cf = cf;
         this.plainCache = new SensorCache("plain.text");
         this.valueCache = new SensorCache("plain.value");
+    }
+    
+    private static PlainTextFactory instance;
+    
+    public static PlainTextFactory getInstance() throws SQLException {
+        if (instance == null) {
+            synchronized(PlainTextFactory.class) {
+                if (instance == null) {
+                    instance = new PlainTextFactory
+                        (ConnectionFactory.getInstance());
+                }
+            }
+        }
+        return instance;
     }
     
     public int getPlainText(String text) throws SQLException {
@@ -60,7 +75,7 @@ public class PlainTextFactory {
         }
         
         PreparedStatement ps = cf
-            .prepareStatement("select value from pt where id=?");
+            .prepareStatement("select v from pt where id=?");
         
         ps.setInt(1, id);
         
@@ -81,12 +96,9 @@ public class PlainTextFactory {
     
     private int findPlainText(String text, int hc) throws SQLException {
         PreparedStatement ps = cf
-            .prepareStatement("select id,value from pt where hc=?");
-//        PreparedStatement ps = cf
-//            .prepareStatement("select id,value from pt where hc=? and value=?");
+            .prepareStatement("select id,v from pt where hc=?");
         
         ps.setInt(1, hc);
-//        ps.setString(2, text);
         
         ResultSet rs = ps.executeQuery();
         try {
@@ -105,7 +117,7 @@ public class PlainTextFactory {
     
     private int createPlainText(String text, int hc) throws SQLException {
         PreparedStatement ps = cf
-            .prepareStatement("insert into pt (hc,value) values (?,?)");
+            .prepareStatement("insert into pt (hc,v) values (?,?)");
         
         ps.setLong(1, hc);
         ps.setString(2, text);

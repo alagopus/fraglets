@@ -1,5 +1,5 @@
 /*
- * PlainTextFactory.java -
+ * NamespaceFactory -
  * Copyright (C) 2003 Klaus Rennecke, all rights reserved.
  *
  * Created on Apr 6, 2003 by marion@users.sourceforge.net
@@ -15,12 +15,27 @@ import net.sourceforge.fraglets.zeig.jdbc.ConnectionFactory;
 
 /**
  * @author marion@users.sourceforge.net
+ * @version $Revision: 1.2 $
  */
 public class NamespaceFactory {
     private ConnectionFactory connectionFactory;
     
     public NamespaceFactory(ConnectionFactory connectionFactory) {
         this.connectionFactory = connectionFactory;
+    }
+    
+    private static NamespaceFactory instance;
+    
+    public static NamespaceFactory getInstance() throws SQLException {
+        if (instance == null) {
+            synchronized(NamespaceFactory.class) {
+                if (instance == null) {
+                    instance = new NamespaceFactory
+                        (ConnectionFactory.getInstance());
+                }
+            }
+        }
+        return instance;
     }
     
     public int getNamespace(int uri, int value) throws SQLException {
@@ -56,7 +71,7 @@ public class NamespaceFactory {
     
     public int getValue(int id) throws SQLException {
         PreparedStatement ps = connectionFactory
-            .prepareStatement("select value from ns where id=?");
+            .prepareStatement("select v from ns where id=?");
         
         ps.setInt(1, id);
         
@@ -82,7 +97,7 @@ public class NamespaceFactory {
             ps.setInt(1, uri);
         } else if (value != 0) {
             ps = connectionFactory
-                .prepareStatement("select id from ns where value=?");
+                .prepareStatement("select id from ns where v=?");
             ps.setInt(1, value);
         } else {
             throw new IllegalArgumentException("neither uri nor value");
@@ -108,7 +123,7 @@ public class NamespaceFactory {
         }
         
         PreparedStatement ps = connectionFactory
-            .prepareStatement("insert into ns (uri,value) values (?,?)");
+            .prepareStatement("insert into ns (uri,v) values (?,?)");
         
         ps.setInt(1, uri);
         ps.setInt(2, value);

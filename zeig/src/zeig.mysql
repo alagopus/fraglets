@@ -1,67 +1,61 @@
 
-CREATE TABLE `at` (
-  `id` int(11) NOT NULL auto_increment,
-  `nm` int(11) NOT NULL default '0',
-  `value` int(11) NOT NULL default '0',
-  PRIMARY KEY  (`id`),
-  UNIQUE KEY `at_at` (`nm`,`value`),
-  KEY `at_nm` (`nm`)
-) TYPE=MyISAM COMMENT='XML Attribute'; 
-
-
 CREATE TABLE `nm` (
   `id` int(11) NOT NULL auto_increment,
   `ns` int(11) NOT NULL default '0',
-  `value` int(11) NOT NULL default '0',
+  `v` int(11) NOT NULL default '0',
   PRIMARY KEY  (`id`),
-  UNIQUE KEY `nm_name` (`ns`,`value`)
+  KEY `nm_sk` (`ns`,`v`)
 ) TYPE=MyISAM COMMENT='XML Name'; 
 
 
 CREATE TABLE `ns` (
   `id` int(11) NOT NULL auto_increment,
   `uri` int(11) NOT NULL default '0',
-  `value` int(11) NOT NULL default '0',
+  `v` int(11) NOT NULL default '0',
   PRIMARY KEY  (`id`),
   UNIQUE KEY `ns_uri` (`uri`),
-  UNIQUE KEY `ns_value` (`value`)
+  UNIQUE KEY `ns_v` (`v`)
 ) TYPE=MyISAM COMMENT='XML Namespace'; 
 
 
 CREATE TABLE `pt` (
   `id` int(11) NOT NULL auto_increment,
   `hc` int(11) NOT NULL default '0',
-  `value` text NOT NULL,
+  `v` text NOT NULL,
   PRIMARY KEY  (`id`),
-  FULLTEXT KEY `pt_value` (`value`),
   KEY `pt_hc` (`hc`)
 ) TYPE=MyISAM COMMENT='Plain text'; 
 
 
-CREATE TABLE `xa` (
-  `xt` int(11) NOT NULL default '0',
-  `at` int(11) NOT NULL default '0',
-  KEY `xa_xt` (`xt`)
-) TYPE=MyISAM; 
+CREATE TABLE `ve` (
+  `id` int(11) NOT NULL auto_increment,
+  `g` int(11) NOT NULL default '0',
+  `v` int(11) NOT NULL default '0',
+  `co` int(11) NOT NULL default '0',
+  `ts` timestamp(14) NOT NULL,
+  PRIMARY KEY  (`id`,`g`),
+  KEY `ve_id` (`id`),
+  KEY `ve_fk` (`v`)
+) TYPE=MyISAM COMMENT='Version'; 
 
 
 CREATE TABLE `xn` (
   `xt` int(11) NOT NULL default '0',
   `pos` int(11) NOT NULL default '0',
-  `node` int(11) NOT NULL default '0',
+  `nm` int(11) NOT NULL default '0',
+  `v` int(11) NOT NULL default '0',
   PRIMARY KEY  (`xt`,`pos`),
-  KEY `xn_xt` (`xt`),
-  KEY `xn_node` (`node`)
+  KEY `xn_fk` (`nm`,`v`),
+  KEY `xn_xt` (`xt`)
 ) TYPE=MyISAM COMMENT='XML Node'; 
+
 
 
 CREATE TABLE `xt` (
   `id` int(11) NOT NULL auto_increment,
   `hc` int(11) NOT NULL default '0',
-  `value` int(11) NOT NULL default '0',
+  `nm` int(11) NOT NULL default '0',
   PRIMARY KEY  (`id`),
-  KEY `xt_hc` (`hc`,`value`),
-  KEY `xt_value` (`value`)
+  KEY `xt_sk` (`hc`,`nm`)
 ) TYPE=MyISAM COMMENT='XML text'; 
-
 

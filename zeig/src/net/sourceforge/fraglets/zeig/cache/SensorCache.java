@@ -12,6 +12,7 @@ import java.util.Iterator;
 
 /**
  * @author marion@users.sourceforge.net
+ * @version $Revision: 1.2 $
  */
 public class SensorCache implements SimpleCache {
     private String name;
@@ -104,7 +105,7 @@ public class SensorCache implements SimpleCache {
     }
     
     public static double percent(int have, int max) {
-        return (10000 * have / max) / 100.0;
+        return (10000L * have / max) / 100.0;
     }
     
     /**

@@ -18,66 +18,63 @@ import org.xml.sax.SAXException;
 
 /**
  * @author unknown
+ * @version $Revision: 1.2 $
  */
 public class SAXSerializer {
     private NodeFactory nf;
     private int piTag;
+    private int nodeTag;
+    private int rootTag;
     private int textTag;
     
     public SAXSerializer(NodeFactory nf) throws SQLException {
         this.nf = nf;
+        this.nodeTag = nf.getNode();
+        this.rootTag = nf.getRoot();
         this.textTag = nf.getText();
         this.piTag = nf.getPi();
     }
     
     public void serialize(ContentHandler handler, int id) throws SAXException {
-        handler.startDocument();
-        serializeNode(handler, id);
-        handler.endDocument();
-    }
-    
-    public void serializeNode(ContentHandler handler, int id) throws SAXException {
         try {
-            int name = nf.xt.getValue(id);
+            int name = nf.xt.getName(id);
             int node[] = nf.xt.getNodes(id);
-            if (name == textTag) {
-                serialize(handler, name, node);
+            
+            if (name == rootTag) {
+                handler.startDocument();
+                for (int i = 0; i < node.length; i += 2) {
+                    serialize(handler, node[i], node[i+1]);
+                }
+                handler.endDocument();
+            } else if (name == piTag) {
+                String target = nf.pt.getPlainText(node[0]);
+                String data = nf.pt.getPlainText(node[1]);
+                handler.processingInstruction(target, data);
             } else {
-                int atts[] = nf.xt.getAttributes(id);
-                serialize(handler, name, atts, node);
-            }
-        } catch (SQLException ex) {
-            throw new SAXException(ex);
-        }
-    }
-    
-    protected void serialize(ContentHandler handler, int name, int atts[], int node[]) throws SAXException {
-        try {
-            if (name != piTag) {
                 int ns = nf.nm.getNamespace(name);
                 String uri = nf.pt.getPlainText(nf.ns.getUri(ns));
                 String prefix = nf.pt.getPlainText(nf.ns.getValue(ns));
                 String lName = nf.pt.getPlainText(nf.nm.getValue(name));
-                handler.startElement(uri, prefix, lName, new Atts(atts));
-                for (int i = 1; i < node.length; i++) {
-                    serializeNode(handler, node[i]);
+                handler.startElement(uri, prefix, lName, new Atts(node));
+                for (int i = 0; i < node.length; i += 2) {
+                    serialize(handler, node[i], node[i+1]);
                 }
                 handler.endElement(uri, prefix, lName);
-            } else {
-                String target = nf.pt.getPlainText(node[0]);
-                String data = nf.pt.getPlainText(node[1]);
-                handler.processingInstruction(target, data);
             }
         } catch (SQLException ex) {
             throw new SAXException(ex);
         }
     }
     
-    protected void serialize(ContentHandler handler, int name, int node[]) throws SAXException {
+    protected void serialize(ContentHandler handler, int name, int node) throws SAXException {
         try {
-            for (int i = 1; i < node.length; i++) {
-                char chars[] = nf.pt.getPlainText(node[i]).toCharArray();
+            if (name == textTag) {
+                char chars[] = nf.pt.getPlainText(node).toCharArray();
                 handler.characters(chars, 0, chars.length);
+            } else if (name == nodeTag) {
+                serialize(handler, node);
+            } else {
+                // root and attribute ignored
             }
         } catch (SQLException ex) {
             throw new SAXException(ex);
@@ -107,13 +104,24 @@ public class SAXSerializer {
     
     public class Atts implements Attributes {
         private int atts[];
+        private int length;
         
         public Atts(int atts[]) throws SQLException {
             this.atts = atts;
+            
+            int node = nodeTag;
+            int text = textTag;
+            for (int i = 0; i < atts.length; i += 2) {
+                if (atts[i] == node || atts[i] == text) {
+                    break;
+                } else {
+                    length++;
+                }
+            }
         }
         
         public int getLength() {
-            return atts.length;
+            return length;
         }
         
         /**
@@ -122,8 +130,7 @@ public class SAXSerializer {
         public String getUri(int index) {
             try {
                 int id;
-                id = nf.at.getName(atts[index]);
-                id = nf.nm.getNamespace(id);
+                id = nf.nm.getNamespace(atts[index << 1]);
                 id = nf.ns.getUri(id);
                 return nf.pt.getPlainText(id);
             } catch (Exception ex) {
@@ -160,9 +167,7 @@ public class SAXSerializer {
          */
         public String getValue(int index) {
             try {
-                int id;
-                id = nf.at.getValue(atts[index]);
-                return nf.pt.getPlainText(id);
+                return nf.pt.getPlainText(atts[(index << 1) + 1]);
             } catch (Exception ex) {
                 return null;
             }
@@ -200,10 +205,7 @@ public class SAXSerializer {
          */
         public String getLocalName(int index) {
             try {
-                int id;
-                id = nf.at.getName(atts[index]);
-                id = nf.nm.getValue(id);
-                return nf.pt.getPlainText(id);
+                return nf.pt.getPlainText(nf.nm.getValue(atts[index << 1]));
             } catch (Exception ex) {
                 return null;
             }
@@ -215,8 +217,7 @@ public class SAXSerializer {
         public String getQName(int index) {
             try {
                 int id;
-                id = nf.at.getName(atts[index]);
-                id = nf.nm.getNamespace(id);
+                id = nf.nm.getNamespace(atts[index << 1]);
                 id = nf.ns.getValue(id);
                 String prefix = nf.pt.getPlainText(id);
                 return prefix.length() > 0
@@ -233,8 +234,7 @@ public class SAXSerializer {
         public String getURI(int index) {
             try {
                 int id;
-                id = nf.at.getName(atts[index]);
-                id = nf.nm.getNamespace(id);
+                id = nf.nm.getNamespace(atts[index << 1]);
                 id = nf.ns.getUri(id);
                 return nf.pt.getPlainText(id);
             } catch (Exception ex) {

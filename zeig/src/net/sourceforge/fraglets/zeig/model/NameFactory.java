@@ -1,5 +1,5 @@
 /*
- * PlainTextFactory.java -
+ * NameFactory -
  * Copyright (C) 2003 Klaus Rennecke, all rights reserved.
  *
  * Created on Apr 6, 2003 by marion@users.sourceforge.net
@@ -15,12 +15,27 @@ import net.sourceforge.fraglets.zeig.jdbc.ConnectionFactory;
 
 /**
  * @author marion@users.sourceforge.net
+ * @version $Revision: 1.2 $
  */
 public class NameFactory {
     private ConnectionFactory cf;
     
     public NameFactory(ConnectionFactory cf) {
         this.cf = cf;
+    }
+    
+    private static NameFactory instance;
+    
+    public static NameFactory getInstance() throws SQLException {
+        if (instance == null) {
+            synchronized(NameFactory.class) {
+                if (instance == null) {
+                    instance = new NameFactory
+                        (ConnectionFactory.getInstance());
+                }
+            }
+        }
+        return instance;
     }
     
     public int getName(int ns, int value) throws SQLException {
@@ -52,7 +67,7 @@ public class NameFactory {
     
     public int getValue(int id) throws SQLException {
         PreparedStatement ps = cf
-            .prepareStatement("select value from nm where id=?");
+            .prepareStatement("select v from nm where id=?");
         
         ps.setInt(1, id);
         
@@ -71,7 +86,7 @@ public class NameFactory {
     
     private int findName(int ns, int value) throws SQLException {
         PreparedStatement ps = cf
-            .prepareStatement("select id from nm where ns=? and value=?");
+            .prepareStatement("select id from nm where ns=? and v=?");
         
         ps.setInt(1, ns);
         ps.setInt(2, value);
@@ -81,7 +96,7 @@ public class NameFactory {
             if (rs.next()) {
                 return rs.getInt(1);
             } else {
-                throw new NoSuchElementException("namespace");
+                throw new NoSuchElementException();
             }
         } finally {
             rs.close();
@@ -96,7 +111,7 @@ public class NameFactory {
         }
         
         PreparedStatement ps = cf
-            .prepareStatement("insert into nm (ns,value) values (?,?)");
+            .prepareStatement("insert into nm (ns,v) values (?,?)");
         
         ps.setInt(1, ns);
         ps.setInt(2, value);

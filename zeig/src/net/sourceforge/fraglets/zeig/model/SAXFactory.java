@@ -7,6 +7,8 @@
 package net.sourceforge.fraglets.zeig.model;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.StringReader;
 import java.sql.SQLException;
 import java.util.Stack;
 
@@ -15,6 +17,7 @@ import net.sourceforge.fraglets.zeig.jdbc.ConnectionFactory;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
+import org.xml.sax.InputSource;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
@@ -22,6 +25,7 @@ import org.xml.sax.helpers.XMLReaderFactory;
 
 /**
  * @author unknown
+ * @version $Revision: 1.3 $
  */
 public class SAXFactory implements ContentHandler {
     private NodeFactory nf;
@@ -40,6 +44,10 @@ public class SAXFactory implements ContentHandler {
         return result.toIntArray();
     }
     
+    public int getLastResult() {
+        return result.get(result.getSize() - 1);
+    }
+    
     /**
      * @see org.xml.sax.DocumentHandler#setDocumentLocator(org.xml.sax.Locator)
      */
@@ -51,15 +59,24 @@ public class SAXFactory implements ContentHandler {
      * @see org.xml.sax.DocumentHandler#startDocument()
      */
     public void startDocument() throws SAXException {
-        stack = new Stack();
-        buffer = new NodeBuffer();
+        try {
+            stack = new Stack();
+            buffer = new NodeBuffer();
+            buffer.setId(nf.getRoot());
+        } catch (SQLException ex) {
+            throw new SAXException(ex);
+        }
     }
 
     /**
      * @see org.xml.sax.DocumentHandler#endDocument()
      */
     public void endDocument() throws SAXException {
-        result.append(buffer.get(0));
+        try {
+            result.append(nf.getNode(buffer.getId(), buffer.toIntArray()));
+        } catch (SQLException ex) {
+            throw new SAXException(ex);
+        }
     }
 
     /**
@@ -75,12 +92,11 @@ public class SAXFactory implements ContentHandler {
             buffer.setId(nf.getName(namespaceURI, localName));
             int end = atts.getLength();
             for (int i = 0; i < end; i++) {
-                buffer.append(nf.getAttribute(atts.getURI(i),
-                    atts.getLocalName(i), atts.getValue(i)));
+                buffer
+                    .append(nf.getName(atts.getURI(i), atts.getLocalName(i)))
+                    .append(nf.pt.getPlainText(atts.getValue(i)));
             }
-            buffer.setAtts(end);
         } catch (SQLException ex) {
-            ex.printStackTrace();
             throw new SAXException(ex);
         }
     }
@@ -91,36 +107,40 @@ public class SAXFactory implements ContentHandler {
     public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
         int id;
         try {
-            id = nf.getNode(buffer.getId(), buffer.getAtts(), buffer.toIntArray());
+            id = nf.getNode(buffer.getId(), buffer.toIntArray());
             buffer = (NodeBuffer)stack.pop();
-            buffer.append(id);
+            buffer
+                .append(nf.getNode())
+                .append(id);
         } catch (SQLException ex) {
             throw new SAXException(ex);
         }
     }
 
-    /* (non-Javadoc)
+    /**
+     * Ignored.
      * @see org.xml.sax.ContentHandler#endPrefixMapping(java.lang.String)
      */
     public void endPrefixMapping(String prefix) throws SAXException {
         // ignored
     }
 
-    /* (non-Javadoc)
+    /**
+     * Ignored.
      * @see org.xml.sax.ContentHandler#skippedEntity(java.lang.String)
      */
     public void skippedEntity(String name) throws SAXException {
         // ignored
     }
 
-    /* (non-Javadoc)
+    /**
      * @see org.xml.sax.ContentHandler#startPrefixMapping(java.lang.String, java.lang.String)
      */
     public void startPrefixMapping(String prefix, String uri)
         throws SAXException {
         try {
             // declare prefix
-            nf.getNamespace(prefix, uri);
+            nf.getNamespace(uri, prefix);
         } catch (SQLException ex) {
             throw new SAXException(ex);
         }
@@ -132,7 +152,9 @@ public class SAXFactory implements ContentHandler {
     public void characters(char[] c, int off, int len)
         throws SAXException {
         try {
-            buffer.append(nf.getText(new String(c, off, len)));
+            buffer
+                .append(nf.getText())
+                .append(nf.pt.getPlainText(new String(c, off, len)));
         } catch (SQLException ex) {
             throw new SAXException(ex);
         }
@@ -153,29 +175,60 @@ public class SAXFactory implements ContentHandler {
     public void processingInstruction(String arg0, String arg1)
         throws SAXException {
         try {
-            buffer.append(nf.getProcessingInstruction(arg0, arg1));
+            buffer
+                .append(nf.getPi())
+                .append(nf.getProcessingInstruction(arg0, arg1));
         } catch (SQLException ex) {
             throw new SAXException(ex);
         }
     }
     
-    public static void process(XMLReader reader, File file) {
+    public synchronized int parse(InputSource in) throws SAXException {
+        try {
+            XMLReader reader = createReader();
+            reader.setContentHandler(this);
+            reader.parse(in);
+            return getLastResult();
+        } catch (IOException ex) {
+            throw new SAXException(ex);
+        }
+    }
+    
+    public int parse(String in) throws SAXException {
+        return parse(new InputSource(new StringReader(in)));
+    }
+    
+    public static XMLReader createReader() throws SAXException {
+        XMLReader reader = XMLReaderFactory
+            .createXMLReader("org.apache.xerces.parsers.SAXParser");
+        reader.setFeature("http://xml.org/sax/features/namespaces", true);
+        return reader;
+    }
+    
+    public static void process(XMLReader reader, SAXFactory sf, File file) {
         if (file.isDirectory()) {
             File list[] = file.listFiles();
             for (int i = 0; i < list.length; i++) {
-                process(reader, list[i]);
+                process(reader, sf, list[i]);
             }
         } else {
             try {
-//                System.out.println("reading "+file.getName()+" ...");
-                reader.parse(file.toURL().toExternalForm());
+                String url = file.toURL().toExternalForm();
+                System.out.print("reading "+file.getName()+" ...");
+                reader.parse(url);
+                int id = sf.getLastResult();
+                VersionFactory.getInstance()
+                    .createVersion(id, sf.nf.pt.getPlainText(url));
+                System.out.println(" OK.");
             } catch (SAXException ex) {
 //                ex.printStackTrace();
-//                if (ex.getException() != null) {
-//                    ex.getException().printStackTrace();
-//                }
+                if (ex.getException() != null) {
+                    ex.getException().printStackTrace();
+                }
+                System.out.println(" "+ex.getMessage());
             } catch (Exception ex) {
                 ex.printStackTrace();
+                System.out.println(" "+ex.getMessage());
             }
         }
     }
@@ -184,11 +237,10 @@ public class SAXFactory implements ContentHandler {
         try {
             ConnectionFactory cf = ConnectionFactory.getInstance();
             SAXFactory sf = new SAXFactory(cf);
-            XMLReader reader = XMLReaderFactory
-                .createXMLReader("org.apache.xerces.parsers.SAXParser");
+            XMLReader reader = createReader();
             reader.setContentHandler(sf);
             for (int i = 0; i < args.length; i++) {
-                process(reader, new File(args[i]));
+                process(reader, sf, new File(args[i]));
             }
             int result[] = sf.getResult();
             for (int i = 0; i < result.length; i++) {

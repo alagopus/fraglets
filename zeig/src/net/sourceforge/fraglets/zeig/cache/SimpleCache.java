@@ -8,6 +8,7 @@ package net.sourceforge.fraglets.zeig.cache;
 
 /**
  * @author marion@users.sourceforge.net
+ * @version $Revision: 1.2 $
  */
 public interface SimpleCache {
     public CacheEntry get(int hash, int key);

@@ -8,8 +8,11 @@ package net.sourceforge.fraglets.zeig.model;
 
 /**
  * @author unknown
+ * @version $Revision: 1.2 $
  */
 public interface NodeTags {
+    public static final String NODE_NODE = "#node";
+    public static final String NODE_ROOT = "#root";
     public static final String NODE_TEXT = "#text";
     public static final String NODE_PROCESSING_INSTRUCTION= "#processing-instruction";
 }
