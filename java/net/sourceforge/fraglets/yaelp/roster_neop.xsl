@@ -12,7 +12,7 @@
 <xsl:param name="class-color">#000066</xsl:param>
 <xsl:param name="row-color">#000033</xsl:param>
 <xsl:param name="text-color">#FFFFFF</xsl:param>
-<xsl:param name="link-color">#00FF00</xsl:param>
+<xsl:param name="link-color">#FFFF00</xsl:param>
 <xsl:param name="star-color">#00FF00</xsl:param>
 <xsl:param name="rank-color">#FFFF00</xsl:param>
 
@@ -72,7 +72,7 @@
         <xsl:apply-templates select="culture"/>
         <TD><xsl:choose>
             <xsl:when test="not($main) or $main=''">/na</xsl:when>
-            <xsl:when test="$main != name"><a href="#{$main}" style="color: #ffff00;"><xsl:value-of select="$main"/>'s</a></xsl:when>
+            <xsl:when test="$main != name"><a href="#{$main}" style="color: {$link-color};"><xsl:value-of select="$main"/>'s</a></xsl:when>
             <xsl:otherwise>Main</xsl:otherwise>
         </xsl:choose></TD>
     </TR>
