@@ -2,7 +2,7 @@
 // Default Web Page for groups that haven't setup their page yet
 // Please replace this file with your own website
 //
-// $Id: index.php,v 1.1 2000-04-28 07:04:31 marion Exp $
+// $Id: index.php,v 1.2 2000-04-28 09:03:54 marion Exp $
 //
 $headers = getallheaders();
 ?>
@@ -49,7 +49,7 @@ $headers = getallheaders();
       <H1>Welcome to http://<?php print $headers[Host]; ?>/</H1>
       <P>I'm sorry but I had not the time to create a ready web page design.
       Thus I will just add the stuff here until I get the time to do it right.
-      See <a href="http://sourceforge.net/project/?group_id=3854">the project
+      See <a href="http://sourceforge.net/project/?group_id=5068">the project
       page</a> for further information, but don't expect much for now.
       </P>
       </CENTER>
@@ -64,26 +64,26 @@ $headers = getallheaders();
 <OBJECT classid="clsid:8AD9C840-044E-11D1-B3E9-00805F499D93"
      width="416" height="321" align="baseline"
      codebase="http://java.sun.com/products/plugin/1.2.2/jinstall-1_2_2-win.cab#Version=1,2,2,0">
- <PARAM NAME="archive" VALUE="shelf-beans.jar">
- <PARAM NAME="code" VALUE="net.sourceforge.shelf.beans.Showcase.class">
+ <PARAM NAME="archive" VALUE="fraglets-beans.jar">
+ <PARAM NAME="code" VALUE="net.sourceforge.fraglets.beans.Showcase.class">
  <PARAM NAME="type" VALUE="application/x-java-applet;version=1.2.2">
  <PARAM NAME="scriptable" VALUE="false">
  <COMMENT>
      <EMBED type="application/x-java-applet;version=1.2.2"
        width="416" height="321" align="baseline"
-       archive="shelf-beans.jar"
-       code="net.sourceforge.shelf.beans.Showcase.class"
+       archive="fraglets-beans.jar"
+       code="net.sourceforge.fraglets.beans.Showcase.class"
        pluginspage="http://java.sun.com/products/plugin/1.2/plugin-install.html">
      <NOEMBED>
-	<APPLET WIDTH=416 HEIGHT=321 ARCHIVE="shelf-beans.jar"
-	  CODE="net.sourceforge.shelf.beans.Showcase.class">
+	<APPLET WIDTH=416 HEIGHT=321 ARCHIVE="fraglets-beans.jar"
+	  CODE="net.sourceforge.fraglets.beans.Showcase.class">
             No JDK 1.2 support for APPLET!!
 	</APPLET>
      </NOEMBED></EMBED>
      </COMMENT>
  </OBJECT><BR>
 	The code and jar for this applet can be found <a
-href="http://cvs.sourceforge.net/cgi-bin/cvsweb.cgi/shelf/java/net/sourceforge/shelf/beans/?cvsroot=shelf"
+href="http://cvs.sourceforge.net/cgi-bin/cvsweb.cgi/fraglets/java/net/sourceforge/fraglets/beans/?cvsroot=fraglets"
 	>here in the CVS repository</a>, and standard
         JavaDoc is <a href="javadoc/">here</a>.
 
