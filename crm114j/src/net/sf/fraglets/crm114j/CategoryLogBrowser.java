@@ -1,5 +1,5 @@
 /*
- * $Id: CategoryLogBrowser.java,v 1.3 2004-04-04 23:37:11 marion Exp $
+ * $Id: CategoryLogBrowser.java,v 1.4 2004-04-04 23:37:44 marion Exp $
  * Copyright (C) 2004 Klaus Rennecke, all rights reserved.
  */
 package net.sf.fraglets.crm114j;
@@ -21,7 +21,7 @@ import thinlet.FrameLauncher;
 import thinlet.Thinlet;
 
 /**
- * @version $Id: CategoryLogBrowser.java,v 1.3 2004-04-04 23:37:11 marion Exp $
+ * @version $Id: CategoryLogBrowser.java,v 1.4 2004-04-04 23:37:44 marion Exp $
  */
 public class CategoryLogBrowser extends Thinlet implements FilesystemBrowser.FileSelectionListener {
     
@@ -416,21 +416,16 @@ public class CategoryLogBrowser extends Thinlet implements FilesystemBrowser.Fil
             // update status and sliders with current position and portion
             lastPart = pos + off - lastPos;
             long all = file.length();
-            System.out.println("lastPos: " + lastPos);
-            System.out.println("lastPart: " + lastPart);
-            System.out.println("all: " + all);
             setString(find("status"), "text", "pos="+lastPos+", part="+lastPart);
             if (lastPart > 0) {
                 Object slider = find("slider");
                 max = getInteger(slider, "maximum");
                 setInteger(slider, "block", (int)(max * lastPart / all));
-                System.out.println("block: " + getInteger(slider, "block"));
             }
             item = find("portion");
             if (item != null) {
                 max = getInteger(item, "maximum");
                 setInteger(item, "value", (int)(max * (lastPos + lastPart) / all));
-                System.out.println("portion: " + getInteger(item, "value"));
             }
             
             // select the item which is closest to focus
