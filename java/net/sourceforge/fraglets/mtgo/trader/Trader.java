@@ -64,12 +64,14 @@ import javax.swing.event.ListSelectionListener;
 import java.net.URL;
 import net.sourceforge.fraglets.mtgo.trader.Trader.CardPanel;
 import javax.swing.Box;
+import java.io.FilterReader;
+import java.io.Reader;
 
 /**
  *
  * @author marion@users.sourceforge.net
  */
-public class Trader extends JFrame {
+public class Trader extends JFrame implements ProgressListener {
     public static final String ABOUT_MESSAGE =
     "MGT Trader (C) Copyright 2002 Sandra Rennecke and Klaus Rennecke.\n" +
     "Contains XP XML parser Copyright (c) 1997, 1998 James Clark, see XP License.\n" +
@@ -105,6 +107,7 @@ public class Trader extends JFrame {
         menuBar.add(styleStatusLabel);
         setSize(600, 400);
         detective = new CardDetective(null);
+        detective.setProgressListener(this);
     }
     
     /** This method is called from within the constructor to
@@ -117,6 +120,9 @@ public class Trader extends JFrame {
         desktopPane = new javax.swing.JDesktopPane();
         propertyPanel = new javax.swing.JPanel();
         cardPanel = new CardPanel();
+        statusPanel = new javax.swing.JPanel();
+        statusLabel = new javax.swing.JLabel();
+        progressBar = new javax.swing.JProgressBar();
         menuBar = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
         openSetMenuItem = new javax.swing.JMenuItem();
@@ -149,13 +155,24 @@ public class Trader extends JFrame {
 
         getContentPane().add(desktopPane, java.awt.BorderLayout.CENTER);
 
-        propertyPanel.setBorder(new javax.swing.border.TitledBorder("Card Information"));
+        propertyPanel.setBorder(new javax.swing.border.TitledBorder("Selected Card"));
         cardPanel.setMaximumSize(new java.awt.Dimension(200, 285));
         cardPanel.setMinimumSize(new java.awt.Dimension(200, 285));
         cardPanel.setPreferredSize(new java.awt.Dimension(200, 285));
         propertyPanel.add(cardPanel);
 
         getContentPane().add(propertyPanel, java.awt.BorderLayout.WEST);
+
+        statusPanel.setLayout(new javax.swing.BoxLayout(statusPanel, javax.swing.BoxLayout.X_AXIS));
+
+        statusPanel.setBorder(new javax.swing.border.EtchedBorder());
+        statusLabel.setMaximumSize(new java.awt.Dimension(32767, 32767));
+        statusPanel.add(statusLabel);
+
+        progressBar.setMaximumSize(new java.awt.Dimension(148, 14));
+        statusPanel.add(progressBar);
+
+        getContentPane().add(statusPanel, java.awt.BorderLayout.SOUTH);
 
         fileMenu.setText("File");
         openSetMenuItem.setText("Open Set ...");
@@ -342,9 +359,11 @@ public class Trader extends JFrame {
                 String name = result.toString();
                 final DefaultTableModel model = new DefaultTableModel();
                 SpoilerParser parser = new SpoilerParser(model);
-                parser.parse(detective.openURL(detective.getSet(name)));
+                Reader in = detective.openURL(detective.getSet(name));
+                parser.parse(in);
+                in.close();
                 openTable(name, model);
-            } catch (IOException ex) {
+            } catch (Exception ex) {
                 showException("opening set", ex);
             }
         }
@@ -365,7 +384,7 @@ public class Trader extends JFrame {
                     PDLParser parser = new PDLParser(model);
                     parser.parse(chooser.getSelectedFile());
                     openTable(file.getName(), model);
-                } catch (IOException ex) {
+                } catch (Exception ex) {
                     showException("opening file", ex);
                 }
             }
@@ -392,7 +411,7 @@ public class Trader extends JFrame {
                     CDLParser parser = new CDLParser(model);
                     parser.parse(chooser.getSelectedFile());
                     openTable(file.getName(), model);
-                } catch (IOException ex) {
+                } catch (Exception ex) {
                     showException("opening file", ex);
                 }
             }
@@ -495,6 +514,7 @@ public class Trader extends JFrame {
                 Dimension size = this.getSize();
                 tracker.addImage(image, 0, size.width, size.height);
                 tracker.statusAll(true);
+                tracker.removeImage(image);
             }
             this.repaint();
         }
@@ -578,6 +598,8 @@ public class Trader extends JFrame {
         initProcessor();
         if (loadedStyle == null || !loadedStyle.equals(style)) {
             InputStream xsl = style.openStream();
+            setObjective("Loading: "+style);
+            xsl = new ProgressInputStream(xsl, this, xsl.available());
             processor.loadStylesheet(new InputSource(xsl));
             xsl.close();
             loadedStyle = style;
@@ -625,6 +647,7 @@ public class Trader extends JFrame {
         int cols = tcm.getColumnCount();
         String tags[] = new String[cols];
         pw.println(" <heading>");
+        progressBar.setValue(0);
         for (int i = 0; i < cols; i++) {
             // HACK: we don't set identifiers explicitly yet,
             // so we use lower case header values.
@@ -635,6 +658,7 @@ public class Trader extends JFrame {
             pw.print("\">");
             pw.print(column.getHeaderValue());
             pw.println("</column>");
+            progressBar.setValue(i / cols * 100);
         }
         pw.println(" </heading>");
         
@@ -657,6 +681,8 @@ public class Trader extends JFrame {
                 }
             }
             pw.println(" </row>");
+            progressBar.setValue(j / rows * 100);
+            RepaintManager.currentManager(progressBar).paintDirtyRegions();
         }
         pw.println("</table>");
         pw.flush();
@@ -704,6 +730,16 @@ public class Trader extends JFrame {
         new Trader().show();
     }
     
+    public void setObjective(String objective) {
+        statusLabel.setText(objective);
+        setPercent(0);
+    }
+    
+    public void setPercent(int percent) {
+        progressBar.setValue(percent);
+        RepaintManager.currentManager(progressBar).paintDirtyRegions();
+    }
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutMenuItem;
     private javax.swing.JMenu fileMenu;
@@ -713,12 +749,15 @@ public class Trader extends JFrame {
     private javax.swing.JMenuItem exportXMLMenuItem;
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JMenuItem openCDLMenuItem;
+    private javax.swing.JPanel statusPanel;
     private javax.swing.JLabel styleStatusLabel;
     private javax.swing.JPanel propertyPanel;
     private javax.swing.JMenuItem contentMenuItem;
     private javax.swing.JMenuItem openSetMenuItem;
+    private javax.swing.JProgressBar progressBar;
     private javax.swing.JMenuItem gnuLicenseItem;
     private javax.swing.JDesktopPane desktopPane;
+    private javax.swing.JLabel statusLabel;
     private javax.swing.JCheckBoxMenuItem defaultStyleMenuItem;
     private javax.swing.JMenu optionsMenu;
     private javax.swing.JMenuItem xpLicenseItem;
