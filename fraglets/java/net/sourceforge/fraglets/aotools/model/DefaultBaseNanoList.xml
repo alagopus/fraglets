@@ -1,0 +1,337 @@
+<base-nano-list>
+  <base-nano-cluster name="Akimbo Style">
+    <property name="body-loc">Right Wrist</property>
+    <property name="skill">Multi Ranged</property>
+    <property name="type">Bright</property>
+  </base-nano-cluster>
+  <base-nano-cluster name="Ambidexteriy">
+    <property name="body-loc">Unknown</property>
+    <property name="skill">Multi Melee</property>
+    <property name="type">Unknown</property>
+  </base-nano-cluster>
+  <base-nano-cluster name="Backstabbing">
+    <property name="body-loc">Unknown</property>
+    <property name="skill">Sneak Attack</property>
+    <property name="type">Unknown</property>
+  </base-nano-cluster>
+  <base-nano-cluster name="Captaining">
+    <property name="body-loc">Unknown</property>
+    <property name="skill">Vehicle Hydro</property>
+    <property name="type">Unknown</property>
+  </base-nano-cluster>
+  <base-nano-cluster name="Computer Skill">
+    <property name="body-loc">Eye</property>
+    <property name="skill">Comp Lit</property>
+    <property name="type">Bright</property>
+  </base-nano-cluster>
+  <base-nano-cluster name="Creation">
+    <property name="body-loc">Eye</property>
+    <property name="skill">Matter Crea</property>
+    <property name="type">Faded</property>
+  </base-nano-cluster>
+  <base-nano-cluster name="Dodging">
+    <property name="body-loc">Waist</property>
+    <property name="skill">Dodge-Rng</property>
+    <property name="type">Faded</property>
+  </base-nano-cluster>
+  <base-nano-cluster name="Ducking">
+    <property name="body-loc">Feet</property>
+    <property name="skill">Duck-Exp</property>
+    <property name="type">Faded</property>
+  </base-nano-cluster>
+  <base-nano-cluster name="Ducking">
+    <property name="body-loc">Waist</property>
+    <property name="skill">Duck-Exp</property>
+    <property name="type">Bright</property>
+  </base-nano-cluster>
+  <base-nano-cluster name="E=MC^2">
+    <property name="body-loc">Unknown</property>
+    <property name="skill">Time&amp;Space</property>
+    <property name="type">Unknown</property>
+  </base-nano-cluster>
+  <base-nano-cluster name="Empathy">
+    <property name="body-loc">Waist</property>
+    <property name="skill">Sense</property>
+    <property name="type">Bright</property>
+  </base-nano-cluster>
+  <base-nano-cluster name="Endurance">
+    <property name="body-loc">Chest</property>
+    <property name="skill">Stamina</property>
+    <property name="type">Shining</property>
+  </base-nano-cluster>
+  <base-nano-cluster name="Fire Protection">
+    <property name="body-loc">Left Hand</property>
+    <property name="skill">Fire AC</property>
+    <property name="type">Bright</property>
+  </base-nano-cluster>
+  <base-nano-cluster name="Flying">
+    <property name="body-loc">Eye</property>
+    <property name="skill">Vehicle Air</property>
+    <property name="type">Shining</property>
+  </base-nano-cluster>
+  <base-nano-cluster name="Genius">
+    <property name="body-loc">Head</property>
+    <property name="skill">Intelligence</property>
+    <property name="type">Shining</property>
+  </base-nano-cluster>
+  <base-nano-cluster name="High ROF">
+    <property name="body-loc">Head</property>
+    <property name="skill">Ranged Init</property>
+    <property name="type">Bright</property>
+  </base-nano-cluster>
+  <base-nano-cluster name="Inner Energy">
+    <property name="body-loc">Unknown</property>
+    <property name="skill">Nano Pool</property>
+    <property name="type">Unknown</property>
+  </base-nano-cluster>
+  <base-nano-cluster name="Inner Fire">
+    <property name="body-loc">Unknown</property>
+    <property name="skill">Martial Arts</property>
+    <property name="type">Unknown</property>
+  </base-nano-cluster>
+  <base-nano-cluster name="Inner Pool">
+    <property name="body-loc">Unknown</property>
+    <property name="skill">Max Nano</property>
+    <property name="type">Unknown</property>
+  </base-nano-cluster>
+  <base-nano-cluster name="Inner Strength">
+    <property name="body-loc">Unknown</property>
+    <property name="skill">Psychic</property>
+    <property name="type">Unknown</property>
+  </base-nano-cluster>
+  <base-nano-cluster name="Insurging">
+    <property name="body-loc">Chest</property>
+    <property name="skill">Break &amp; Entry</property>
+    <property name="type">Bright</property>
+  </base-nano-cluster>
+  <base-nano-cluster name="Insurging">
+    <property name="body-loc">Head</property>
+    <property name="skill">Break &amp; Entry</property>
+    <property name="type">Shining</property>
+  </base-nano-cluster>
+  <base-nano-cluster name="Life">
+    <property name="body-loc">Unknown</property>
+    <property name="skill">Max Health</property>
+    <property name="type">Unknown</property>
+  </base-nano-cluster>
+  <base-nano-cluster name="Longrange Weapons">
+    <property name="body-loc">Unknown</property>
+    <property name="skill">Rifle</property>
+    <property name="type">Unknown</property>
+  </base-nano-cluster>
+  <base-nano-cluster name="Lumping">
+    <property name="body-loc">Left Arm</property>
+    <property name="skill">Grenade</property>
+    <property name="type">Bright</property>
+  </base-nano-cluster>
+  <base-nano-cluster name="Mauling">
+    <property name="body-loc">Unknown</property>
+    <property name="skill">2H Blunt</property>
+    <property name="type">Unknown</property>
+  </base-nano-cluster>
+  <base-nano-cluster name="Nanite Resistance">
+    <property name="body-loc">Unknown</property>
+    <property name="skill">Nano Resist</property>
+    <property name="type">Unknown</property>
+  </base-nano-cluster>
+  <base-nano-cluster name="Nanite Resistance">
+    <property name="body-loc">Left Wrist</property>
+    <property name="skill">Nano Resist</property>
+    <property name="type">Faded</property>
+  </base-nano-cluster>
+  <base-nano-cluster name="Navigation">
+    <property name="body-loc">Ear</property>
+    <property name="skill">Map Navigation</property>
+    <property name="type">Faded</property>
+  </base-nano-cluster>
+  <base-nano-cluster name="Navigation">
+    <property name="body-loc">Eye</property>
+    <property name="skill">Map Navigation</property>
+    <property name="type">Shining</property>
+  </base-nano-cluster>
+  <base-nano-cluster name="Nimbleness">
+    <property name="body-loc">Unknown</property>
+    <property name="skill">Agility</property>
+    <property name="type">Unknown</property>
+  </base-nano-cluster>
+  <base-nano-cluster name="Parrying">
+    <property name="body-loc">Right Wrist</property>
+    <property name="skill">Parry</property>
+    <property name="type">Shining</property>
+  </base-nano-cluster>
+  <base-nano-cluster name="Perception">
+    <property name="body-loc">Ear</property>
+    <property name="skill">Perception</property>
+    <property name="type">Shining</property>
+  </base-nano-cluster>
+  <base-nano-cluster name="Pill Knowledge">
+    <property name="body-loc">Eye</property>
+    <property name="skill">Pharma Tech</property>
+    <property name="type">Bright</property>
+  </base-nano-cluster>
+  <base-nano-cluster name="Poison Protection">
+    <property name="body-loc">Unknown</property>
+    <property name="skill">Disease AC</property>
+    <property name="type">Unknown</property>
+  </base-nano-cluster>
+  <base-nano-cluster name="Poison Resistance">
+    <property name="body-loc">Unknown</property>
+    <property name="skill">Bow</property>
+    <property name="type">Unknown</property>
+  </base-nano-cluster>
+  <base-nano-cluster name="Polymorph">
+    <property name="body-loc">Head</property>
+    <property name="skill">Bio Meta</property>
+    <property name="type">Shining</property>
+  </base-nano-cluster>
+  <base-nano-cluster name="Polymorph">
+    <property name="body-loc">Waist</property>
+    <property name="skill">Bio Meta</property>
+    <property name="type">Faded</property>
+  </base-nano-cluster>
+  <base-nano-cluster name="Polymorph">
+    <property name="body-loc">Chest</property>
+    <property name="skill">Bio Meta</property>
+    <property name="type">Bright</property>
+  </base-nano-cluster>
+  <base-nano-cluster name="Programming Skill">
+    <property name="body-loc">Eye</property>
+    <property name="skill">Nano Progra</property>
+    <property name="type">Bright</property>
+  </base-nano-cluster>
+  <base-nano-cluster name="Programming Skill">
+    <property name="body-loc">Head</property>
+    <property name="skill">Nano Progra</property>
+    <property name="type">Shining</property>
+  </base-nano-cluster>
+  <base-nano-cluster name="Projectile Protection">
+    <property name="body-loc">Chest</property>
+    <property name="skill">Imp/Proj AC</property>
+    <property name="type">Bright</property>
+  </base-nano-cluster>
+  <base-nano-cluster name="Quick Slashing">
+    <property name="body-loc">Feet</property>
+    <property name="skill">Melee Init</property>
+    <property name="type">Shining</property>
+  </base-nano-cluster>
+  <base-nano-cluster name="Quickie">
+    <property name="body-loc">Left Hand</property>
+    <property name="skill">Fast Attack</property>
+    <property name="type">Shining</property>
+  </base-nano-cluster>
+  <base-nano-cluster name="Radiation Resistance">
+    <property name="body-loc">Unknown</property>
+    <property name="skill">Radiation AC</property>
+    <property name="type">Unknown</property>
+  </base-nano-cluster>
+  <base-nano-cluster name="Red X">
+    <property name="body-loc">Left Hand</property>
+    <property name="skill">First Aid</property>
+    <property name="type">Faded</property>
+  </base-nano-cluster>
+  <base-nano-cluster name="Retaliation">
+    <property name="body-loc">Unknown</property>
+    <property name="skill">Riposte</property>
+    <property name="type">Unknown</property>
+  </base-nano-cluster>
+  <base-nano-cluster name="Sensitivity">
+    <property name="body-loc">Head</property>
+    <property name="skill">Sensory Impr</property>
+    <property name="type">Shining</property>
+  </base-nano-cluster>
+  <base-nano-cluster name="Slashing Protection">
+    <property name="body-loc">Legs</property>
+    <property name="skill">Melee/MA AC</property>
+    <property name="type">Faded</property>
+  </base-nano-cluster>
+  <base-nano-cluster name="Small Arms">
+    <property name="body-loc">Right Wrist</property>
+    <property name="skill">Pistol</property>
+    <property name="type">Shining</property>
+  </base-nano-cluster>
+  <base-nano-cluster name="Small Arms">
+    <property name="body-loc">Right Hand</property>
+    <property name="skill">Pistol</property>
+    <property name="type">Bright</property>
+  </base-nano-cluster>
+  <base-nano-cluster name="Smashing">
+    <property name="body-loc">Unknown</property>
+    <property name="skill">Brawling</property>
+    <property name="type">Unknown</property>
+  </base-nano-cluster>
+  <base-nano-cluster name="Sneaking">
+    <property name="body-loc">Left Wrist</property>
+    <property name="skill">Concealment</property>
+    <property name="type">Shining</property>
+  </base-nano-cluster>
+  <base-nano-cluster name="Soul Attack">
+    <property name="body-loc">Unknown</property>
+    <property name="skill">Dimach</property>
+    <property name="type">Unknown</property>
+  </base-nano-cluster>
+  <base-nano-cluster name="Sprinting">
+    <property name="body-loc">Ear</property>
+    <property name="skill">Run Speed</property>
+    <property name="type">Faded</property>
+  </base-nano-cluster>
+  <base-nano-cluster name="Strenght">
+    <property name="body-loc">Left Arm</property>
+    <property name="skill">Strength</property>
+    <property name="type">Faded</property>
+  </base-nano-cluster>
+  <base-nano-cluster name="Strenght">
+    <property name="body-loc">Right Arm</property>
+    <property name="skill">Strength</property>
+    <property name="type">Bright</property>
+  </base-nano-cluster>
+  <base-nano-cluster name="Surgery">
+    <property name="body-loc">Right Hand</property>
+    <property name="skill">Treatment</property>
+    <property name="type">Faded</property>
+  </base-nano-cluster>
+  <base-nano-cluster name="Surgery">
+    <property name="body-loc">Head</property>
+    <property name="skill">Treatment</property>
+    <property name="type">Shining</property>
+  </base-nano-cluster>
+  <base-nano-cluster name="Swiftness of Controlling">
+    <property name="body-loc">Eye</property>
+    <property name="skill">Nano Init</property>
+    <property name="type">Bright</property>
+  </base-nano-cluster>
+  <base-nano-cluster name="Swiftness of Controlling">
+    <property name="body-loc">Head</property>
+    <property name="skill">Nano Init</property>
+    <property name="type">Shining</property>
+  </base-nano-cluster>
+  <base-nano-cluster name="Swimming">
+    <property name="body-loc">Left Arm</property>
+    <property name="skill">Swimming</property>
+    <property name="type">Faded</property>
+  </base-nano-cluster>
+  <base-nano-cluster name="Teaching">
+    <property name="body-loc">Head</property>
+    <property name="skill">Tutoring</property>
+    <property name="type">Faded</property>
+  </base-nano-cluster>
+  <base-nano-cluster name="Transmutation">
+    <property name="body-loc">Left Arm</property>
+    <property name="skill">Matter Meta</property>
+    <property name="type">Faded</property>
+  </base-nano-cluster>
+  <base-nano-cluster name="Unloading">
+    <property name="body-loc">Unknown</property>
+    <property name="skill">Full Auto</property>
+    <property name="type">Unknown</property>
+  </base-nano-cluster>
+  <base-nano-cluster name="Warfare">
+    <property name="body-loc">Right Arm</property>
+    <property name="skill">Assault Rifle</property>
+    <property name="type">Shining</property>
+  </base-nano-cluster>
+  <base-nano-cluster name="Weapon Knowledge">
+    <property name="body-loc">Eye</property>
+    <property name="skill">Weapon Smithing</property>
+    <property name="type">Faded</property>
+  </base-nano-cluster>
+</base-nano-list>

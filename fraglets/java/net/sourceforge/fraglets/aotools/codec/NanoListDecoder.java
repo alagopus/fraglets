@@ -13,16 +13,19 @@ import com.jclark.xml.parse.ApplicationException;
 import com.jclark.xml.parse.CharacterDataEvent;
 import com.jclark.xml.parse.EndElementEvent;
 import com.jclark.xml.parse.EntityManagerImpl;
+import com.jclark.xml.parse.OpenEntity;
 import com.jclark.xml.parse.NotWellFormedException;
 import com.jclark.xml.parse.StartElementEvent;
 import com.jclark.xml.parse.base.ApplicationImpl;
 import com.jclark.xml.parse.base.Parser;
 import com.jclark.xml.parse.base.ParserImpl;
+import java.io.IOException;
+import java.net.URL;
 
 /** Decoder for XML encoded nano lists.
  *
  * @author kre
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class NanoListDecoder extends ApplicationImpl {
     /** The list where to add nano clusters. */
@@ -43,6 +46,19 @@ public class NanoListDecoder extends ApplicationImpl {
     public NanoListDecoder(BaseNanoList list) {
         this.list = list;
         this.buffer = new StringBuffer();
+    }
+    
+    /** Decode the XML file at <var>url</var>.
+     * @param url the URL to parse
+     * @throws ApplicationException on parser failures
+     * @throws IOException on IO failures
+     * @throws NotWellFormedException on XML format errors
+     */
+    public void decode(URL url) throws ApplicationException, IOException, NotWellFormedException {
+        Parser parser = new ParserImpl();
+        parser.setApplication(this);
+        parser.parseDocument(new OpenEntity(url.openStream(),
+            url.toExternalForm(), url));
     }
     
     /** Convert a text description of a nano type to numeric
@@ -147,7 +163,7 @@ public class NanoListDecoder extends ApplicationImpl {
      * @throws IOException on IO failures
      * @throws ApplicationException on parser failures
      */    
-    public static void main(String args[]) throws java.io.IOException, ApplicationException {
+    public static void main(String args[]) throws IOException, ApplicationException {
         Parser parser = new ParserImpl();
         BaseNanoList list = BaseNanoList.getBaseNanoList();
         parser.setApplication(new NanoListDecoder(list));

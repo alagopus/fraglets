@@ -8,6 +8,7 @@ package net.sourceforge.fraglets.aotools.model;
 
 import java.util.*;
 import java.io.*;
+import net.sourceforge.fraglets.aotools.codec.NanoListDecoder;
 
 /**
  *
@@ -24,17 +25,16 @@ public class BaseNanoList {
     
     /** Creates new BaseNanoList */
     private BaseNanoList() {
-        try{
-            File f = new File("BaseNanoList.ser");
-            ObjectInputStream in = new ObjectInputStream(new FileInputStream(f));
-            allNano = (List) in.readObject();
-        }
-        catch(Exception ex){
-            allNano = new ArrayList();
-            System.out.println("Error in loading BaseNanoList.ser");
-        }
+        allNano = new ArrayList();
         listModel = new BaseNanoListModel();
         selectedNano = allNano;
+        try {
+            new NanoListDecoder(this)
+                .decode(getClass().getResource("DefaultBaseNanoList.xml"));
+        } catch (Exception ex) {
+            System.err.println
+                ("loading default base nano list failed: "+ex.getMessage());
+        }
     }
     
     public static BaseNanoList getBaseNanoList(){
