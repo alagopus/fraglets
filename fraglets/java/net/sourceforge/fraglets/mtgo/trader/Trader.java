@@ -19,31 +19,50 @@
 
 package net.sourceforge.fraglets.mtgo.trader;
 
-import javax.swing.JOptionPane;
-import javax.swing.JFileChooser;
-import javax.swing.table.DefaultTableModel;
-import java.io.File;
-import javax.swing.JInternalFrame;
-import java.io.IOException;
-import java.awt.BorderLayout;
-import javax.swing.RepaintManager;
+import java.util.StringTokenizer;
+import com.jclark.xml.sax.CommentDriver;
 import org.xml.sax.SAXParseException;
+import org.xml.sax.SAXException;
+import org.xml.sax.InputSource;
+import org.xml.sax.ErrorHandler;
+import java.beans.PropertyVetoException;
+import javax.swing.JScrollPane;
+
+import javax.swing.JEditorPane;
+import javax.swing.JPanel;
+import javax.swing.UIManager;
+import javax.swing.JOptionPane;
+import javax.swing.JInternalFrame;
+import javax.swing.JFileChooser;
+import javax.swing.JTable;
 import javax.swing.JFrame;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.event.ListSelectionEvent;
-import java.net.URL;
-import javax.swing.ImageIcon;
-import java.awt.Dimension;
+import javax.swing.RepaintManager;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableColumn;
+import com.jclark.xsl.sax.Destination;
+import com.jclark.xsl.sax.OutputMethodHandlerImpl;
+import com.jclark.xsl.sax.FileDestination;
+import com.jclark.xsl.sax.XSLProcessor;
+import com.jclark.xsl.sax.XSLProcessorImpl;
+import java.io.FileWriter;
+import java.io.File;
+import java.io.InputStream;
+import java.io.PipedReader;
+import java.io.PipedWriter;
+import java.io.IOException;
+import java.io.Writer;
+import java.io.PrintWriter;
 import java.awt.Image;
 import java.awt.Graphics;
-import javax.swing.JPanel;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.MediaTracker;
-import javax.swing.table.TableModel;
-import javax.swing.JList;
-import java.util.Iterator;
-import java.net.URLConnection;
-import java.beans.PropertyVetoException;
-import javax.swing.UIManager;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import java.net.URL;
+import net.sourceforge.fraglets.mtgo.trader.Trader.CardPanel;
 
 /**
  *
@@ -51,7 +70,9 @@ import javax.swing.UIManager;
  */
 public class Trader extends JFrame {
     public static final String ABOUT_MESSAGE =
-    "MGT Trader (C) Copyright 2002 Klaus Rennecke\n" +
+    "MGT Trader (C) Copyright 2002 Sandra Rennecke and Klaus Rennecke.\n" +
+    "Contains XP XML parser Copyright (c) 1997, 1998 James Clark, see XP License.\n" +
+    "Contains XT XML transformer Copyright (c) 1998, 1999 James Clark, see XT License.\n" +
     "\n" +
     "This program is free software; you can redistribute it and/or modify\n" +
     "it under the terms of the GNU General Public License as published by\n" +
@@ -72,6 +93,9 @@ public class Trader extends JFrame {
     
     /** The shared card detective. */
     protected CardDetective detective;
+    
+    /** The currently selected style. */
+    protected URL selectedStyle;
     
     /** Creates new form Trader */
     public Trader() {
@@ -95,19 +119,20 @@ public class Trader extends JFrame {
         openCDLMenuItem = new javax.swing.JMenuItem();
         openPDLMenuItem = new javax.swing.JMenuItem();
         jSeparator1 = new javax.swing.JSeparator();
-        saveMenuItem = new javax.swing.JMenuItem();
-        saveAsMenuItem = new javax.swing.JMenuItem();
+        exportHTMLMenuItem = new javax.swing.JMenuItem();
+        exportXMLMenuItem = new javax.swing.JMenuItem();
         jSeparator2 = new javax.swing.JSeparator();
         exitMenuItem = new javax.swing.JMenuItem();
-        editMenu = new javax.swing.JMenu();
-        cutMenuItem = new javax.swing.JMenuItem();
-        copyMenuItem = new javax.swing.JMenuItem();
-        pasteMenuItem = new javax.swing.JMenuItem();
-        deleteMenuItem = new javax.swing.JMenuItem();
+        optionsMenu = new javax.swing.JMenu();
+        defaultStyleMenuItem = new javax.swing.JCheckBoxMenuItem();
+        selectStyleMenuItem = new javax.swing.JMenuItem();
         helpMenu = new javax.swing.JMenu();
         contentMenuItem = new javax.swing.JMenuItem();
         aboutMenuItem = new javax.swing.JMenuItem();
-        licenseItem = new javax.swing.JMenuItem();
+        jSeparator3 = new javax.swing.JSeparator();
+        gnuLicenseItem = new javax.swing.JMenuItem();
+        xpLicenseItem = new javax.swing.JMenuItem();
+        xtLicenseItem = new javax.swing.JMenuItem();
 
         setTitle("MTGO Trader");
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -152,12 +177,22 @@ public class Trader extends JFrame {
 
         fileMenu.add(openPDLMenuItem);
         fileMenu.add(jSeparator1);
-        saveMenuItem.setText("Save");
-        saveMenuItem.setEnabled(false);
-        fileMenu.add(saveMenuItem);
-        saveAsMenuItem.setText("Save As ...");
-        saveAsMenuItem.setEnabled(false);
-        fileMenu.add(saveAsMenuItem);
+        exportHTMLMenuItem.setText("Export HTML ...");
+        exportHTMLMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                exportHTMLMenuItemActionPerformed(evt);
+            }
+        });
+
+        fileMenu.add(exportHTMLMenuItem);
+        exportXMLMenuItem.setText("Export XML ...");
+        exportXMLMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                exportXMLMenuItemActionPerformed(evt);
+            }
+        });
+
+        fileMenu.add(exportXMLMenuItem);
         fileMenu.add(jSeparator2);
         exitMenuItem.setText("Exit");
         exitMenuItem.addActionListener(new java.awt.event.ActionListener() {
@@ -168,20 +203,22 @@ public class Trader extends JFrame {
 
         fileMenu.add(exitMenuItem);
         menuBar.add(fileMenu);
-        editMenu.setText("Edit");
-        cutMenuItem.setText("Cut");
-        cutMenuItem.setEnabled(false);
-        editMenu.add(cutMenuItem);
-        copyMenuItem.setText("Copy");
-        copyMenuItem.setEnabled(false);
-        editMenu.add(copyMenuItem);
-        pasteMenuItem.setText("Paste");
-        pasteMenuItem.setEnabled(false);
-        editMenu.add(pasteMenuItem);
-        deleteMenuItem.setText("Delete");
-        deleteMenuItem.setEnabled(false);
-        editMenu.add(deleteMenuItem);
-        menuBar.add(editMenu);
+        optionsMenu.setText("Edit");
+        defaultStyleMenuItem.setSelected(true);
+        defaultStyleMenuItem.setText("Default style");
+        defaultStyleMenuItem.setToolTipText("Use default style for HTML export");
+        defaultStyleMenuItem.setEnabled(false);
+        optionsMenu.add(defaultStyleMenuItem);
+        selectStyleMenuItem.setText("Select style ...");
+        selectStyleMenuItem.setToolTipText("Select a custom style for HTML export");
+        selectStyleMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                selectStyleMenuItemActionPerformed(evt);
+            }
+        });
+
+        optionsMenu.add(selectStyleMenuItem);
+        menuBar.add(optionsMenu);
         helpMenu.setText("Help");
         contentMenuItem.setText("Contents");
         contentMenuItem.setEnabled(false);
@@ -194,19 +231,77 @@ public class Trader extends JFrame {
         });
 
         helpMenu.add(aboutMenuItem);
-        licenseItem.setText("License ...");
-        licenseItem.addActionListener(new java.awt.event.ActionListener() {
+        helpMenu.add(jSeparator3);
+        gnuLicenseItem.setText("GNU License");
+        gnuLicenseItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                licenseItemActionPerformed(evt);
+                gnuLicenseItemActionPerformed(evt);
             }
         });
 
-        helpMenu.add(licenseItem);
+        helpMenu.add(gnuLicenseItem);
+        xpLicenseItem.setText("XP License");
+        xpLicenseItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                xpLicenseItemActionPerformed(evt);
+            }
+        });
+
+        helpMenu.add(xpLicenseItem);
+        xtLicenseItem.setText("XT License");
+        xtLicenseItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                xtLicenseItemActionPerformed(evt);
+            }
+        });
+
+        helpMenu.add(xtLicenseItem);
         menuBar.add(helpMenu);
         setJMenuBar(menuBar);
 
         pack();
     }//GEN-END:initComponents
+
+    private void selectStyleMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectStyleMenuItemActionPerformed
+        if (chooser == null) {
+            chooser = new JFileChooser();
+        }
+        chooser.setApproveButtonText("Select");
+        chooser.setDialogTitle("Select HTML export style");
+        chooser.setFileSelectionMode(chooser.FILES_ONLY);
+        if (chooser.APPROVE_OPTION == chooser.showOpenDialog(this)) {
+            File file = chooser.getSelectedFile();
+            if (file != null && file.exists()) {
+                try {
+                    selectedStyle = file.toURL();
+                    defaultStyleMenuItem.setEnabled(true);
+                    defaultStyleMenuItem.setSelected(false);
+                } catch (IOException ex) {
+                    showException("selecting style", ex);
+                }
+            }
+        }
+    }//GEN-LAST:event_selectStyleMenuItemActionPerformed
+
+    private void exportXMLMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportXMLMenuItemActionPerformed
+        exportCurrentTable("Export XML", ".xml", null);
+    }//GEN-LAST:event_exportXMLMenuItemActionPerformed
+
+    private void exportHTMLMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportHTMLMenuItemActionPerformed
+        URL style = selectedStyle;
+        if (style == null || defaultStyleMenuItem.isSelected()) {
+            style = getClass().getResource("table.xsl");
+        }
+        exportCurrentTable("Export HTML", ".html", style);
+    }//GEN-LAST:event_exportHTMLMenuItemActionPerformed
+
+    private void xtLicenseItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_xtLicenseItemActionPerformed
+        showTextResource("copying_xt.txt", "XT License");
+    }//GEN-LAST:event_xtLicenseItemActionPerformed
+
+    private void xpLicenseItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_xpLicenseItemActionPerformed
+        showTextResource("copying_xp.txt", "XP License");
+    }//GEN-LAST:event_xpLicenseItemActionPerformed
 
     private void openSetMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openSetMenuItemActionPerformed
         // Add your handling code here:
@@ -227,10 +322,11 @@ public class Trader extends JFrame {
     }//GEN-LAST:event_openSetMenuItemActionPerformed
 
     private void openPDLMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openPDLMenuItemActionPerformed
-        // Add your handling code here:
         if (chooser == null) {
             chooser = new JFileChooser();
         }
+        chooser.setApproveButtonText("Import");
+        chooser.setDialogTitle("Import Pipe (|) delimited table");
         chooser.setFileSelectionMode(chooser.FILES_ONLY);
         if (chooser.APPROVE_OPTION == chooser.showOpenDialog(this)) {
             File file = chooser.getSelectedFile();
@@ -247,27 +343,17 @@ public class Trader extends JFrame {
         }
     }//GEN-LAST:event_openPDLMenuItemActionPerformed
 
-    private void licenseItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_licenseItemActionPerformed
-        try {
-            javax.swing.JEditorPane editorPane =
-                new javax.swing.JEditorPane(getClass().getResource("gpl.txt"));
-            editorPane.setEditable(false);
-            javax.swing.JScrollPane scrollPane =
-                new javax.swing.JScrollPane(editorPane);
-            scrollPane.setPreferredSize(new java.awt.Dimension(600, 250));
-            javax.swing.JOptionPane.showInternalMessageDialog(desktopPane,
-                scrollPane, "License",
-                javax.swing.JOptionPane.INFORMATION_MESSAGE);
-        } catch (java.io.IOException ex) {
-            showException("reading license", ex);
-        }
-    }//GEN-LAST:event_licenseItemActionPerformed
+    private void gnuLicenseItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_gnuLicenseItemActionPerformed
+        showTextResource("gpl.txt", "MTGO Trader License");
+    }//GEN-LAST:event_gnuLicenseItemActionPerformed
 
     private void openCDLMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openCDLMenuItemActionPerformed
         // Add your handling code here:
         if (chooser == null) {
             chooser = new JFileChooser();
         }
+        chooser.setApproveButtonText("Import");
+        chooser.setDialogTitle("Import comma delimited table");
         chooser.setFileSelectionMode(chooser.FILES_ONLY);
         if (chooser.APPROVE_OPTION == chooser.showOpenDialog(this)) {
             File file = chooser.getSelectedFile();
@@ -286,7 +372,7 @@ public class Trader extends JFrame {
 
     private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutMenuItemActionPerformed
         // Add your handling code here:
-        JOptionPane.showInternalMessageDialog(desktopPane, ABOUT_MESSAGE);
+        JOptionPane.showMessageDialog(this, ABOUT_MESSAGE);
     }//GEN-LAST:event_aboutMenuItemActionPerformed
     
     private void exitMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitMenuItemActionPerformed
@@ -336,6 +422,23 @@ public class Trader extends JFrame {
         });
     }
     
+    protected void showTextResource(String resource, String title) {
+        showText(getClass().getResource(resource), title);
+    }
+    protected void showText(URL text, String title) {
+        try {
+            JEditorPane editorPane = new JEditorPane(text);
+            editorPane.setEditable(false);
+            JScrollPane scrollPane = new JScrollPane(editorPane);
+            scrollPane.setPreferredSize(new Dimension(600, 250));
+            JOptionPane.showMessageDialog(this,
+                scrollPane, title,
+                JOptionPane.INFORMATION_MESSAGE);
+        } catch (IOException ex) {
+            showException("reading "+text, ex);
+        }
+    }
+    
     protected void showException(String operation, Throwable ex) {
         String message = ex.getLocalizedMessage();
         if (message == null) {
@@ -346,8 +449,8 @@ public class Trader extends JFrame {
             message += "(" + spe.getSystemId()
                 + " line " + spe.getLineNumber() + ")";
         }
-        JOptionPane.showInternalMessageDialog
-            (desktopPane, message, "Exception "+operation, JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog
+            (this, message, "Exception "+operation, JOptionPane.ERROR_MESSAGE);
         RepaintManager.currentManager(this)
             .markCompletelyDirty(getRootPane());
     }
@@ -377,6 +480,181 @@ public class Trader extends JFrame {
         }
     }
     
+    protected void exportCurrentTable(String dialogTitle, String postfix, URL style) {
+        JTable table;
+        String title;
+        try {
+            JInternalFrame selected = desktopPane.getSelectedFrame();
+            table = ((PriceTable)selected.getContentPane().getComponent(0))
+                .getTable();
+            title = selected.getTitle();
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this,
+                "Please select a table to export", "Export Failed",
+                JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        if (chooser == null) {
+            chooser = new JFileChooser();
+        }
+        chooser.setApproveButtonText("Export");
+        chooser.setDialogTitle(dialogTitle);
+        chooser.setFileSelectionMode(chooser.FILES_ONLY);
+        chooser.setSelectedFile(new File(title+postfix));
+        if (chooser.APPROVE_OPTION == chooser.showSaveDialog(this)) {
+            File file = chooser.getSelectedFile();
+            if (!isWriteOK(file))
+                return;
+            writeTransformed(file, table, title, style);
+        }
+    }
+        
+    protected boolean isWriteOK(File file) {
+        if (file == null) {
+            return false;
+        } else if (file.exists()) {
+            return JOptionPane.OK_OPTION ==
+                JOptionPane.showConfirmDialog
+                    (this, "Overwrite "+file+"?", "Overwrite Confirmation",
+                     JOptionPane.OK_CANCEL_OPTION);
+        }
+        return true;
+    }
+    
+    protected XSLProcessor processor;
+    protected OutputMethodHandlerImpl handler;
+    protected URL loadedStyle;
+    
+    /** Export the current roster to a HTML file.
+     * @param file file to write the exported roster into
+     */    
+    protected void writeTransformed(File file, final JTable table, final String title, URL style) {
+        try {
+            if (style == null) {
+                FileWriter fw = new FileWriter(file);
+                writeXML(fw, table, title);
+                fw.close();
+                return;
+            }
+            if (processor == null) {
+                processor = new XSLProcessorImpl();
+                processor.setParser(new CommentDriver());
+                processor.setErrorHandler(new ErrorHandler() {
+                    public void warning(SAXParseException e) {
+                        showException("XML transformation", e);
+                    }
+                    public void error(SAXParseException e) {
+                        showException("XML transformation", e);
+                    }
+                    public void fatalError(SAXParseException e) throws SAXException {
+                        throw e;
+                    }
+                });
+                handler = new OutputMethodHandlerImpl(processor);
+                processor.setOutputMethodHandler(handler);
+            }
+            if (loadedStyle == null || !loadedStyle.equals(style)) {
+                InputStream xsl = style.openStream();
+                processor.loadStylesheet(new InputSource(xsl));
+                xsl.close();
+                loadedStyle = style;
+            }
+            Destination out = new FileDestination(file);
+            handler.setDestination(out);
+            final PipedWriter pw = new PipedWriter();
+            new Thread() {
+                public void run() {
+                    try {
+                        writeXML(pw, table, title);
+                        pw.close();
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            }.start();
+            processor.parse(new InputSource(new PipedReader(pw)));
+//            showText(file.toURL(), "HTML Export Result");
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            showException("XML transformation", ex);
+        }
+    }
+    
+    protected void writeXML(Writer out, JTable table, String title) throws IOException {
+        PrintWriter pw = new PrintWriter(out);
+        pw.println("<table title=\""+title+"\">");
+        // create tag names
+        TableColumnModel tcm = table.getColumnModel();
+        int cols = tcm.getColumnCount();
+        String tags[] = new String[cols];
+        pw.println(" <heading>");
+        for (int i = 0; i < cols; i++) {
+            // HACK: we don't set identifiers explicitly yet,
+            // so we use lower case header values.
+            TableColumn column = tcm.getColumn(i);
+            tags[i] = CardDetective.simpleName(column.getIdentifier().toString());
+            pw.print("  <column id=\"");
+            pw.print(tags[i]);
+            pw.print("\">");
+            pw.print(column.getHeaderValue());
+            pw.println("</column>");
+        }
+        pw.println(" </heading>");
+        
+        // create XML
+        int rows = table.getRowCount();
+        for (int j = 0; j < rows; j++) {
+            pw.println(" <row>");
+            for (int i = 0; i < cols; i++) {
+                pw.print("  <");
+                pw.print(tags[i]);
+                Object value = table.getValueAt(j, i);
+                if (value != null) {
+                    pw.print(">");
+                    pw.print(pcdata(value.toString()));
+                    pw.print("</");
+                    pw.print(tags[i]);
+                    pw.println(">");
+                } else {
+                    pw.println("/>");
+                }
+            }
+            pw.println(" </row>");
+        }
+        pw.println("</table>");
+        pw.flush();
+    }
+    
+    /** Quote a string, ready to use in a #PCDATA section of XML
+     * @param str the string to quote
+     * @return the quoted string
+     */
+    public static String pcdata(String str) {
+        StringBuffer buffer = new StringBuffer();
+        StringTokenizer tok = new StringTokenizer(str, "&<>", true);
+        while (tok.hasMoreTokens()) {
+            String token = tok.nextToken();
+            if (token.length() == 1) {
+                switch(token.charAt(0)) {
+                    case '<':
+                        buffer.append("&lt;");
+                        break;
+                    case '>':
+                        buffer.append("&gt;");
+                        break;
+                    case '&':
+                        buffer.append("&amp;");
+                        break;
+                    default:
+                        buffer.append(token);
+                }
+            } else {
+                buffer.append(token);
+            }
+        }
+        return buffer.toString();
+    }
+    
     /**
      * @param args the command line arguments
      */
@@ -392,24 +670,25 @@ public class Trader extends JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutMenuItem;
     private javax.swing.JMenu fileMenu;
+    private javax.swing.JSeparator jSeparator3;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator1;
-    private javax.swing.JMenuItem licenseItem;
-    private javax.swing.JMenuItem cutMenuItem;
+    private javax.swing.JMenuItem exportXMLMenuItem;
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JMenuItem openCDLMenuItem;
     private javax.swing.JPanel propertyPanel;
-    private javax.swing.JMenuItem saveMenuItem;
     private javax.swing.JMenuItem contentMenuItem;
     private javax.swing.JMenuItem openSetMenuItem;
-    private javax.swing.JMenuItem copyMenuItem;
+    private javax.swing.JMenuItem gnuLicenseItem;
     private javax.swing.JDesktopPane desktopPane;
-    private javax.swing.JMenuItem deleteMenuItem;
+    private javax.swing.JCheckBoxMenuItem defaultStyleMenuItem;
+    private javax.swing.JMenu optionsMenu;
+    private javax.swing.JMenuItem xpLicenseItem;
+    private javax.swing.JMenuItem xtLicenseItem;
     private javax.swing.JPanel cardPanel;
+    private javax.swing.JMenuItem exportHTMLMenuItem;
     private javax.swing.JMenuItem exitMenuItem;
-    private javax.swing.JMenu editMenu;
-    private javax.swing.JMenuItem pasteMenuItem;
-    private javax.swing.JMenuItem saveAsMenuItem;
+    private javax.swing.JMenuItem selectStyleMenuItem;
     private javax.swing.JMenu helpMenu;
     private javax.swing.JMenuItem openPDLMenuItem;
     // End of variables declaration//GEN-END:variables
