@@ -72,7 +72,7 @@ import org.xml.sax.Locator;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author  marion@users.sourceforge.net
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class UpdateWizard extends javax.swing.JPanel implements Runnable, Observer, Comparator, ListSelectionListener {
     
@@ -903,6 +903,7 @@ public class UpdateWizard extends javax.swing.JPanel implements Runnable, Observ
             while (--scan >= 0) {
                 if (isTrue(avatars[scan].getProperty("Login"))) {
                     Avatar.Guild guild = avatars[scan].getGuild();
+                    if (guild == null) continue;
                     String name = guild.getName();
                     if (name.length() > 0 && !name.equals("-")) {
                         guilds.add(guild.getName());
