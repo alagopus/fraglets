@@ -27,15 +27,15 @@ package net.sourceforge.fraglets.zeig.cache;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class LazyCache implements SimpleCache {
     protected CacheEntry entries[];
     
     private int initialSize;
     
-    private int fill;
-    private int drop;
+    private volatile int fill;
+    private volatile int drop;
     
     public LazyCache() {
         init(16);
@@ -59,7 +59,6 @@ public class LazyCache implements SimpleCache {
     }
     
     public CacheEntry get(int hash, Object key) {
-        // avoid synchronisation
         CacheEntry candidate = get(hash);
         if (candidate != null && candidate.equals(key)) {
             return candidate;
@@ -69,7 +68,6 @@ public class LazyCache implements SimpleCache {
     }
     
     public CacheEntry get(int hash, int key) {
-        // avoid synchronisation
         CacheEntry candidate = get(hash);
         if (candidate != null && candidate.equals(key)) {
             return candidate;
@@ -82,10 +80,13 @@ public class LazyCache implements SimpleCache {
         // avoid synchronisation
         CacheEntry entries[] = this.entries;
         int index = index(entry.hashCode(), entries.length);
+        if (entries[index] != null && fill + fill / 2 >= entries.length) {
+            // grow on conflict when 3/4 full
+            entries = grow();
+            index = index(entry.hashCode(), entries.length);
+        }
         if (entries[index] == null) {
             fill++;
-        } else if (fill + fill / 2 >= entries.length) {
-            entries = grow();
         } else {
             drop++;
         }
@@ -109,9 +110,7 @@ public class LazyCache implements SimpleCache {
         
         this.drop += this.fill - count; 
         this.fill = count;
-        this.entries = more;
-        
-        return more;
+        return this.entries = more;
     }
     
     /**
