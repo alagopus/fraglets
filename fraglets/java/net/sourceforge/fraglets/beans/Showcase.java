@@ -33,10 +33,12 @@ import java.beans.*;
 import java.util.StringTokenizer;
 import javax.swing.*;
 
+import net.sourceforge.shelf.swing.JMenuAction;
+
 /** This class showcases the beans in this package.
  *
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class Showcase extends JApplet {
 
@@ -84,39 +86,35 @@ public class Showcase extends JApplet {
   private void initComponents () {//GEN-BEGIN:initComponents
     menuBar = new javax.swing.JMenuBar ();
     fileMenu = new javax.swing.JMenu ();
-    jMenuItem2 = new javax.swing.JMenuItem ();
+    jMenuItem2 = new JMenuAction(getAction(ACTION_NEW_BEAN));
     jSeparator1 = new javax.swing.JSeparator ();
-    jMenuItem1 = new javax.swing.JMenuItem ();
+    jMenuItem1 = new JMenuAction(getAction(ACTION_QUIT));
     beanMenu = new javax.swing.JMenu ();
-    jMenuItem3 = new javax.swing.JMenuItem ();
+    jMenuItem3 = new JMenuAction(getAction(ACTION_CREATE_INT_VALUE_EDITOR));
     helpMenu = new javax.swing.JMenu ();
-    jMenuItem4 = new javax.swing.JMenuItem ();
+    jMenuItem4 = new JMenuAction(getAction(ACTION_ABOUT));
     jScrollPane1 = new javax.swing.JScrollPane ();
     desktopPane = new javax.swing.JDesktopPane ();
 
       fileMenu.setText ("File");
       fileMenu.setMnemonic ('F');
   
-        jMenuItem2.setAction (getAction (ACTION_NEW_BEAN));
     
         fileMenu.add (jMenuItem2);
     
         fileMenu.add (jSeparator1);
-        jMenuItem1.setAction (getAction (ACTION_QUIT));
     
         fileMenu.add (jMenuItem1);
       menuBar.add (fileMenu);
       beanMenu.setText ("Bean");
       beanMenu.setMnemonic ('B');
   
-        jMenuItem3.setAction (getAction (ACTION_CREATE_INT_VALUE_EDITOR));
     
         beanMenu.add (jMenuItem3);
       menuBar.add (beanMenu);
       helpMenu.setText ("Help");
       helpMenu.setMnemonic ('H');
   
-        jMenuItem4.setAction (getAction (ACTION_ABOUT));
     
         helpMenu.add (jMenuItem4);
       menuBar.add (helpMenu);
@@ -233,6 +231,7 @@ public class Showcase extends JApplet {
   public class LaunchBeanAction extends AbstractAction {
     public LaunchBeanAction (String name) {
       super (name);
+      putValue (SMALL_ICON, findIcon (name));
     }
 
     public void actionPerformed (ActionEvent ev) {
