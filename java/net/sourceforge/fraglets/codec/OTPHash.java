@@ -374,7 +374,7 @@ public class OTPHash {
          * @see java.io.OutputStream#write(int)
          */
         public void write(int b) {
-            int bits[] = getOTP(scan + 255);
+            int bits[] = getOTP(scan + 1 + 255);
             step = roll(step) ^ bits[scan++ + (b & 0xff)];
         }
 
