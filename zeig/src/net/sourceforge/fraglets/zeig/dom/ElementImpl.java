@@ -19,7 +19,7 @@ import org.w3c.dom.NodeList;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class ElementImpl extends NodeImpl implements Element {
     
@@ -106,14 +106,14 @@ public class ElementImpl extends NodeImpl implements Element {
      * @see org.w3c.dom.Element#removeAttribute(java.lang.String)
      */
     public void removeAttribute(String name) throws DOMException {
-        throw noModification();
+        throw notImplemented();
     }
 
     /**
      * @see org.w3c.dom.Element#removeAttributeNode(org.w3c.dom.Attr)
      */
     public Attr removeAttributeNode(Attr oldAttr) throws DOMException {
-        throw noModification();
+        throw notImplemented();
     }
 
     /**
@@ -121,28 +121,28 @@ public class ElementImpl extends NodeImpl implements Element {
      */
     public void removeAttributeNS(String namespaceURI, String localName)
         throws DOMException {
-        throw noModification();
+        throw notImplemented();
     }
 
     /**
      * @see org.w3c.dom.Element#setAttribute(java.lang.String, java.lang.String)
      */
     public void setAttribute(String name, String value) throws DOMException {
-        throw noModification();
+        throw notImplemented();
     }
 
     /**
      * @see org.w3c.dom.Element#setAttributeNode(org.w3c.dom.Attr)
      */
     public Attr setAttributeNode(Attr newAttr) throws DOMException {
-        throw noModification();
+        throw notImplemented();
     }
 
     /**
      * @see org.w3c.dom.Element#setAttributeNodeNS(org.w3c.dom.Attr)
      */
     public Attr setAttributeNodeNS(Attr newAttr) throws DOMException {
-        throw noModification();
+        throw notImplemented();
     }
 
     /**
@@ -153,7 +153,7 @@ public class ElementImpl extends NodeImpl implements Element {
         String qualifiedName,
         String value)
         throws DOMException {
-        throw noModification();
+        throw notImplemented();
     }
 
     /**

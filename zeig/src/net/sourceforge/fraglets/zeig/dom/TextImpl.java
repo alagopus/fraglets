@@ -16,7 +16,7 @@ import org.w3c.dom.Text;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class TextImpl extends NodeImpl implements Text {
 
@@ -33,21 +33,21 @@ public class TextImpl extends NodeImpl implements Text {
      * @see org.w3c.dom.Text#splitText(int)
      */
     public Text splitText(int offset) throws DOMException {
-        throw noModification();
+        throw notImplemented();
     }
 
     /**
      * @see org.w3c.dom.CharacterData#appendData(java.lang.String)
      */
     public void appendData(String arg) throws DOMException {
-        throw noModification();
+        throw notImplemented();
     }
 
     /**
      * @see org.w3c.dom.CharacterData#deleteData(int, int)
      */
     public void deleteData(int offset, int count) throws DOMException {
-        throw noModification();
+        throw notImplemented();
     }
 
     /**
@@ -72,7 +72,7 @@ public class TextImpl extends NodeImpl implements Text {
      * @see org.w3c.dom.CharacterData#insertData(int, java.lang.String)
      */
     public void insertData(int offset, String arg) throws DOMException {
-        throw noModification();
+        throw notImplemented();
     }
 
     /**
@@ -80,14 +80,14 @@ public class TextImpl extends NodeImpl implements Text {
      */
     public void replaceData(int offset, int count, String arg)
         throws DOMException {
-        throw noModification();
+        throw notImplemented();
     }
 
     /**
      * @see org.w3c.dom.CharacterData#setData(java.lang.String)
      */
     public void setData(String data) throws DOMException {
-        throw noModification();
+        throw notImplemented();
     }
 
     /**

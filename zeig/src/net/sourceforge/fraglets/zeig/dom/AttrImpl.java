@@ -13,7 +13,7 @@ import org.w3c.dom.Node;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class AttrImpl extends NodeImpl implements Attr {
     
@@ -58,7 +58,7 @@ public class AttrImpl extends NodeImpl implements Attr {
      * @see org.w3c.dom.Attr#setValue(java.lang.String)
      */
     public void setValue(String value) throws DOMException {
-        throw noModification();
+        throw notImplemented();
     }
 
     /**

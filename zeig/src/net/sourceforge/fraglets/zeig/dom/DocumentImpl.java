@@ -34,7 +34,7 @@ import org.w3c.dom.Text;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class DocumentImpl extends NodeImpl implements Document {
     public static final int ROOT;
@@ -56,34 +56,34 @@ public class DocumentImpl extends NodeImpl implements Document {
      * @see org.w3c.dom.Document#createAttribute(java.lang.String)
      */
     public Attr createAttribute(String name) throws DOMException {
-        throw noModification();    }
+        throw notImplemented();    }
 
     /**
      * @see org.w3c.dom.Document#createAttributeNS(java.lang.String, java.lang.String)
      */
     public Attr createAttributeNS(String namespaceURI, String qualifiedName) throws DOMException {
-        throw noModification();
+        throw notImplemented();
     }
 
     /**
      * @see org.w3c.dom.Document#createCDATASection(java.lang.String)
      */
     public CDATASection createCDATASection(String data) throws DOMException {
-        throw noModification();
+        throw notImplemented();
     }
 
     /**
      * @see org.w3c.dom.Document#createComment(java.lang.String)
      */
     public Comment createComment(String data) {
-        throw noModification();
+        throw notImplemented();
     }
 
     /**
      * @see org.w3c.dom.Document#createDocumentFragment()
      */
     public DocumentFragment createDocumentFragment() {
-        throw noModification();
+        throw notImplemented();
     }
 
     /**
@@ -118,21 +118,21 @@ public class DocumentImpl extends NodeImpl implements Document {
      * @see org.w3c.dom.Document#createEntityReference(java.lang.String)
      */
     public EntityReference createEntityReference(String name) throws DOMException {
-        throw noModification();
+        throw notImplemented();
     }
 
     /**
      * @see org.w3c.dom.Document#createProcessingInstruction(java.lang.String, java.lang.String)
      */
     public ProcessingInstruction createProcessingInstruction(String target, String data) throws DOMException {
-        throw noModification();
+        throw notImplemented();
     }
 
     /**
      * @see org.w3c.dom.Document#createTextNode(java.lang.String)
      */
     public Text createTextNode(String data) {
-        throw noModification();
+        throw notImplemented();
     }
 
     /**
@@ -204,7 +204,7 @@ public class DocumentImpl extends NodeImpl implements Document {
      * @see org.w3c.dom.Document#importNode(org.w3c.dom.Node, boolean)
      */
     public Node importNode(Node importedNode, boolean deep) throws DOMException {
-        throw noModification();
+        throw notImplemented();
     }
 
     /**

@@ -54,7 +54,7 @@ public class PIImpl extends NodeImpl implements ProcessingInstruction {
      * @see org.w3c.dom.ProcessingInstruction#setData(java.lang.String)
      */
     public void setData(String data) throws DOMException {
-        throw noModification();
+        throw notImplemented();
     }
 
     /**

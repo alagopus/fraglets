@@ -20,7 +20,7 @@ import org.w3c.dom.NodeList;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class NamedNodeMapImpl implements NamedNodeMap, NodeList {
     NodeImpl nodes[];
@@ -154,7 +154,7 @@ public class NamedNodeMapImpl implements NamedNodeMap, NodeList {
      * @see org.w3c.dom.NamedNodeMap#removeNamedItem(java.lang.String)
      */
     public Node removeNamedItem(String name) throws DOMException {
-        throw NodeImpl.noModification();
+        throw NodeImpl.notImplemented();
     }
 
     /**
@@ -162,21 +162,21 @@ public class NamedNodeMapImpl implements NamedNodeMap, NodeList {
      */
     public Node removeNamedItemNS(String namespaceURI, String localName)
         throws DOMException {
-        throw NodeImpl.noModification();
+        throw NodeImpl.notImplemented();
     }
 
     /**
      * @see org.w3c.dom.NamedNodeMap#setNamedItem(org.w3c.dom.Node)
      */
     public Node setNamedItem(Node arg) throws DOMException {
-        throw NodeImpl.noModification();
+        throw NodeImpl.notImplemented();
     }
 
     /**
      * @see org.w3c.dom.NamedNodeMap#setNamedItemNS(org.w3c.dom.Node)
      */
     public Node setNamedItemNS(Node arg) throws DOMException {
-        throw NodeImpl.noModification();
+        throw NodeImpl.notImplemented();
     }
 
     public static class NodeIterator implements Iterator {
@@ -210,7 +210,7 @@ public class NamedNodeMapImpl implements NamedNodeMap, NodeList {
          * @see java.util.Iterator#remove()
          */
         public void remove() {
-            throw NodeImpl.noModification();
+            throw NodeImpl.notImplemented();
         }
 
     }

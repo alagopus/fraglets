@@ -24,7 +24,7 @@ import org.xml.sax.SAXException;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class NodeImpl implements Node {
     private int id;
@@ -48,9 +48,9 @@ public class NodeImpl implements Node {
         return this.v;
     }
     
-    protected static DOMException noModification() {
+    protected static DOMException notImplemented() {
         return new DOMException
-            (DOMException.NO_MODIFICATION_ALLOWED_ERR, "not implemented");
+            (DOMException.NOT_SUPPORTED_ERR, "not implemented");
     }
     
     protected static DOMException domException(SQLException ex) {
@@ -307,22 +307,21 @@ public class NodeImpl implements Node {
      */
     public Node insertBefore(Node newChild, Node refChild)
         throws DOMException {
-        throw noModification();
+        throw notImplemented();
     }
 
     /**
      * @see org.w3c.dom.Node#normalize()
      */
     public void normalize() {
-        throw noModification();
-
+        throw notImplemented();
     }
 
     /**
      * @see org.w3c.dom.Node#removeChild(org.w3c.dom.Node)
      */
     public Node removeChild(Node oldChild) throws DOMException {
-        throw noModification();
+        return replaceChild(null, oldChild);
     }
 
     /**
@@ -330,21 +329,83 @@ public class NodeImpl implements Node {
      */
     public Node replaceChild(Node newChild, Node oldChild)
         throws DOMException {
-        throw noModification();
+        try {
+            NodeImpl newNode = (NodeImpl)newChild;
+            NodeImpl oldNode = (NodeImpl)oldChild;
+            
+            NodeFactory nf = NodeFactory.getInstance();
+            NodeList newNodes = null;
+            int nodes[] = nf.getNodes(getId());
+            int length = nodes.length;
+            int nodeId = nf.getNode();
+            if (oldChild == null) {
+                length += 2;
+            }
+            if (newNode == null) {
+                length -= 2;
+            } else if (newNode.getNodeType() == Node.DOCUMENT_FRAGMENT_NODE) {
+                newNodes = newNode.getChildNodes();
+                length += (newNodes.getLength() - 1) * 2;
+            }
+            NodeBuffer buffer = new NodeBuffer(length);
+            int scan = 0;
+            if (oldNode != null) {
+                while (scan < nodes.length) {
+                    if (nodes[scan] != nodeId || nodes[scan+1] != oldNode.id) {
+                        buffer.append(nodes[scan++]);
+                        buffer.append(nodes[scan++]);
+                    } else {
+                        scan += 2;
+                        break;
+                    }
+                }
+            } else {
+                while (scan < nodes.length) {
+                    buffer.append(nodes[scan++]);
+                    buffer.append(nodes[scan++]);
+                }
+            }
+            if (newNodes != null) {
+                for (int i = 0; i < newNodes.getLength(); i++) {
+                    NodeImpl insert = (NodeImpl)newNodes.item(i);
+                    buffer.append(nodeId);
+                    buffer.append(insert.id);
+                }
+            } else if (newNode != null) {
+                buffer.append(nodeId);
+                buffer.append(newNode.id);
+            }
+            while (scan < nodes.length) {
+                buffer.append(nodes[scan++]);
+                buffer.append(nodes[scan++]);
+            }
+            children = null;
+            id = nf.getNode(v, buffer.toIntArray());
+            if (parent != null) {
+                parent.validate();
+            }
+            return oldChild;
+        } catch (SAXException ex) {
+            throw domException(ex);
+        } catch (SQLException ex) {
+            throw domException(ex);
+        } catch (ClassCastException ex) {
+            throw new DOMException(DOMException.WRONG_DOCUMENT_ERR, ex.toString());
+        }
     }
 
     /**
      * @see org.w3c.dom.Node#setNodeValue(java.lang.String)
      */
     public void setNodeValue(String nodeValue) throws DOMException {
-        throw noModification();
+        throw notImplemented();
     }
 
     /**
      * @see org.w3c.dom.Node#setPrefix(java.lang.String)
      */
     public void setPrefix(String prefix) throws DOMException {
-        throw noModification();
+        throw notImplemented();
     }
 
     /**
