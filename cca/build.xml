@@ -1,0 +1,21 @@
+<project name="cca" default="jar">
+
+	<target name="clean">
+		<delete dir="bin"/>
+	</target>
+	
+	<target name="compile">
+		<mkdir dir="bin"/>
+		<javac srcdir="src" destdir="bin">
+			<classpath location="../cruisecontrol/main/classes"/>
+			<classpath location="../cruisecontrol/main/lib/log4j.jar"/>
+		</javac>
+	</target>
+	
+	<target name="jar" depends="clean,compile">
+		<jar destfile="cca.jar">
+			<fileset dir="bin"/>
+		</jar>
+	</target>
+	
+</project>
