@@ -101,7 +101,7 @@ from observed /who output. However, it is extremely fast at doing that
 and it can parse gzipped files directly. I can parse my complete log
 files from the past half year in under one minute. You can use the
 <a href="http://sourceforge.net/project/showfiles.php?group_id=5068"
->pre-compiled jars</p> from the files section to give it a try.</p>
+>pre-compiled jars</a> from the files section to give it a try.</p>
 
 <p><a name="MTGOTrader" href="http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/fraglets/fraglets/java/net/sourceforge/fraglets/mtgo/trader/"
 >MTGO Trader</a> is an unfinished attempt at creating a tool to organize
@@ -123,6 +123,6 @@ files. It is sort of obscure in its implementation, does depend on standard
 *NIX tools and a ready installation of the GNU C++ preprocessor, but is
 really fast compared to all other solutions I have seen so far.
 
-<hr noshade><p align="right">$Id: index.php,v 1.8 2002-06-09 14:13:38 marion Exp $</p>
+<hr noshade><p align="right">$Id: index.php,v 1.9 2002-06-09 14:15:39 marion Exp $</p>
 </BODY>
 </HTML>
