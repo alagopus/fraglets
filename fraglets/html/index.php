@@ -41,7 +41,11 @@ href="http://cvs.sourceforge.net/cgi-bin/cvsweb.cgi/fraglets/?cvsroot=fraglets"
 <A HREF="http://cvs.sourceforge.net/cvstarballs/fraglets-cvsroot.tar.gz">tarballs</A>.</P>
 
 <h2>C/C++ programs</h2>
+Some of the C programs are quite old already. Thus, although the algorithm
+may still be useful, the software may use features no longer supported
+on a modern system.
 
+<h3><a href="http://cvs.sourceforge.net/cgi-bin/cvsweb.cgi/fraglets/cish/dgrep/?cvsroot=fraglets">dgrep</a></h3>
 <p>Somewhat redundantly, there is a fast literal string search program <a
 href="http://cvs.sourceforge.net/cgi-bin/cvsweb.cgi/fraglets/cish/dgrep/?cvsroot=fraglets"
 >dgrep</a> from my C development times. That software is comparatively old,
@@ -49,9 +53,22 @@ but since it is small and fast, I still use it as a starting point if fast
 string match in large data is needed. It is in dire need of documentation
 though.</p>
 
+<h3><a href="http://cvs.sourceforge.net/cgi-bin/cvsweb.cgi/fraglets/cish/relay/?cvsroot=fraglets">relay</a></h3>
 <p><a href="http://cvs.sourceforge.net/cgi-bin/cvsweb.cgi/fraglets/cish/relay/?cvsroot=fraglets"
 >Relay</a> contains a set of network relay/forwarding programs
 which were created to migrate an active multiuser game.</p>
+
+<h3><a href="http://cvs.sourceforge.net/cgi-bin/cvsweb.cgi/fraglets/cish/tryst/?cvsroot=fraglets">tryst</a></h3>
+<p>The <a href="http://cvs.sourceforge.net/cgi-bin/cvsweb.cgi/fraglets/cish/tryst/?cvsroot=fraglets"
+>tryst</a> package is an example of black *NIX art which will probably
+never become very portable. It implements a fast inter-process communication
+mechanism. Since it uses unix domain datagram sockets, memory mapping and
+file descriptor passing it depends on quite a lot of unix features.</p>
+
+<p>The current version works at least on old SunOSes and Linux. Note that
+the expected cost of sending a message in tryst is <em>constant</em> and
+does not depend on the message length. This is done by passing file
+descriptors to mmap-ed memory blocks around.</p>
 
 <h2>Java Beans</h2>
 
@@ -61,7 +78,10 @@ You will need a java-able browser or, even better now, the
 Sun Microsystems</a>.</p>
 
 <h2>Shell scripts</h2>
+Shell scripts contained here may often expect an installation of
+<a href="http://www.gnu.org/">GNU</a> tools.
 
+<h3><a href="http://cvs.sourceforge.net/cgi-bin/cvsweb.cgi/fraglets/bash/javadepend?cvsroot=fraglets">javadepend</a></h3>
 <p>As with many temporary solutions, my <a
 href="http://cvs.sourceforge.net/cgi-bin/cvsweb.cgi/fraglets/bash/javadepend?cvsroot=fraglets"
 >javadepend</a> shell script now lives in most of my java projects. Since
@@ -70,6 +90,6 @@ files. It is sort of obscure in its implementation, does depend on standard
 *NIX tools and a ready installation of the GNU C++ preprocessor, but is
 really fast compared to all other solutions I have seen so far.
 
-<hr noshade><p align="right">$Id: index.php,v 1.5 2000-04-30 09:24:29 marion Exp $</p>
+<hr noshade><p align="right">$Id: index.php,v 1.6 2000-05-01 15:59:04 marion Exp $</p>
 </BODY>
 </HTML>
