@@ -17,9 +17,11 @@ import java.util.HashMap;
 import java.util.Properties;
 import java.util.ResourceBundle;
 
+import org.apache.log4j.Category;
+
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class ConnectionFactory {
     
@@ -58,6 +60,11 @@ public class ConnectionFactory {
             this.connectionUrl = this.environment
                 .getProperty(RESOURCE_CONNECTION_URL);
         }
+        Category cat = Category.getInstance(ConnectionFactory.class);
+        if (cat.isDebugEnabled()) {
+            cat.debug("new connection factory: env="
+                + environment + ", url=" + connectionUrl);
+        }
     }
     
     public PreparedStatement prepareStatement(String sql) throws SQLException {
@@ -73,6 +80,10 @@ public class ConnectionFactory {
         }
         
         if (result == null) {
+            Category cat = Category.getInstance(ConnectionFactory.class);
+            if (cat.isDebugEnabled()) {
+                cat.debug("prepare statement: "+sql);
+            }
             result = getConnection().prepareStatement(sql);
             if (preparedStatements == null) {
                 synchronized (this) {
@@ -131,6 +142,10 @@ public class ConnectionFactory {
             synchronized (this) {
                 if (connection == null) {
                     try {
+                        Category cat = Category.getInstance(ConnectionFactory.class);
+                        if (cat.isDebugEnabled()) {
+                            cat.debug("open connection: "+getConnectionUrl());
+                        }
                         Class.forName("com.mysql.jdbc.Driver");
                         return connection = DriverManager
                             .getConnection(getConnectionUrl()); 
@@ -166,6 +181,10 @@ public class ConnectionFactory {
     }
 
     public synchronized void close() throws SQLException {
+        Category cat = Category.getInstance(ConnectionFactory.class);
+        if (cat.isDebugEnabled()) {
+            cat.debug("close connection: "+getConnectionUrl());
+        }
         if (connection != null) {
             connection.close();
             connection = null;

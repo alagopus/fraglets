@@ -9,11 +9,13 @@ package net.sourceforge.fraglets.zeig.model;
 import java.sql.SQLException;
 import java.util.Properties;
 
+import org.apache.log4j.Category;
+
 import net.sourceforge.fraglets.zeig.jdbc.ConnectionFactory;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class ConnectionContext {
     private ConnectionFactory connectionFactory;
@@ -28,10 +30,12 @@ public class ConnectionContext {
     
     public ConnectionContext open() {
         shares++;
+        Category.getInstance(getClass()).debug("ConnectionContext.open");
         return this;
     }
     
     public void close() throws SQLException {
+        Category.getInstance(getClass()).debug("ConnectionContext.close");
         if (--shares <= 0) {
             ConnectionFactory cf = this.connectionFactory;
             this.connectionFactory = null;
