@@ -1,5 +1,5 @@
 /*
-    $Id: inetd.c,v 1.1 2000-04-30 06:27:22 marion Exp $
+    $Id: inetd.c,v 1.2 2000-04-30 09:14:17 marion Exp $
     Internet dispatch server. (replacement)
 
     Sep 03 1995 by marion@marble.sax.de
@@ -29,7 +29,10 @@
 */
 
 /* $Log: inetd.c,v $
-/* Revision 1.1  2000-04-30 06:27:22  marion
+/* Revision 1.2  2000-04-30 09:14:17  marion
+/* Silly indirection error.
+/*
+/* Revision 1.1  2000/04/30 06:27:22  marion
 /* Converted to MIT license.
 /*
  * Revision 1.3  1995/09/06 00:04:07  marion
@@ -77,7 +80,7 @@ char copyright[] =
 extern char *strtok();
 
 #ifndef lint
-static char rcsid[] = "$Id: inetd.c,v 1.1 2000-04-30 06:27:22 marion Exp $";
+static char rcsid[] = "$Id: inetd.c,v 1.2 2000-04-30 09:14:17 marion Exp $";
 #endif /* not lint */
 
 suicide(prog, s) char *prog, *s; {
@@ -295,7 +298,7 @@ main(argc, argv) int argc; char **argv; {
 	    suicide (*argv, "setsockopt listen socket");
 #endif
 
-	memset (sin, sizeof (sin), 0);
+	memset (&sin, sizeof (sin), 0);
 	sin.sin_family = AF_INET;
 	sin.sin_port = htons (server.port);
 	/* FIX: Using *.port address for listen is unsafe on BSD4.3 derived
