@@ -21,7 +21,7 @@ import org.apache.log4j.Category;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class ConnectionFactory {
     
@@ -193,10 +193,10 @@ public class ConnectionFactory {
     }
     
     public static String getConnectionURL(String host, int port, String database) {
-        if (port == 0) {
-            return "jdbc:mysql://"+host+'/'+database;
-        } else {
+        if (port > 0) {
             return "jdbc:mysql://"+host+':'+port+'/'+database;
+        } else {
+            return "jdbc:mysql://"+host+'/'+database;
         }
     }
 }
