@@ -72,7 +72,7 @@ import org.xml.sax.Locator;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author  marion@users.sourceforge.net
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class UpdateWizard extends javax.swing.JPanel implements Runnable, Observer, Comparator, ListSelectionListener {
     
@@ -658,19 +658,23 @@ public class UpdateWizard extends javax.swing.JPanel implements Runnable, Observ
 
     private void mainFieldFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_mainFieldFocusLost
         // Add your handling code here:
-        System.err.println("mainFieldFocusLost");
         if (selectedAvatar != null) {
-            Avatar roster[] = model.getRoster();
-            Avatar probe = new Avatar(0);
-            probe.setName(Avatar.normalizeName(mainField.getText()));
-            int index = Arrays.binarySearch(roster, probe, this);
-            if (index < 0) {
-                mainField.setText(null); // avoid loop
-                JOptionPane.showMessageDialog(this,
-                    "Unknown character name: "+probe.getName(),
-                    "Error setting main character", JOptionPane.ERROR_MESSAGE);
+            String name = mainField.getText();
+            if (name == null || name.length() == 0) {
+                updateProperty(selectedAvatar, "Main", null);
             } else {
-                updateProperty(selectedAvatar, "Main", probe.getName());
+                Avatar roster[] = model.getRoster();
+                Avatar probe = new Avatar(0);
+                probe.setName(Avatar.normalizeName(name));
+                int index = Arrays.binarySearch(roster, probe, this);
+                if (index < 0) {
+                    mainField.setText(null); // avoid loop
+                    JOptionPane.showMessageDialog(this,
+                        "Unknown character name: "+probe.getName(),
+                        "Error setting main character", JOptionPane.ERROR_MESSAGE);
+                } else {
+                    updateProperty(selectedAvatar, "Main", probe.getName());
+                }
             }
             mainField.setText(selectedAvatar.getProperty("Main"));
         }
@@ -1367,10 +1371,13 @@ public class UpdateWizard extends javax.swing.JPanel implements Runnable, Observ
     }
     
     public static void updateProperty(Avatar avatar, String key, String value) {
+        if (value != null && value.length() == 0) {
+            value = null; // normalize
+        }
         String current = avatar.getProperty(key);
         if (current == value) return;
         if (current == null || value == null || !current.equals(value)) {
-            System.err.println("updateProperty(..., "+key+", "+value+")");
+//            System.err.println("updateProperty(..., "+key+", "+value+")");
             avatar.setProperty(key, value, System.currentTimeMillis());
         }
     }
