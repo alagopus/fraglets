@@ -68,7 +68,7 @@ import javax.swing.RepaintManager;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.18 $
+ * @version $Revision: 1.19 $
  */
 public class RosterFrame extends javax.swing.JFrame {
     /** The file chooser map used to select files to parse and export.
@@ -140,6 +140,12 @@ public class RosterFrame extends javax.swing.JFrame {
         public Destination resolve(String str) {
             return null;
         }
+    }
+    
+    /** Creates new form RosterFrame */
+    public RosterFrame(boolean appletFrame) {
+        this();
+        setAppletFrame(appletFrame);
     }
     
     /** Creates new form RosterFrame */
@@ -1162,7 +1168,11 @@ public class RosterFrame extends javax.swing.JFrame {
             != JOptionPane.OK_OPTION) {
             return; // canceled
         }
-        System.exit(0);
+        if (isAppletFrame()) {
+            dispose();
+        } else {
+            System.exit(0);
+        }
     }//GEN-LAST:event_exitForm
 
     /** Refresh the filter expression based on the current filter
@@ -1860,7 +1870,7 @@ public class RosterFrame extends javax.swing.JFrame {
                 }
             }
             aboutText =
-            "YAELP log file parser, version 1.15.\n"+
+            "YAELP log file parser, version 1.16.\n"+
             "Copyright © 2001, 2002 Klaus Rennecke.\n"+
             "XML parser Copyright © 1997, 1998 James Clark.\n"+
             "XSL transformation Copyright © 1998, 1999 James Clark.\n"+
@@ -1991,6 +2001,20 @@ public class RosterFrame extends javax.swing.JFrame {
         }
     }
     
+    /** Getter for property appletFrame.
+     * @return Value of property appletFrame.
+     */
+    public boolean isAppletFrame() {
+        return this.appletFrame;
+    }
+    
+    /** Setter for property appletFrame.
+     * @param appletFrame New value of property appletFrame.
+     */
+    public void setAppletFrame(boolean appletFrame) {
+        this.appletFrame = appletFrame;
+    }
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup styleButtonGroup;
     private javax.swing.JMenu fileMenu;
@@ -2064,4 +2088,7 @@ public class RosterFrame extends javax.swing.JFrame {
     /** Holds value of property changed. */
     private boolean changed;    
 
+    /** Holds value of property appletFrame. */
+    private boolean appletFrame;
+    
 }

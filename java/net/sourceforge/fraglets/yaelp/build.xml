@@ -1,6 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project basedir="..\..\..\.." default="all" name="yaelp">
 
+    <target name="init">
+        <property name="package" value="net/sourceforge/fraglets/yaelp"/>
+        <property name="version" value="1.16"/>
+        
+        <!-- Jar signing parameters. -->
+        <property name="signer-alias" value="Thawte Freemail Member's Thawte ID #2"/>
+        <property name="signer-keystore" value="../sign/sign.p12"/>
+        <property name="signer-storetype" value="PKCS12"/>
+        
+        <!-- Task definition for interactive query -->
+        <taskdef classname="net.sourceforge.fraglets.taskdef.Query" classpath="." name="query"/>
+    </target>
+    
     <target depends="jars" name="all">
         <!-- WRITEME -->
     </target>
@@ -11,12 +24,6 @@
     
     <target depends="compile" name="jars">
         <jar basedir="." excludes="**/*.java" includes="${package}/**" jarfile="../jars/yaelp-${version}.jar" manifest="${package}/yaelp.mf"/>
-        
-    </target>
-    
-    <target name="init">
-        <property name="package" value="net/sourceforge/fraglets/yaelp"/>
-        <property name="version" value="1.15"/>
     </target>
     
     <target depends="jars" name="release">
@@ -25,5 +32,14 @@
         </zip>
         <zip basedir="../html/yaelp" includes="*.html,*.png" zipfile="../jars/yaelp-${version}-manual.zip"/>
         <zip basedir="." excludes="**/*.class" includes="${package}/**" zipfile="../jars/yaelp-${version}-source.zip"/>
+    </target>
+    
+    <target depends="init,jars" description="Sign jars." name="sign">
+        <query prompt="Enter keystore password for ${signer-keystore}" property="signer-storepass" secret="true" title="Keystore password"/>
+        <signjar alias="${signer-alias}" jar="../jars/yaelp-${version}.jar" signedjar="../sign/yaelp-${version}.jar" keystore="${signer-keystore}" storepass="${signer-storepass}" storetype="${signer-storetype}"/>
+        <signjar alias="${signer-alias}" jar="../jars/sax.jar" signedjar="../sign/sax.jar" keystore="${signer-keystore}" storepass="${signer-storepass}" storetype="${signer-storetype}"/>
+        <signjar alias="${signer-alias}" jar="../jars/xp.jar" signedjar="../sign/xp.jar" keystore="${signer-keystore}" storepass="${signer-storepass}" storetype="${signer-storetype}"/>
+        <signjar alias="${signer-alias}" jar="../jars/xt.jar" signedjar="../sign/xt.jar" keystore="${signer-keystore}" storepass="${signer-storepass}" storetype="${signer-storetype}"/>
+        <property name="signer-storepass" value="*"/> <!-- minimum security measure -->
     </target>
 </project>
