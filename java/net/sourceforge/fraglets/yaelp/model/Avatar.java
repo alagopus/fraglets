@@ -36,7 +36,7 @@ import java.util.Collections;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class Avatar {
     public static final String GUILD_UNGUILDED = "-";
@@ -251,12 +251,16 @@ public class Avatar {
     public void setGuild(Guild guild, long timestamp) {
         if (timestamp >= this.guildTimestamp) {
             if (guild != this.guild) {
+                Guild ex = this.guild;
                 this.guild = guild;
 //                addHistory(timestamp, "guild", guild);
                 if (guild == null || Avatar.GUILD_UNGUILDED.equals(guild.getName())) {
                     if (properties != null) {
                         properties.remove("Rank"); // unguilded
 //                        addHistory(timestamp, "Rank", "null");
+                    }
+                    if (ex != null && !Avatar.GUILD_UNGUILDED.equals(ex.getName())) {
+                        setProperty("EX", ex.getName(), timestamp);
                     }
                 }
             }
