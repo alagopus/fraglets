@@ -36,7 +36,7 @@ import org.xml.sax.SAXParseException;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author  kre
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class RosterFrame extends javax.swing.JFrame {
     /** The file chooser used to select files to parse and export.
@@ -171,12 +171,12 @@ public class RosterFrame extends javax.swing.JFrame {
     public static class AvatarFilterClass implements AvatarFilter {
         /** Class the avatar has to be to be accepted.
          */        
-        protected Word clazz;
+        protected Clazz clazz;
         /** Create a new avatar filter based on the given class.
          * @param clazz the class for an avatar to be accepted
          */        
         public AvatarFilterClass(String clazz) {
-            this.clazz = Word.create(clazz);
+            this.clazz = Clazz.create(clazz);
         }
         /** Determine whether the given avatar is of the required class.
          * @param avatar the avatar to examine
@@ -601,9 +601,7 @@ public class RosterFrame extends javax.swing.JFrame {
 
     private void styleFileItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_styleFileItemActionPerformed
         // Add your handling code here:
-        if (chooser == null) {
-            chooser = new javax.swing.JFileChooser();
-        }
+        chooser = getChooser();
         chooser.setApproveButtonText("Use Style");
         chooser.setDialogTitle("Use New Style");
         chooser.setFileSelectionMode(chooser.FILES_ONLY);
@@ -644,9 +642,7 @@ public class RosterFrame extends javax.swing.JFrame {
 
     private void exportHTMLItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportHTMLItemActionPerformed
         // Add your handling code here:
-        if (chooser == null) {
-            chooser = new javax.swing.JFileChooser();
-        }
+        chooser = getChooser();
         chooser.setApproveButtonText("Export");
         chooser.setDialogTitle("Export HTML");
         chooser.setFileSelectionMode(chooser.FILES_ONLY);
@@ -671,9 +667,7 @@ public class RosterFrame extends javax.swing.JFrame {
 
     private void exportXMLItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportXMLItemActionPerformed
         // Add your handling code here:
-        if (chooser == null) {
-            chooser = new javax.swing.JFileChooser();
-        }
+        chooser = getChooser();
         chooser.setApproveButtonText("Export");
         chooser.setDialogTitle("Export XML");
         chooser.setFileSelectionMode(chooser.FILES_ONLY);
@@ -710,9 +704,7 @@ public class RosterFrame extends javax.swing.JFrame {
 
     private void exportTableItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportTableItemActionPerformed
         // Add your handling code here:
-        if (chooser == null) {
-            chooser = new javax.swing.JFileChooser();
-        }
+        chooser = getChooser();
         chooser.setApproveButtonText("Export");
         chooser.setDialogTitle("Export table");
         chooser.setFileSelectionMode(chooser.FILES_ONLY);
@@ -743,9 +735,7 @@ public class RosterFrame extends javax.swing.JFrame {
 
     private void parseFileItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_parseFileItemActionPerformed
         // Add your handling code here:
-        if (chooser == null) {
-            chooser = new javax.swing.JFileChooser();
-        }
+        chooser = getChooser();
         chooser.setApproveButtonText("Parse");
         chooser.setDialogTitle("Parse files");
         chooser.setFileSelectionMode(chooser.FILES_ONLY);
@@ -876,8 +866,8 @@ public class RosterFrame extends javax.swing.JFrame {
                 other.getClass() == this.getClass();
             }
             public int compare(Object a, Object b) {
-                return ((Avatar)a).getName().toString()
-                .compareTo(((Avatar)b).getName().toString());
+                return ((Avatar)a).getName()
+                .compareTo(((Avatar)b).getName());
             }
         });
     }
@@ -1228,6 +1218,24 @@ public class RosterFrame extends javax.swing.JFrame {
         fixBackingStore();
     }
     
+    protected javax.swing.JFileChooser getChooser() {
+        if (chooser == null) {
+            chooser = new javax.swing.JFileChooser();
+            String alternatives[] = {
+                "C:/Program Files/EverQuest",
+                "C:/Programme/EverQuest",
+            };
+            for (int i = 0; i < alternatives.length; i++) {
+                java.io.File eq = new java.io.File(alternatives[i]);
+                if (eq.exists() && eq.isDirectory()) {
+                    chooser.setCurrentDirectory(eq);
+                    break;
+                }
+            }
+        }
+        return chooser;
+    }
+    
     protected static java.net.URL getResource(String name) {
         return RosterFrame.class.getResource(name);
     }
@@ -1249,7 +1257,7 @@ public class RosterFrame extends javax.swing.JFrame {
                 }
             }
             aboutText =
-            "YAELP log file parser, $Revision: 1.3 $.\n"+
+            "YAELP log file parser, $Revision: 1.4 $.\n"+
             "Copyright © 2001 Klaus Rennecke.\n"+
             "XML parser Copyright © 1997, 1998 James Clark.\n"+
             "XSL transformation Copyright © 1998, 1999 James Clark.\n"+
