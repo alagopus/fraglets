@@ -68,7 +68,7 @@ import javax.swing.RepaintManager;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.22 $
+ * @version $Revision: 1.23 $
  */
 public class RosterFrame extends javax.swing.JFrame {
     /** The file chooser map used to select files to parse and export.
@@ -1655,7 +1655,6 @@ public class RosterFrame extends javax.swing.JFrame {
     protected XSLProcessor processor;
     protected OutputMethodHandlerImpl handler;
     protected java.net.URL loadedStyle;
-    
     /** Export the current roster to a HTML file.
      * @param file file to write the exported roster into
      */    
@@ -1683,10 +1682,16 @@ public class RosterFrame extends javax.swing.JFrame {
                 processor.setOutputMethodHandler(handler);
             }
             java.net.URL style = styleSelection.getSelectedStyle();
-            if (loadedStyle == null || !loadedStyle.equals(style)) {
-                java.io.InputStream xsl = style.openStream();
-                processor.loadStylesheet(new InputSource(xsl));
-                xsl.close();
+            if (loadedStyle == null || !loadedStyle.equals(style) ||
+                style.getProtocol().equals("file")) {
+                java.net.URLConnection connection = style.openConnection();
+                connection.setUseCaches(false);
+                java.io.InputStream xsl = connection.getInputStream();
+                try {
+                    processor.loadStylesheet(new InputSource(xsl));
+                } finally {
+                    xsl.close();
+                }
                 loadedStyle = style;
             }
             Destination out;
@@ -2046,8 +2051,8 @@ public class RosterFrame extends javax.swing.JFrame {
     private javax.swing.JSeparator separator4;
     private javax.swing.JSeparator separator3;
     private javax.swing.JSeparator separator2;
-    private javax.swing.JRadioButtonMenuItem neopStyleItem;
     private javax.swing.JSeparator separator1;
+    private javax.swing.JRadioButtonMenuItem neopStyleItem;
     private javax.swing.JCheckBoxMenuItem friendFilterItem;
     private javax.swing.JMenuItem newEntryItem;
     private javax.swing.JCheckBoxMenuItem memberFilterItem;
