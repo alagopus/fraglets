@@ -14,21 +14,27 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Iterator;
 
-/**
+/** XML encoder for nano lists.
  *
- * @author  kre
- * @version 
+ * @author kre
+ * @version $Revision: 1.2 $
  */
 public class NanoListEncoder {
     /** The UTF8 writer. */
     UTF8XMLWriter out;
     
-    /** Creates new NanoListEncoder */
+    /** Creates new NanoListEncoder
+     * @param out the output stream for XML output
+     */
     public NanoListEncoder(OutputStream out) {
         this.out = new UTF8XMLWriter(out,
             UTF8XMLWriter.MINIMIZE_EMPTY_ELEMENTS);
     }
     
+    /** Encode a base nano list.
+     * @param list the list to encode
+     * @throws IOException on IO failures
+     */    
     public void encodeBaseNanoList(BaseNanoList list) throws IOException {
         out.startElement(NanoListTags.BASE_NANO_LIST);
         out.write('\n');
@@ -40,6 +46,10 @@ public class NanoListEncoder {
         out.write('\n');
     }
     
+    /** Encode a base nano.
+     * @param nano the nano to encode
+     * @throws IOException on IO failures
+     */    
     public void encodeBaseNanoCluster(BaseNanoCluster nano) throws IOException {
         out.write("  ");
         out.startElement(NanoListTags.BASE_NANO_CLUSTER);
@@ -53,6 +63,11 @@ public class NanoListEncoder {
         out.write('\n');
     }
 
+    /** Encode one nano property.
+     * @param name name of the property
+     * @param value value of the property
+     * @throws IOException on IO failures
+     */    
     public void encodeProperty(String name, String value) throws IOException {
         out.write("    ");
         out.startElement(NanoListTags.PROPERTY);
@@ -62,10 +77,16 @@ public class NanoListEncoder {
         out.write('\n');
     }
     
+    /** Flush the output stream.
+     * @throws IOException on IO failures
+     */    
     public void flush() throws IOException {
         out.flush();
     }
 
+    /** Testing method.
+     * @param args provide exactly onr file name for output
+     */    
     public static void main(String args[]) {
         try {
             NanoListEncoder encoder;

@@ -1,6 +1,6 @@
 /*
  * EditBaseNanoPanel.java
- *
+ * Copright (C) 2001 Shakasta Sslytherin and Noiram Voker.
  * Created on 3. August 2001, 18:08
  */
 
@@ -10,7 +10,8 @@ import net.sourceforge.fraglets.aotools.model.*;
 
 /**
  *
- * @author  sas
+ * @author sas
+ * @version $Revision: 1.2 $
  */
 public class EditBaseNanoPanel extends javax.swing.JPanel {
 
@@ -324,6 +325,9 @@ public class EditBaseNanoPanel extends javax.swing.JPanel {
         setNano(c);
     }//GEN-LAST:event_nanoListValueChanged
 
+    /** Start the editor.
+     * @param args no arguments so far
+     */    
     public static void main(String []args){
         javax.swing.JFrame f = new javax.swing.JFrame("Edit Base Nano List");
         f.getContentPane().add(new EditBaseNanoPanel(), java.awt.BorderLayout.CENTER);
