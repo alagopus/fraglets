@@ -30,7 +30,7 @@ import java.util.Arrays;
 /**
  *
  * @author  marion@users.sourceforge.net
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public abstract class EventCodec {
     public final int STRING_WORD = 0;
@@ -223,39 +223,6 @@ public abstract class EventCodec {
         public int hashCode() {
             return hashCache;
         }
-    }
-    
-    public static void main(String args[]) {
-        try {
-            EventEncoder encoder = new EventEncoder();
-            EventDecoder decoder = new EventDecoder();
-            java.io.BufferedReader in = new java.io.BufferedReader
-                (new java.io.InputStreamReader(System.in));
-            String line;
-            while ((line = in.readLine()) != null) {
-                encoder.encodeWord(line);
-                byte buffer[] = encoder.getUTF8();
-                print("buffer", buffer, System.out);
-                decoder.setBuffer(buffer);
-                while (decoder.hasNext()) {
-                    int code = decoder.next();
-                    System.out.println("code: "+code+" value='"+decoder.getString(code)+"'");
-                }
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
-    
-    public static void print(String name, byte[] data, java.io.PrintStream out) {
-        out.print(name);
-        out.print(": [");
-        for (int i = 0; i < data.length; i++) {
-            if (i > 0) out.print(", 0x");
-            else out.print("0x");
-            out.print(Integer.toString((int)data[i], 16));
-        }
-        out.println(']');
     }
     
 }
