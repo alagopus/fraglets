@@ -126,6 +126,9 @@ public class SortedTableProxy implements SortedTableModel, TableModelListener {
      */
     public void setValueAt(Object value, int row, int col) {
         model.setValueAt(value, toDelegate(row), col);
+        if (col == sortedColumn) {
+            sortColumn(sortedColumn, ascending, comparator);
+        }
     }
     
     /** Sort the column at index <var>column</var>, using the default
@@ -232,6 +235,7 @@ public class SortedTableProxy implements SortedTableModel, TableModelListener {
      * @param ev the event to process.
      */    
     public void tableChanged(TableModelEvent ev) {
+        System.err.println("table changed: "+ev);
         if (ev.getColumn() == ev.ALL_COLUMNS || ev.getColumn() == sortedColumn) {
             // simplistic implementation...
             initTransformation();
