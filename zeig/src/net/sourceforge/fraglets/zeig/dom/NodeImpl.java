@@ -24,7 +24,7 @@ import org.xml.sax.SAXException;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class NodeImpl implements Node {
     private int id;
@@ -330,7 +330,6 @@ public class NodeImpl implements Node {
     public Node replaceChild(Node newChild, Node oldChild)
         throws DOMException {
         try {
-            NodeImpl newNode = (NodeImpl)newChild;
             NodeImpl oldNode = (NodeImpl)oldChild;
             
             NodeFactory nf = getNodeFactory();
@@ -341,10 +340,10 @@ public class NodeImpl implements Node {
             if (oldChild == null) {
                 length += 2;
             }
-            if (newNode == null) {
+            if (newChild == null) {
                 length -= 2;
-            } else if (newNode.getNodeType() == Node.DOCUMENT_FRAGMENT_NODE) {
-                newNodes = newNode.getChildNodes();
+            } else if (newChild.getNodeType() == Node.DOCUMENT_FRAGMENT_NODE) {
+                newNodes = newChild.getChildNodes();
                 length += (newNodes.getLength() - 1) * 2;
             }
             NodeBuffer buffer = new NodeBuffer(length);
@@ -367,13 +366,13 @@ public class NodeImpl implements Node {
             }
             if (newNodes != null) {
                 for (int i = 0; i < newNodes.getLength(); i++) {
-                    NodeImpl insert = (NodeImpl)newNodes.item(i);
+                    Node insert = newNodes.item(i);
                     buffer.append(nodeId);
-                    buffer.append(insert.id);
+                    buffer.append(nf.getId(insert));
                 }
-            } else if (newNode != null) {
+            } else if (newChild != null) {
                 buffer.append(nodeId);
-                buffer.append(newNode.id);
+                buffer.append(nf.getId(newChild));
             }
             while (scan < nodes.length) {
                 buffer.append(nodes[scan++]);
