@@ -26,11 +26,23 @@
 package net.sourceforge.fraglets.codec;
 
 /**
- *
+ * An UTF-8 decoder able to decode UCS-4 in addition to UCS-2. See
+ * standards ISO/IEC 10646-1:1993 and RFC2279, RFC2781.
+ * 
+ * This implementation requires that you know in advance how many
+ * characters you will decode from a given input. You may try to
+ * use it catching ArrayIndexOutOfBoundsException to detect the end
+ * if input. However, doing that may discard up to 5 partial bytes
+ * at the end of the input.
+ * 
+ * Format checking is minimal in favor of performance. If you feed
+ * it garbage, you will get garbage output.
+ * 
  * @author  marion@users.sourceforge.net
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class UTF8Decoder {
+	/** Input buffer. */
     private byte buffer[];
     
     /** Offset into buffer. */
@@ -50,21 +62,53 @@ public class UTF8Decoder {
         initTables();
     }
 
+	/**
+	 * Set the current input buffer. Note that the buffer is
+	 * used in-place and no copy is created to decode it.
+	 * 
+	 * @param buffer the new input buffer
+	 */
     public void setBuffer(byte buffer[]) {
         setBuffer(buffer, 0, buffer.length);
     }
     
+	/**
+	 * Set the current input buffer. Note that the buffer is
+	 * used in-place and no copy is created to decode it.
+	 * 
+	 * @param buffer the new input buffer
+	 * @param off where to start in buffer
+	 * @param len how many bytes to use from buffer
+	 */
     public void setBuffer(byte buffer[], int off, int len) {
         this.buffer = buffer;
         this.off = off;
         this.end = off + len;
     }
     
+	/**
+	 * Compute how many bytes are still in the input buffer.
+	 * Note that this is always at least as much as the number
+	 * of UCS-4 encoded characters available, usually more.
+	 * 
+	 * @return number of bytes still available
+	 */
     public int available() {
         return end - off;
     }
     
-    public int[] decodeUCS4(int buffer[], int off, int len) {
+	/**
+	 * Decode a UCS-4 character string.
+	 * 
+	 * @param buffer the buffer to hold the result, or null
+	 * @param off where to start in buffer, ignored when buffer is null
+	 * @param len number of characters to decode
+	 * @return the decoded characters as an array of integers
+	 * @throws ArrayIndexOutOfBoundsException when input or output
+	 * buffers are exhausted before len characters are decoded
+	 */
+    public int[] decodeUCS4(int buffer[], int off, int len)
+    throws ArrayIndexOutOfBoundsException {
         if (buffer == null) {
             buffer = new int[len];
             off = 0; // ignored
@@ -75,7 +119,23 @@ public class UTF8Decoder {
         return buffer;
     }
     
-    public char[] decodeUCS2(char buffer[], int off, int len) {
+	/**
+	 * Decode a UCS-2 character string. This will convert UCS-4
+	 * characters to surrogate pairs when needed. Note that this
+	 * means that you may have to provide more room in the output
+	 * buffer: two characters for each surrogate pair instead of
+	 * one.
+	 * 
+	 * @param buffer the buffer to hold the result, or null
+	 * @param off where to start in buffer, ignored when buffer is null
+	 * @param len number of UCS-2 characters to decode, including
+	 * surrogate pairs
+	 * @return the decoded characters as an array of characters
+	 * @throws ArrayIndexOutOfBoundsException when input or output
+	 * buffers are exhausted before len characters are decoded
+	 */
+    public char[] decodeUCS2(char buffer[], int off, int len)
+    throws ArrayIndexOutOfBoundsException {
         if (buffer == null) {
             buffer = new char[len];
             off = 0; // ignored
@@ -100,32 +160,77 @@ public class UTF8Decoder {
         return buffer;
     }
     
-    public String decodeString(int len) {
+	/**
+	 * Decode a UCS-2 encoded string.
+	 *
+	 * @param len number of UCS-2 characters to decode, including
+	 * surrogate pairs
+	 * @return the decoded characters as a String
+	 * @throws ArrayIndexOutOfBoundsException when the input
+	 * buffer is exhausted before len characters are decoded
+	 */
+    public String decodeString(int len)
+    throws ArrayIndexOutOfBoundsException {
         return new String(decodeUCS2(null, 0, len));
     }
     
-    public final int decodeUCS4() {
-        int datum = buffer[off++] & 0xff;
-        int result = value[datum];
-        switch (length[datum]) {
-            case 6:
-                result = result << 6 | (buffer[off++] & 0x3f); 
-            case 5:
-                result = result << 6 | (buffer[off++] & 0x3f); 
-            case 4:
-                result = result << 6 | (buffer[off++] & 0x3f); 
-            case 3:
-                result = result << 6 | (buffer[off++] & 0x3f); 
-            case 2:
-                result = result << 6 | (buffer[off++] & 0x3f); 
-            case 1:
-                return result;
-            default:
-                throw new IllegalArgumentException
-                    ("format error: illegal byte: "+datum);
-        }
+	/**
+	 * Decode a UCS-4 character.
+	 * 
+	 * @return the decoded character as an integer
+	 * @throws ArrayIndexOutOfBoundsException when the input
+	 * buffer is exhausted
+	 */
+    public final int decodeUCS4()
+    throws ArrayIndexOutOfBoundsException {
+    	try {
+	        int datum = buffer[off++] & 0xff;
+	        int result = value[datum];
+	        
+	        // this is a bit reckless, ignoring the byte tags
+	        // for continued values but it's quite fast that way
+	        switch (length[datum]) {
+	            case 6:
+	                result = result << 6 | (buffer[off++] & 0x3f); 
+	            case 5:
+	                result = result << 6 | (buffer[off++] & 0x3f); 
+	            case 4:
+	                result = result << 6 | (buffer[off++] & 0x3f); 
+	            case 3:
+	                result = result << 6 | (buffer[off++] & 0x3f); 
+	            case 2:
+	                result = result << 6 | (buffer[off++] & 0x3f); 
+	            case 1:
+	                return result;
+	            default:
+	                throw new IllegalArgumentException
+	                    ("format error: illegal byte: "+datum);
+	        }
+    	} catch (ArrayIndexOutOfBoundsException ex) {
+    		off = end; // reset invalid offset
+    		throw ex;
+    	} finally {
+    		// detect buffer underrun
+    		if (off > end) {
+    			ArrayIndexOutOfBoundsException ex =
+    				new ArrayIndexOutOfBoundsException(off);
+    			off = end; // reset invalid offset
+    			throw ex;
+    		}
+    	}
     }
     
+	/**
+	 * Initialize decoder tables. Both tables are used to interpret
+	 * the first byte of an encoded character.
+	 * 
+	 * The <code>length</code> table determines how many bytes make
+	 * up the character. If the first byte is invalid,
+	 * <code>length[byte]</code> is zero.
+	 * 
+	 * The <code>value</code> table contains the partial value of the
+	 * first byte, shifted down by <code>length[byte] * 6 - 1</code>.
+	 */
     private static void initTables() {
         if (length != null) {
             return;
