@@ -31,12 +31,13 @@ import org.w3c.dom.Node;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class AttrImpl extends NodeImpl implements Attr {
     
     public AttrImpl(NodeImpl owner, int nm, int v) {
         super(owner, nm, v);
+        children = NamedNodeMapImpl.MT;
     }
     
     public int getNm() {

@@ -32,7 +32,7 @@ import org.w3c.dom.Text;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class TextImpl extends NodeImpl implements Text {
 
@@ -43,6 +43,7 @@ public class TextImpl extends NodeImpl implements Text {
      */
     public TextImpl(NodeImpl parent, int id, int v) {
         super(parent, id, v);
+        children = NamedNodeMapImpl.MT;
     }
 
     /**

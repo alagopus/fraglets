@@ -32,7 +32,7 @@ import org.w3c.dom.ProcessingInstruction;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class PIImpl extends NodeImpl implements ProcessingInstruction {
 
@@ -108,6 +108,20 @@ public class PIImpl extends NodeImpl implements ProcessingInstruction {
      */
     public boolean hasChildNodes() {
         return false;
+    }
+
+    /**
+     * @see org.w3c.dom.Node#getLocalName()
+     */
+    public String getLocalName() {
+        return getTarget();
+    }
+
+    /**
+     * @see org.w3c.dom.Node#getNamespaceURI()
+     */
+    public String getNamespaceURI() {
+        return "";
     }
 
 }
