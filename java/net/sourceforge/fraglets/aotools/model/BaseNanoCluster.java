@@ -1,3 +1,9 @@
+/*
+ * BaseNanoCluster.java
+ * Copright (C) 2001 Shakasta Sslytherin and Noiram Voker.
+ * Created on 4. August 2001, 17:49
+ */
+
 package net.sourceforge.fraglets.aotools.model;
 
 import java.io.Serializable;

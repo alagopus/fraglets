@@ -1,6 +1,6 @@
 /*
  * BaseNanoListModel.java
- *
+ * Copright (C) 2001 Shakasta Sslytherin and Noiram Voker.
  * Created on 3. August 2001, 18:31
  */
 
