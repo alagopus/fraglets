@@ -17,7 +17,7 @@ import java.util.Iterator;
 /** XML encoder for nano lists.
  *
  * @author kre
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class NanoListEncoder {
     /** The UTF8 writer. */
@@ -36,6 +36,9 @@ public class NanoListEncoder {
      * @throws IOException on IO failures
      */    
     public void encodeBaseNanoList(BaseNanoList list) throws IOException {
+        out.processingInstruction("xml-stylesheet",
+            "href=\"BaseNanoList.xsl\" type=\"text/xsl\"");
+        out.write('\n');
         out.startElement(NanoListTags.BASE_NANO_LIST);
         out.write('\n');
         Iterator i = list.getAllNanos();
