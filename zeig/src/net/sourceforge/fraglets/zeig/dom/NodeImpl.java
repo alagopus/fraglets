@@ -24,14 +24,14 @@ import org.xml.sax.SAXException;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class NodeImpl implements Node {
     private int id;
     private int v;
     
     private NodeImpl parent;
-    private NodeList children;
+    protected NodeList children;
     private NamedNodeMap attributes;
     
     public NodeImpl(NodeImpl parent, int id, int v) {

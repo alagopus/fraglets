@@ -19,11 +19,17 @@ import org.w3c.dom.NodeList;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class NamedNodeMapImpl implements NamedNodeMap, NodeList {
     private NodeFactory nf;
     private NodeImpl nodes[];
+    
+    public static final NamedNodeMapImpl MT = new NamedNodeMapImpl();
+    
+    private NamedNodeMapImpl() {
+        nodes = new NodeImpl[0];
+    }
     
     public NamedNodeMapImpl(NodeImpl node, boolean atts) throws DOMException {
         init(node, atts);

@@ -24,6 +24,7 @@ public class PIImpl extends NodeImpl implements ProcessingInstruction {
      */
     public PIImpl(NodeImpl parent, int id, int v) {
         super(parent, id, v);
+        children = NamedNodeMapImpl.MT;
     }
 
     /**
@@ -81,6 +82,13 @@ public class PIImpl extends NodeImpl implements ProcessingInstruction {
      */
     public Node cloneNode(boolean deep) {
         return new PIImpl((NodeImpl)getParentNode(), getId(), getV());
+    }
+
+    /**
+     * @see org.w3c.dom.Node#hasChildNodes()
+     */
+    public boolean hasChildNodes() {
+        return false;
     }
 
 }
