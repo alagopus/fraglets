@@ -21,7 +21,7 @@ import org.apache.log4j.Category;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class ConnectionFactory {
     
@@ -149,7 +149,7 @@ public class ConnectionFactory {
                         }
                         Class.forName("com.mysql.jdbc.Driver");
                         return connection = DriverManager
-                            .getConnection(getConnectionUrl()); 
+                            .getConnection(getConnectionUrl(), environment); 
                     } catch (ClassNotFoundException ex) {
                         throw new SQLException("driver not found: "+ex);
                     }
