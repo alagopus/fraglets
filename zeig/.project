@@ -3,7 +3,8 @@
 	<name>zeig</name>
 	<comment></comment>
 	<projects>
-		<project>fraglets</project>
+		<project>3rd</project>
+		<project>fraglets-codec</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
