@@ -11,28 +11,37 @@ import java.io.StringReader;
 import java.sql.SQLException;
 import java.util.Stack;
 
+import org.apache.log4j.Category;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
+import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
 /**
  * @author marion@users.souceforge.net
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
-public class SAXFactory implements ContentHandler {
+public class SAXFactory implements ContentHandler, ErrorHandler {
     private NodeFactory nf;
     private Stack stack;
     private NodeBuffer buffer;
     private Locator locator;
     
     private NodeBuffer result;
+    private boolean silent;
     
     public SAXFactory(NodeFactory nf) {
+        this(nf, false);
+    }
+    
+    public SAXFactory(NodeFactory nf, boolean silent) {
         this.nf = nf;
+        this.silent = silent;
         result = new NodeBuffer();
     }
     
@@ -201,6 +210,7 @@ public class SAXFactory implements ContentHandler {
         try {
             XMLReader reader = createReader();
             reader.setContentHandler(this);
+            reader.setErrorHandler(this);
             reader.parse(in);
             return getLastResult();
         } catch (IOException ex) {
@@ -219,4 +229,47 @@ public class SAXFactory implements ContentHandler {
         return reader;
     }
     
+    /**
+     * @see org.xml.sax.ErrorHandler#error(org.xml.sax.SAXParseException)
+     */
+    public void error(SAXParseException ex) throws SAXException {
+        if (!silent) {
+            Category.getInstance(getClass()).error("SAX error", ex);
+        }
+        throw ex;
+    }
+
+    /**
+     * @see org.xml.sax.ErrorHandler#fatalError(org.xml.sax.SAXParseException)
+     */
+    public void fatalError(SAXParseException ex) throws SAXException {
+        if (!silent) {
+            Category.getInstance(getClass()).error("SAX fatal error", ex);
+        }
+        throw ex;
+    }
+
+    /**
+     * @see org.xml.sax.ErrorHandler#warning(org.xml.sax.SAXParseException)
+     */
+    public void warning(SAXParseException ex) throws SAXException {
+        if (!silent) {
+            Category.getInstance(getClass()).error("SAX warning", ex);
+        }
+    }
+
+    /**
+     * @return
+     */
+    public boolean isSilent() {
+        return silent;
+    }
+
+    /**
+     * @param b
+     */
+    public void setSilent(boolean b) {
+        silent = b;
+    }
+
 }
