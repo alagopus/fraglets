@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!ELEMENT button EMPTY>
+<!ATTLIST button
+	action CDATA #REQUIRED
+	icon CDATA #IMPLIED
+	halign NMTOKEN #IMPLIED
+	mnemonic NMTOKEN #IMPLIED
+	name NMTOKEN #IMPLIED
+	text NMTOKEN #IMPLIED
+	tooltip CDATA #IMPLIED
+>
+
+<!ELEMENT cell EMPTY>
+<!ATTLIST cell
+	enabled NMTOKEN #IMPLIED
+	icon CDATA #IMPLIED
+	text CDATA #IMPLIED
+>
+
+<!ELEMENT checkbox EMPTY>
+<!ATTLIST checkbox
+	action CDATA #REQUIRED
+	mnemonic NMTOKEN #IMPLIED
+	name NMTOKEN #REQUIRED
+	selected NMTOKEN #REQUIRED
+	text NMTOKEN #REQUIRED
+>
+
+<!ELEMENT choice EMPTY>
+<!ATTLIST choice text NMTOKEN #REQUIRED>
+
+<!ELEMENT column EMPTY>
+<!ATTLIST column
+	alignment NMTOKEN #IMPLIED
+	icon CDATA #IMPLIED
+	text NMTOKEN #REQUIRED
+	width NMTOKEN #IMPLIED
+>
+
+<!ELEMENT combobox (choice+)>
+<!ATTLIST combobox
+	action CDATA #REQUIRED
+	editable NMTOKEN #REQUIRED
+	name NMTOKEN #REQUIRED
+	selected NMTOKEN #REQUIRED
+	valign NMTOKEN #REQUIRED
+>
+
+<!ELEMENT header (column+)>
+
+<!ELEMENT item EMPTY>
+<!ATTLIST item
+	enabled NMTOKEN #IMPLIED
+	icon CDATA #IMPLIED
+	selected NMTOKEN #IMPLIED
+	text CDATA #REQUIRED
+>
+
+<!ELEMENT label EMPTY>
+<!ATTLIST label
+	alignment NMTOKEN #IMPLIED
+	colspan NMTOKEN #IMPLIED
+	mnemonic NMTOKEN #IMPLIED
+	text CDATA #IMPLIED
+	weightx NMTOKEN #IMPLIED
+>
+
+<!ELEMENT list (item+)>
+<!ATTLIST list
+	action CDATA #REQUIRED
+	colspan NMTOKEN #REQUIRED
+	name NMTOKEN #REQUIRED
+	selection NMTOKEN #REQUIRED
+	weightx NMTOKEN #REQUIRED
+	weighty NMTOKEN #REQUIRED
+>
+
+<!ELEMENT menu (menuitem|separator)*>
+<!ATTLIST menu
+	mnemonic NMTOKEN #IMPLIED
+	text NMTOKEN #REQUIRED
+>
+
+<!ELEMENT menubar (menu+)>
+<!ATTLIST menubar weightx NMTOKEN #REQUIRED>
+
+<!ELEMENT menuitem EMPTY>
+<!ATTLIST menuitem
+	icon CDATA #IMPLIED
+	mnemonic NMTOKEN #IMPLIED
+	text CDATA #REQUIRED
+>
+
+<!ELEMENT node (node?)>
+<!ATTLIST node
+	enabled NMTOKEN #IMPLIED
+	expanded NMTOKEN #IMPLIED
+	icon CDATA #REQUIRED
+	selected NMTOKEN #IMPLIED
+	text CDATA #REQUIRED
+>
+
+<!ELEMENT panel (button|checkbox|combobox|label|menubar|panel|progressbar|separator|slider|spinbox|splitpane|tabbedpane|textarea|textfield)*>
+<!ATTLIST panel
+	bottom NMTOKEN #IMPLIED
+	columns NMTOKEN #IMPLIED
+	gap NMTOKEN "4"
+	init CDATA #IMPLIED
+	left NMTOKEN #IMPLIED
+	right NMTOKEN #IMPLIED
+	top NMTOKEN #IMPLIED
+>
+
+<!ELEMENT progressbar EMPTY>
+<!ATTLIST progressbar
+	name NMTOKEN #REQUIRED
+	valign NMTOKEN #REQUIRED
+>
+
+<!ELEMENT row (cell+)>
+<!ATTLIST row selected NMTOKEN #IMPLIED>
+
+<!ELEMENT separator EMPTY>
+<!ATTLIST separator colspan NMTOKEN #IMPLIED>
+
+<!ELEMENT slider EMPTY>
+<!ATTLIST slider
+	action CDATA #REQUIRED
+	maximum NMTOKEN #REQUIRED
+	name NMTOKEN #REQUIRED
+	valign NMTOKEN #REQUIRED
+>
+
+<!ELEMENT spinbox EMPTY>
+<!ATTLIST spinbox
+	action CDATA #REQUIRED
+	columns NMTOKEN #REQUIRED
+	name NMTOKEN #REQUIRED
+	text NMTOKEN #REQUIRED
+>
+
+<!ELEMENT splitpane (splitpane?,list?,tree?,table?)>
+<!ATTLIST splitpane
+	divider NMTOKEN #REQUIRED
+	orientation NMTOKEN #IMPLIED
+	weightx NMTOKEN #IMPLIED
+	weighty NMTOKEN #IMPLIED
+>
+
+<!ELEMENT tab (panel)>
+<!ATTLIST tab
+	mnemonic NMTOKEN #IMPLIED
+	text NMTOKEN #REQUIRED
+>
+
+<!ELEMENT tabbedpane (tab+)>
+<!ATTLIST tabbedpane
+	selected NMTOKEN #REQUIRED
+	weightx NMTOKEN #REQUIRED
+	weighty NMTOKEN #REQUIRED
+>
+
+<!ELEMENT table (header,row+)>
+<!ATTLIST table selection NMTOKEN #REQUIRED>
+
+<!ELEMENT textarea EMPTY>
+<!ATTLIST textarea
+	colspan NMTOKEN #REQUIRED
+	init CDATA #REQUIRED
+	name NMTOKEN #REQUIRED
+	weighty NMTOKEN #REQUIRED
+>
+
+<!ELEMENT textfield EMPTY>
+<!ATTLIST textfield
+	editable NMTOKEN #REQUIRED
+	name NMTOKEN #REQUIRED
+	text NMTOKEN #REQUIRED
+>
+
+<!ELEMENT tree (node+)>
+<!ATTLIST tree selection NMTOKEN #REQUIRED>
+

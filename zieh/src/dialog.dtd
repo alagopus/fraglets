@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!ENTITY % panel.dtd SYSTEM "panel.dtd">
+%panel.dtd;
+
+<!ELEMENT dialog (button|checkbox|combobox|label|menubar|panel|progressbar|separator|slider|spinbox|splitpane|tabbedpane|textarea|textfield)*>
+<!ATTLIST dialog
+	bottom NMTOKEN #IMPLIED
+	columns NMTOKEN #IMPLIED
+	gap NMTOKEN "4"
+	init CDATA #IMPLIED
+	icon CDATA #IMPLIED
+	left NMTOKEN #IMPLIED
+	modal NMTOKEN #IMPLIED
+	name NMTOKEN #IMPLIED
+	right NMTOKEN #IMPLIED
+	text CDATA #IMPLIED
+	top NMTOKEN #IMPLIED
+>
