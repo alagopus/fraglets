@@ -15,7 +15,7 @@ import org.apache.log4j.Priority;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class SensorCache implements SimpleCache {
     private String name;
@@ -104,16 +104,16 @@ public class SensorCache implements SimpleCache {
             int[] sensor = element.getSensor();
             String name = element.getName();
             Category category = Category.getInstance(name);
-            category.log(priority, ".get: "+sensor[GET_SENSOR]);
-            category.log(priority, ".hit: "+sensor[HIT_SENSOR]);
-            category.log(priority, ".put: "+sensor[PUT_SENSOR]);
+            category.log(priority, "get: "+sensor[GET_SENSOR]);
+            category.log(priority, "hit: "+sensor[HIT_SENSOR]);
+            category.log(priority, "put: "+sensor[PUT_SENSOR]);
             if (sensor[GET_SENSOR] > 0) {
                 category.log(priority, " hit rate: "
                     + percent(sensor[HIT_SENSOR], sensor[GET_SENSOR]) + "%");
             }
-            category.log(priority, ".size: " + element.getSize());
-            category.log(priority, ".fill: " + element.getFill());
-            category.log(priority, ".drop: " + element.getDrop());
+            category.log(priority, "size: " + element.getSize());
+            category.log(priority, "fill: " + element.getFill());
+            category.log(priority, "drop: " + element.getDrop());
             if (element.getSize() > 0) {
                 category.log(priority, " fill rate: "
                     + percent(element.getFill(), element.getSize()) + "%");
