@@ -33,7 +33,7 @@ import org.w3c.dom.Text;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class DocumentImpl extends NodeImpl implements Document {
     protected ConnectionContext cc;
@@ -151,7 +151,7 @@ public class DocumentImpl extends NodeImpl implements Document {
             int v = getNodeFactory().getPlainTextFactory().getPlainText(elementId);
             return getElementById(this, nm, v);
         } catch (SQLException ex) {
-            throw domException(ex);
+            return null; // may not be allowed to create id
         }
     }
     

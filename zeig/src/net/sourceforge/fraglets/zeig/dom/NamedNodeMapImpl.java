@@ -19,7 +19,7 @@ import org.w3c.dom.NodeList;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class NamedNodeMapImpl implements NamedNodeMap, NodeList {
     private NodeFactory nf;
@@ -137,7 +137,7 @@ public class NamedNodeMapImpl implements NamedNodeMap, NodeList {
         try {
             return getNamedItem(nf.getName(name));
         } catch (SQLException ex) {
-            throw NodeImpl.domException(ex);
+            return null; // may not be allowed to create name
         }
     }
 
@@ -148,7 +148,7 @@ public class NamedNodeMapImpl implements NamedNodeMap, NodeList {
         try {
             return getNamedItem(nf.getName(namespaceURI, localName));
         } catch (SQLException ex) {
-            throw NodeImpl.domException(ex);
+            return null; // may not be allowed to create name
         }
     }
 
