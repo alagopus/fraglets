@@ -21,7 +21,7 @@ import net.sourceforge.fraglets.zeig.dom.DocumentImpl;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class DOMObjectFactory implements ObjectFactory {
 
@@ -34,7 +34,7 @@ public class DOMObjectFactory implements ObjectFactory {
             try {
                 DOMContext dctx = (DOMContext)ctx;
                 int ve = dctx.getVe((Element)obj);
-                int id = getLatest(ve, dctx);
+                int id = getLatest(dctx, ve);
                 Document doc = new DocumentImpl(id, dctx.connectionContext);
                 if (isDOMContext(doc)) {
                     return new DOMContext(dctx, name.get(0), doc, ve);
@@ -71,7 +71,7 @@ public class DOMObjectFactory implements ObjectFactory {
         }
     }
     
-    public static int getLatest(int ve, DOMContext ctx) throws NamingException {
+    public static int getLatest(DOMContext ctx, int ve) throws NamingException {
         try {
             return ctx.connectionContext.getVersionFactory().getValue(ve);
         } catch (SQLException ex) {

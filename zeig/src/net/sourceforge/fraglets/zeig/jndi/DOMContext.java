@@ -48,7 +48,7 @@ import org.xml.sax.SAXException;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.17 $
+ * @version $Revision: 1.18 $
  */
 public class DOMContext implements Context {
     /** Context option. */
@@ -263,15 +263,32 @@ public class DOMContext implements Context {
      * @see javax.naming.Context#rename(javax.naming.Name, javax.naming.Name)
      */
     public void rename(Name oldName, Name newName) throws NamingException {
-        if (oldName.isEmpty() && newName.isEmpty()) {
-            throw new InvalidNameException("empty name");
+        if (oldName.isEmpty()) {
+            throw new InvalidNameException("empty old name");
         }
-
-        // Just bind and unbind, in that order. Note that this creates a new
-        // version element, just like in CVS.
-        Object obj = lookup(oldName);
-        bind(newName, obj);
-        unbind(oldName);
+        if (newName.isEmpty()) {
+            throw new InvalidNameException("empty new name");
+        }
+        
+        try {
+            Name oldPrefix = oldName.getPrefix(oldName.size() - 1);
+            String oldSuffix = oldName.get(oldName.size() - 1);
+            DOMContext oldContext = (DOMContext)lookup(oldPrefix);
+            Element in = oldContext.lookupElement(oldSuffix);
+            
+            Name newPrefix = newName.getPrefix(newName.size() - 1);
+            String newSuffix = newName.get(newName.size() - 1);
+            DOMContext newContext = (DOMContext)lookup(newPrefix);
+            if (newContext.lookupElement(newSuffix) != null) {
+                throw new NameAlreadyBoundException(newName.toString());
+            }
+            
+            // use the element to rebind, retaining the element history.
+            newContext.rebind(in, null, newSuffix);
+            oldContext.rebind(null, in, oldSuffix);
+        } catch (ClassCastException ex) {
+            throw new NotContextException();
+        }
     }
 
     /**

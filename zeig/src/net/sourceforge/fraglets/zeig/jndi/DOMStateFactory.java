@@ -22,7 +22,7 @@ import org.xml.sax.InputSource;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class DOMStateFactory implements StateFactory {
     /**
@@ -34,11 +34,16 @@ public class DOMStateFactory implements StateFactory {
             DOMContext dctx = (DOMContext)ctx;
             try {
                 int id;
+                String atom = name.get(0);
                 NodeFactory nf = dctx.connectionContext.getNodeFactory();
                 if (obj instanceof Document) {
                     id = nf.getId((Document)obj);
                 } else if (obj instanceof DOMContext) {
                     id = nf.getId(((DOMContext)obj).getBinding());
+                } else if (obj instanceof Element) {
+                    int ve = dctx.getVe((Element)obj);
+                    id = DOMObjectFactory.getLatest(dctx, ve);
+                    return createBinding(dctx, id, atom, ve);
                 } else {
                     InputSource in;
                     if (obj instanceof InputSource) {
@@ -59,18 +64,11 @@ public class DOMStateFactory implements StateFactory {
                 }
                 int co = dctx.connectionContext.getPlainTextFactory().getPlainText(comment);
                 
-                String atom = name.get(0);
                 Element binding = dctx.lookupElement(atom);
                 if (binding == null) {
                     int ve = dctx.connectionContext.getVersionFactory()
                         .createVersion(id, co);
-                    String localName = DOMObjectFactory.isDOMContext(id, dctx)
-                        ? DOMContext.CONTEXT_TAGNAME
-                        : DOMContext.BINDING_TAGNAME;
-                    Document doc = new org.apache.xerces.dom.DocumentImpl();
-                    binding = doc.createElementNS(DOMContext.CONTEXT_NAMESPACE, localName);
-                    binding.setAttributeNS("", "id", atom);
-                    binding.setAttributeNS(DOMContext.CONTEXT_NAMESPACE, "ve", String.valueOf(ve));
+                    binding = createBinding(dctx, id, atom, ve);
                 } else {
                     int ve = dctx.getVe(binding);
                     dctx.connectionContext.getVersionFactory().addVersion(ve, id, co);
@@ -83,6 +81,17 @@ public class DOMStateFactory implements StateFactory {
         } else {
             return null;
         }
+    }
+    
+    private Element createBinding(DOMContext dctx, int id, String atom, int ve) {
+        String localName = DOMObjectFactory.isDOMContext(id, dctx)
+            ? DOMContext.CONTEXT_TAGNAME
+            : DOMContext.BINDING_TAGNAME;
+        Document doc = new org.apache.xerces.dom.DocumentImpl();
+        Element binding = doc.createElementNS(DOMContext.CONTEXT_NAMESPACE, localName);
+        binding.setAttributeNS("", "id", atom);
+        binding.setAttributeNS(DOMContext.CONTEXT_NAMESPACE, "ve", String.valueOf(ve));
+        return binding;
     }
 
 }
