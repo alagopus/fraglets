@@ -57,8 +57,8 @@ CREATE TABLE `me` (
   `id` int(11) NOT NULL auto_increment,
   `hc` int(11) NOT NULL default '0',
   `t` varchar(200) NOT NULL default 'application/octet-stream',
-  `v` blob NOT NULL,
+  `v` longblob NOT NULL,
   PRIMARY KEY  (`id`),
-  KEY `me_t` (`t`),
-  KEY `me_hc` (`hc`)
+  KEY `me_hc` (`hc`),
+  KEY `me_t` (`t`)
 ) TYPE=MyISAM COMMENT='Media'; 
