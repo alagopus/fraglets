@@ -1,5 +1,5 @@
 /*
- * $Id: send.c,v 1.1 2000-05-01 13:19:39 marion Exp $
+ * $Id: send.c,v 1.2 2000-05-01 15:24:56 marion Exp $
  * 
  * tryst/send.c - 
  * Jul 19 1994 by marion
@@ -26,10 +26,14 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-/* $Log: send.c,v $
-/* Revision 1.1  2000-05-01 13:19:39  marion
-/* Shared memory and unix domain socket group IPC
 /*
+ * $Log: send.c,v $
+ * Revision 1.2  2000-05-01 15:24:56  marion
+ * Port to linux using portable control message header.
+ *
+ * Revision 1.1  2000/05/01 13:19:39  marion
+ * Shared memory and unix domain socket group IPC
+ *
  * Revision 1.2  1994/07/20 00:38:24  marion
  * First run.
  *
@@ -40,10 +44,9 @@
 
 #include "internal.h"
 
+#include <unistd.h>
 #include <memory.h>
 #include <sys/uio.h>
-
-extern int sendmsg (int, struct msghdr *, int);
 
 int
 TrystSend (int fd, Subject *data)
@@ -51,6 +54,10 @@ TrystSend (int fd, Subject *data)
   struct msghdr		msg;
   struct iovec		iov[1];
   char			buf[MSGLEN + sizeof (data->len)];
+#if !defined(__svr4__) || defined(_XPG4_2)
+  struct cmsghdr *cmsg;
+  char cmsgbuf[CMSG_SPACE(sizeof (data->fd))];
+#endif
   
   memcpy (buf, DATA, MSGLEN);
   memcpy (buf + MSGLEN, &data->len, sizeof (data->len));
@@ -62,8 +69,22 @@ TrystSend (int fd, Subject *data)
   msg.msg_namelen = 0;
   msg.msg_iov = iov;
   msg.msg_iovlen = 1;
+#if !defined(__svr4__) || defined(_XPG4_2)
+  msg.msg_control = cmsgbuf;
+  msg.msg_controllen = sizeof (cmsgbuf);
+
+  cmsg = CMSG_FIRSTHDR(&msg);
+  cmsg->cmsg_level = SOL_SOCKET;
+  cmsg->cmsg_type = SCM_RIGHTS;
+  cmsg->cmsg_len = CMSG_LEN(sizeof (data->fd));
+  memcpy (CMSG_DATA(cmsg), &data->fd, sizeof (data->fd));
+
+  /* recaclulate the correct length. */
+  msg.msg_controllen = cmsg->cmsg_len;
+#else
   msg.msg_accrights = (caddr_t)&data->fd;
   msg.msg_accrightslen = sizeof (data->fd);
+#endif
 
   if (sendmsg (fd, &msg, 0) < 0)
     {

@@ -1,5 +1,5 @@
 #
-# $Id: Makefile,v 1.1 2000-05-01 13:19:39 marion Exp $
+# $Id: Makefile,v 1.2 2000-05-01 15:24:56 marion Exp $
 # 
 # tryst/Makefile - 
 # Jul 18 1994 by marion
@@ -27,7 +27,10 @@
 #
 
 # $Log: Makefile,v $
-# Revision 1.1  2000-05-01 13:19:39  marion
+# Revision 1.2  2000-05-01 15:24:56  marion
+# Port to linux using portable control message header.
+#
+# Revision 1.1  2000/05/01 13:19:39  marion
 # Shared memory and unix domain socket group IPC
 #
 # Revision 1.2  1994/07/20 00:38:00  marion
@@ -39,19 +42,20 @@
 #
 
 CC	= gcc
-CFLAGS	= -Wall -O2 -ggdb
+CFLAGS	= -Wall -O2 -g
 CPPFLAGS= 
 
 # Don't use sysV ar, it truncates file names.
-AR	= /usr/local/bin/ar
-RANLIB	= /usr/local/bin/ranlib
+AR	= ar
+RANLIB	= : ranlib
 
 PARTS	= accept alloc data fileno free offer receive send size
 SOURCE	= $(PARTS:%=%.c)
 
 all: libtryst.a
 
-libtryst.a: $(PARTS:%=libtryst.a(%.o))
+libtryst.a: $(PARTS:%=%.o)
+	$(AR) cr $@ $(PARTS:%=%.o)
 	$(RANLIB) libtryst.a
 	
 

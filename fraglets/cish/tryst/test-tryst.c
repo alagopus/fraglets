@@ -1,5 +1,5 @@
 /*
- * $Id: test-tryst.c,v 1.1 2000-05-01 13:19:39 marion Exp $
+ * $Id: test-tryst.c,v 1.2 2000-05-01 15:24:56 marion Exp $
  * 
  * tryst/test-tryst.c - 
  * Jul 19 1994 by marion
@@ -26,39 +26,49 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-/* $Log: test-tryst.c,v $
-/* Revision 1.1  2000-05-01 13:19:39  marion
-/* Shared memory and unix domain socket group IPC
 /*
+ * $Log: test-tryst.c,v $
+ * Revision 1.2  2000-05-01 15:24:56  marion
+ * Port to linux using portable control message header.
+ *
+ * Revision 1.1  2000/05/01 13:19:39  marion
+ * Shared memory and unix domain socket group IPC
+ *
  * Revision 1.1  1994/07/20 00:38:30  marion
  * First run.
  *
  */
 
 #include <stdio.h>
+#include <unistd.h>
 #include <assert.h>
 #include "tryst.h"
 
+#if 0
 extern int printf (const char *, ...);
 extern int sleep (unsigned int);
 extern char *sprintf (char *, const char *, ...);
+#endif
 
 #define NAME "/tmp/tt"
 
 void server();
-void client();
+void client (const char *message);
 
 int
 main (int argc, char **argv)
 {
   switch (argc)
     {
-    case 2:
+    case 1:
       server ();
       break;
-    case 1:
-      client ();
+    case 2:
+      client (argv[1]);
       break;
+    default:
+      fprintf (stderr, "usage: %s [message]\n", argv[0]);
+      exit (1);
     }
   
   return 0;
@@ -75,6 +85,7 @@ server ()
   t = TrystOffer (NAME);
   assert (t);
   
+  printf ("Server: waiting for client...\n");
   p = TrystPlace (t);
   assert (p >= 0);
   
@@ -92,7 +103,7 @@ server ()
 }
 
 void
-client ()
+client (const char *message)
 {
   Subject *s;
   void *d;
@@ -102,13 +113,13 @@ client ()
   t = TrystAccept (NAME);
   assert (t >= 0);
   
-  s = TrystAlloc (256);
+  s = TrystAlloc (strlen (message) + 1);
   assert (s);
   
   d = TrystData (s);
   assert (d);
   
-  sprintf ((char *)d, "Hello server!");
+  strcpy ((char *)d, message);
   
   assert (TrystSend (t, s) != -1);
   

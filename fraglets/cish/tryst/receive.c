@@ -1,5 +1,5 @@
 /*
- * $Id: receive.c,v 1.1 2000-05-01 13:19:39 marion Exp $
+ * $Id: receive.c,v 1.2 2000-05-01 15:24:56 marion Exp $
  * 
  * tryst/receive.c - 
  * Jul 19 1994 by marion
@@ -26,10 +26,14 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-/* $Log: receive.c,v $
-/* Revision 1.1  2000-05-01 13:19:39  marion
-/* Shared memory and unix domain socket group IPC
 /*
+ * $Log: receive.c,v $
+ * Revision 1.2  2000-05-01 15:24:56  marion
+ * Port to linux using portable control message header.
+ *
+ * Revision 1.1  2000/05/01 13:19:39  marion
+ * Shared memory and unix domain socket group IPC
+ *
  * Revision 1.2  1994/07/20 00:38:20  marion
  * First run.
  *
@@ -40,12 +44,10 @@
 
 #include "internal.h"
 
+#include <unistd.h>
 #include <memory.h>
 #include <errno.h>
 #include <sys/uio.h>
-
-extern void free (char *);
-extern int recvmsg (int, struct msghdr *, int);
 
 Subject *
 TrystReceive (int fd)
@@ -54,6 +56,10 @@ TrystReceive (int fd)
   struct msghdr		msg;
   struct iovec		iov[1];
   char			buf[32];
+#if !defined(__svr4__) || defined(_XPG4_2)
+  struct cmsghdr *cmsg;
+  char cmsgbuf[CMSG_SPACE(sizeof (result->fd))];
+#endif
   
   result = NEW(Subject,1);
   if (!result)
@@ -74,8 +80,13 @@ TrystReceive (int fd)
   msg.msg_namelen = 0;
   msg.msg_iov = iov;
   msg.msg_iovlen = 1;
+#if !defined(__svr4__) || defined(_XPG4_2)
+  msg.msg_control = cmsgbuf;
+  msg.msg_controllen = sizeof (cmsgbuf);
+#else
   msg.msg_accrights = (caddr_t)&result->fd;
   msg.msg_accrightslen = sizeof (result->fd);
+#endif
 
   if (recvmsg (fd, &msg, 0) < 0)
     {
@@ -83,6 +94,18 @@ TrystReceive (int fd)
       return 0;
     }
 
+#if !defined(__svr4__) || defined(_XPG4_2)
+  /* Search for control message with fd. */
+  for (cmsg = CMSG_FIRSTHDR(&msg); cmsg != NULL; cmsg = CMSG_NXTHDR(&msg,cmsg))
+    {
+      if (cmsg->cmsg_level == SOL_SOCKET && cmsg->cmsg_type == SCM_RIGHTS)
+	{
+	  result->fd = *(int*)CMSG_DATA(cmsg);
+	  break;
+	}
+    }
+#endif
+  
   if (memcmp (buf, DATA, MSGLEN) || result->fd < 0)
     {
       DELETE(result);
