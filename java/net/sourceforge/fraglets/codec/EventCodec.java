@@ -30,7 +30,7 @@ import java.util.Arrays;
 /**
  *
  * @author  marion@users.sourceforge.net
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public abstract class EventCodec {
     public final int STRING_WORD = 0;
@@ -115,19 +115,6 @@ public abstract class EventCodec {
         return buffer;
     }
     
-    public static final int hashCode(int ucs4[]) {
-        return hashCode(ucs4, 0, ucs4.length);
-    }
-    
-    public static final int hashCode(int ucs4[], int off, int len) {
-        int result = len;
-        int scan = off + len;
-        while (--scan >= off) {
-            result = result * 37 + ucs4[scan];
-        }
-        return result;
-    }
-    
     public static class Word {
         protected int code;
         protected int ucs4[];
@@ -137,7 +124,7 @@ public abstract class EventCodec {
         public Word(int code, int ucs4[]) {
             this.code = code;
             this.ucs4 = ucs4;
-            this.hashCache = EventEncoder.hashCode(this.ucs4);
+            this.hashCache = OTPHash.hash(this.ucs4);
         }
         
         public Word(int code, int ucs4[], int off, int len, String ucs2) {
@@ -151,14 +138,14 @@ public abstract class EventCodec {
             this.code = code;
             this.ucs4 = ucs4;
             this.ucs2 = ucs2;
-            this.hashCache = EventEncoder.hashCode(this.ucs4);
+            this.hashCache = OTPHash.hash(this.ucs4);
         }
         
         public Word(int code, String ucs2) {
             this.code = code;
             this.ucs4 = EventEncoder.toUCS4(ucs2);
             this.ucs2 = ucs2;
-            this.hashCache = EventEncoder.hashCode(this.ucs4);
+            this.hashCache = OTPHash.hash(this.ucs4);
         }
         
         public int getCode() {

@@ -31,7 +31,7 @@ import java.util.Arrays;
  * An event encoder is able to encode strings and integer literals into
  * a compact UTF-8 stream.
  * @author  marion@users.sourceforge.net
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class EventEncoder extends EventCodec {
     private final double MIN_LOAD = 0.4;
@@ -172,7 +172,7 @@ public class EventEncoder extends EventCodec {
         
         // start hash lookup
         int b = reverse.length;
-        int k = Math.abs(hashCode(ucs4, off, len));
+        int k = Math.abs(OTPHash.hash(ucs4, off, len));
         int s = stepPrime - (k % stepPrime);
         int f = k % b;
         for(int i = 1; i < b; i++) {

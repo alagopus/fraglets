@@ -120,12 +120,6 @@ public class EventCodecTest extends TestCase {
 		assertTrue("ucs4(text) equals toUCS4(text))",
 			Arrays.equals(ucs4, EventCodec.toUCS4(text)));
 	}
-
-	/*
-	 * Test for int hashCode(int[], int, int).
-	 */
-	public void testHashCodeIArrayII() {
-	}
 	
 	public static int[] toUCS4(String text)
 	throws UnsupportedEncodingException {
