@@ -9,6 +9,18 @@
         <Property name="label" type="java.lang.String" value="Edit"/>
       </Properties>
       <SubComponents>
+        <MenuItem class="javax.swing.JMenuItem" name="propertyMenuItem">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Properties ..."/>
+            <Property name="toolTipText" type="java.lang.String" value="Show extra avatar properties."/>
+          </Properties>
+
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="propertyMenuItemActionPerformed"/>
+          </Events>
+        </MenuItem>
+        <MenuItem class="javax.swing.JSeparator" name="jSeparator3">
+        </MenuItem>
         <MenuItem class="javax.swing.JMenuItem" name="newEntryItem">
           <Properties>
             <Property name="text" type="java.lang.String" value="new entry"/>
@@ -158,6 +170,20 @@
               </Events>
             </MenuItem>
             <MenuItem class="javax.swing.JSeparator" name="jSeparator2">
+            </MenuItem>
+            <MenuItem class="javax.swing.JCheckBoxMenuItem" name="mainFilterItem">
+              <Properties>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="mainFilterItem.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                </Property>
+                <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="mainFilterItem.tooltip" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                </Property>
+              </Properties>
+
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="filterItemActionPerformed"/>
+              </Events>
             </MenuItem>
             <MenuItem class="javax.swing.JCheckBoxMenuItem" name="level1FilterItem">
               <Properties>
