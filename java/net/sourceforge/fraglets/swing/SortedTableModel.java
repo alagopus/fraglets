@@ -26,6 +26,7 @@
 package net.sourceforge.fraglets.swing;
 
 import javax.swing.table.TableModel;
+import java.util.Comparator;
 
 /**
  * Interface for a sorted table model.
@@ -33,10 +34,20 @@ import javax.swing.table.TableModel;
  */
 public interface SortedTableModel extends TableModel {
     /**
-     * Sort the column at index <var>column</var>. Sorting order is ascending
-     * when <var>ascending</var> is true, else descending.
+     * Sort the column at index <var>column</var>, using the default
+     * comparator. Sorting order is ascending when <var>ascending</var>
+     * is true, else descending.
      * @param column the column index to sort
      * @param ascending whether to sort ascending
      */    
     public void sortColumn(int column, boolean ascending);
+    
+    /** Sort the column at index <var>column</var>, using the given
+     * <var>comparator</var>. Sorting order is ascending when
+     * <var>ascending</var> is true, else descending.
+     * @param column the column index to sort
+     * @param ascending whether to sort ascending 
+     * @param comparator the comparator to use for sorting
+     */    
+    public void sortColumn(int column, boolean ascending, Comparator comparator);
 }
