@@ -21,7 +21,7 @@ import org.apache.log4j.Category;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class ConnectionFactory {
     
@@ -51,6 +51,7 @@ public class ConnectionFactory {
 
     public ConnectionFactory(String connectionUrl, Properties environment) {
         this.environment = new Properties(System.getProperties());
+        this.environment.setProperty("useUnicode", "true");
         if (environment != null) {
             this.environment.putAll(environment);
         }
@@ -188,6 +189,14 @@ public class ConnectionFactory {
         if (connection != null) {
             connection.close();
             connection = null;
+        }
+    }
+    
+    public static String getConnectionURL(String host, int port, String database) {
+        if (port == 0) {
+            return "jdbc:mysql://"+host+'/'+database;
+        } else {
+            return "jdbc:mysql://"+host+':'+port+'/'+database;
         }
     }
 }
