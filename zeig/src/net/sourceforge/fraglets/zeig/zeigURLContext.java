@@ -452,10 +452,11 @@ public class zeigURLContext implements Context {
     protected Name getRemainingName(URI uri) throws InvalidNameException {
         String remainingPath = uri.getPath(true, true);
         CompositeName result = new CompositeName();
-        if (remainingPath.startsWith("/")) {
-            result.add(remainingPath.substring(1));
-        } else {
-            result.add(remainingPath); // unlikely
+        while (remainingPath.startsWith("/")) {
+            remainingPath = remainingPath.substring(1); // swallow initial slash
+        }
+        if (remainingPath.length() > 0){
+            result.add(remainingPath);
         }
         return result;
     }
