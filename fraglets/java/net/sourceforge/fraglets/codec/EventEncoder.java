@@ -31,7 +31,7 @@ import java.util.Arrays;
  * An event encoder is able to encode strings and integer literals into
  * a compact UTF-8 stream.
  * @author  marion@users.sourceforge.net
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class EventEncoder extends EventCodec {
     private final double MIN_LOAD = 0.4;
@@ -195,7 +195,12 @@ public class EventEncoder extends EventCodec {
         throw new RuntimeException("internal error - hash table full");
     }
     
-    /** Simplistic prime search. */
+	/**
+	 * Simplistic prime search. Using the sieve of Erastothenes.
+	 * 
+	 * @param n where to start searching
+	 * @return the smallest prime equal or greater to n
+	 */
     public static int nextPrime(int n) {
         if (n <= 2) {
             return 2;
