@@ -36,7 +36,7 @@ import org.xml.sax.SAXParseException;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author  kre
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class RosterFrame extends javax.swing.JFrame {
     /** The file chooser used to select files to parse and export.
@@ -135,6 +135,12 @@ public class RosterFrame extends javax.swing.JFrame {
         public AvatarFilterGuild(String guild) {
             this.guild = Guild.create(guild);
         }
+        /** Create a new avatar filter based on the given guild.
+         * @param guild the guild avatars must be in to be accepted
+         */        
+        public AvatarFilterGuild(Guild guild) {
+            this.guild = guild;
+        }
         /** Determine whether the given avatar is in the guild.
          * @param avatar the avatar to examine
          * @return true iff the given avatar is in the guild for this filter
@@ -178,6 +184,12 @@ public class RosterFrame extends javax.swing.JFrame {
         public AvatarFilterClass(String clazz) {
             this.clazz = Clazz.create(clazz);
         }
+        /** Create a new avatar filter based on the given class.
+         * @param clazz the class for an avatar to be accepted
+         */        
+        public AvatarFilterClass(Clazz clazz) {
+            this.clazz = clazz;
+        }
         /** Determine whether the given avatar is of the required class.
          * @param avatar the avatar to examine
          * @return true iff the given avatar is of class
@@ -198,6 +210,12 @@ public class RosterFrame extends javax.swing.JFrame {
          */        
         public AvatarFilterCulture(String culture) {
             this.culture = Culture.create(culture);
+        }
+        /** Create a new avatar filter based on the given culture.
+         * @param culture the culture for an avatar to be accepted
+         */        
+        public AvatarFilterCulture(Culture culture) {
+            this.culture = culture;
         }
         /** Determine whether the given avatar belongs to culture.
          * @param avatar the avatar to examine
@@ -565,17 +583,27 @@ public class RosterFrame extends javax.swing.JFrame {
 
     private void cultureFilterItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cultureFilterItemActionPerformed
         // Add your handling code here:
-        String input = javax.swing.JOptionPane.showInputDialog(this, "Culture");
+        Object values[] = Culture.getValues().toArray();
+        java.util.Arrays.sort(values, Culture.getComparator());
+        Object input = javax.swing.JOptionPane.showInputDialog
+            (this, "Culture", "New Culture Filter", javax.swing.JOptionPane.QUESTION_MESSAGE,
+             null, values, null);
         if (input != null) {
-            doNewFilter(input, new AvatarFilterCulture(input));
+            Culture culture = (Culture)input;
+            doNewFilter(culture.getName(), new AvatarFilterCulture(culture));
         }
     }//GEN-LAST:event_cultureFilterItemActionPerformed
 
     private void classFilterItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_classFilterItemActionPerformed
         // Add your handling code here:
-        String input = javax.swing.JOptionPane.showInputDialog(this, "Class");
+        Object values[] = Clazz.getValues().toArray();
+        java.util.Arrays.sort(values, Clazz.getComparator());
+        Object input = javax.swing.JOptionPane.showInputDialog
+            (this, "Class", "New Class Filter", javax.swing.JOptionPane.QUESTION_MESSAGE,
+             null, values, null);
         if (input != null) {
-            doNewFilter(input, new AvatarFilterClass(input));
+            Clazz clazz = (Clazz)input;
+            doNewFilter(clazz.getName(), new AvatarFilterClass(clazz));
         }
     }//GEN-LAST:event_classFilterItemActionPerformed
 
@@ -593,9 +621,14 @@ public class RosterFrame extends javax.swing.JFrame {
 
     private void newGuildFilterItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newGuildFilterItemActionPerformed
         // Add your handling code here:
-        String input = javax.swing.JOptionPane.showInputDialog(this, "Guild name");
+        Object values[] = Guild.getValues().toArray();
+        java.util.Arrays.sort(values, Guild.getComparator());
+        Object input = javax.swing.JOptionPane.showInputDialog
+            (this, "Guild", "New Guild Filter", javax.swing.JOptionPane.QUESTION_MESSAGE,
+             null, values, null);
         if (input != null) {
-            doNewFilter(input, new AvatarFilterGuild(input));
+            Guild guild = (Guild)input;
+            doNewFilter(guild.getName(), new AvatarFilterGuild(guild));
         }
     }//GEN-LAST:event_newGuildFilterItemActionPerformed
 
@@ -1257,7 +1290,7 @@ public class RosterFrame extends javax.swing.JFrame {
                 }
             }
             aboutText =
-            "YAELP log file parser, $Revision: 1.4 $.\n"+
+            "YAELP log file parser, $Revision: 1.5 $.\n"+
             "Copyright © 2001 Klaus Rennecke.\n"+
             "XML parser Copyright © 1997, 1998 James Clark.\n"+
             "XSL transformation Copyright © 1998, 1999 James Clark.\n"+
