@@ -16,7 +16,7 @@ import org.apache.log4j.Category;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class DOMContextFactory implements InitialContextFactory {
 
@@ -25,21 +25,7 @@ public class DOMContextFactory implements InitialContextFactory {
      */
     public Context getInitialContext(Hashtable environment) throws NamingException {
         Category.getInstance(DOMContext.class).debug("initializing DOMContext");
-        try {
-            return new DOMContext(environment);
-        } catch (NamingException ex) {
-            Category.getInstance(DOMContext.class)
-                .error("initializing DOMContext", ex);
-            throw ex;
-        } catch (RuntimeException ex) {
-            Category.getInstance(DOMContext.class)
-                .error("initializing DOMContext", ex);
-            throw ex;
-        } catch (Error ex) {
-            Category.getInstance(DOMContext.class)
-                .error("initializing DOMContext", ex);
-            throw ex;
-        }
+        return new DOMContext(environment);
     }
 
 }
