@@ -2,9 +2,9 @@ CruiseControl add-on (plugin) enabling use of the CVS history file for
 modification detection. Using this is much faster and the history file
 can be pulled via HTTP, enabling builds from viewcvs tarballs.
 
-This software is Copyright(C) 2004 Klaus Rennecke, see LICENSE for deails.
+This software is Copyright(C) 2004 Klaus Rennecke, see LICENSE for details.
 
-The CrouseControl home page is at http://cruisecontrol.sourceforge.net
+The CruiseControl home page is at http://cruisecontrol.sourceforge.net
 
 Add the following line to your <project .../>:
 
@@ -16,3 +16,24 @@ And use the plugin in the <modificationset .../>:
 
 You can pull the history from CVS in a separate project and make your
 project dependent on it using the buildstatus modification set.
+
+Modifications can be limited to modules using either a module="..."
+attribute, or using nested module elements:
+
+	<cvshistory historyfilename="...">
+		<module name="main"/>
+		<module name="lib/aux"/>
+	</cvshistory>
+
+Several projects can be driven from a single history file, by using
+different module selectors.
+
+Note that this modification set is inaccurate with regard to branching.
+There is no way to limit the modification set to changes on particular
+branches. And as far as I can see there is no reliable way to do it from
+a history file.
+
+But in that case you can chain another project in between that triggers
+a regular cvs modification set. The benefit is that you will only check
+the more precise modification set when some change has occured in your
+modules, as opposed to continuous polling of the repository.
