@@ -28,14 +28,13 @@ import javax.xml.transform.dom.DOMSource;
 import net.sourceforge.fraglets.zeig.jdbc.ConnectionFactory;
 import net.sourceforge.fraglets.zeig.jndi.DOMContext;
 
-import org.apache.log4j.Category;
 import org.apache.xml.utils.URI;
 import org.apache.xml.utils.URI.MalformedURIException;
 import org.w3c.dom.Document;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class zeigURLContext implements Context, URIResolver {
     private Hashtable env;
@@ -81,7 +80,6 @@ public class zeigURLContext implements Context, URIResolver {
      * @see javax.naming.Context#lookup(java.lang.String)
      */
     public Object lookup(String name) throws NamingException {
-        Category.getInstance(getClass()).debug(name);
         URI uri = toUri(name);
         Context ctx = getRootContext(uri);
         return ctx.lookup(getRemainingName(uri));
@@ -519,8 +517,6 @@ public class zeigURLContext implements Context, URIResolver {
      */
     public Source resolve(String href, String base) throws TransformerException {
         try {
-            Category.getInstance(getClass()).debug(base);
-            Category.getInstance(getClass()).debug(href);
             URI uri = base == null ? null : new URI(base);
             uri = new URI(uri, href);
             return new DOMSource((Document)lookup(uri.toString()));

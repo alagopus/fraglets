@@ -21,15 +21,15 @@ import javax.xml.transform.dom.DOMSource;
 
 import net.sourceforge.fraglets.zeig.zeigURLContext;
 import net.sourceforge.fraglets.zeig.dom.DocumentImpl;
+import net.sourceforge.fraglets.zeig.eclipse.CorePlugin;
 
-import org.apache.log4j.Category;
 import org.apache.xml.utils.URI;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.14 $
+ * @version $Revision: 1.15 $
  */
 public class DOMObjectFactory implements ObjectFactory {
 
@@ -116,8 +116,6 @@ public class DOMObjectFactory implements ObjectFactory {
                         charset);
 
                 if (stylesheet != null) {
-                    Category.getInstance(getClass())
-                        .debug("transforming with "+((DOMSource)stylesheet).getNode());
                     // 2b. Process the stylesheet and generate a Transformer.
                     Transformer transformer = tFactory.newTransformer(stylesheet);
 
@@ -128,7 +126,7 @@ public class DOMObjectFactory implements ObjectFactory {
                     obj = output.getNode();
                 }
             } catch (Exception e) {
-                Category.getInstance(getClass()).error("transform", e);
+                CorePlugin.error("transform", e);
             }
         }
         return obj;

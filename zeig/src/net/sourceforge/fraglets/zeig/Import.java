@@ -14,15 +14,12 @@ import javax.naming.InitialContext;
 import javax.naming.NameNotFoundException;
 import javax.naming.NamingException;
 
-import net.sourceforge.fraglets.zeig.cache.SensorCache;
+import net.sourceforge.fraglets.zeig.eclipse.CorePlugin;
 import net.sourceforge.fraglets.zeig.jndi.DOMContext;
-
-import org.apache.log4j.Category;
-import org.apache.log4j.Priority;
 
 /**
  * @author marion@users.souceforge.net
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class Import {
 
@@ -42,7 +39,6 @@ public class Import {
                     "not a subcontext: " + file.getName());
             } catch (NameNotFoundException ex) {
                 // ignore
-                CATEGORY.debug("creating subcontext " + file.getName());
                 subCtx = ctx.createSubcontext(file.getName());
             }
             for (int i = 0; i < list.length; i++) {
@@ -50,10 +46,9 @@ public class Import {
             }
         } else {
             try {
-                CATEGORY.debug("reading " + file.getName());
                 ctx.rebind(file.getName(), file);
             } catch (NamingException ex) {
-                CATEGORY.error("failed to import", ex);
+                CorePlugin.error("failed to import", ex);
             }
         }
     }
@@ -63,11 +58,8 @@ public class Import {
             for (int i = 0; i < args.length; i++) {
                 process(new File(args[i]), new InitialContext(System.getProperties()));
             }
-            SensorCache.logStatistics(Priority.INFO);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
-    
-    private static final Category CATEGORY = Category.getInstance(Import.class);
 }

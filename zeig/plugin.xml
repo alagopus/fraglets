@@ -11,23 +11,6 @@
          <export name="*"/>
          <packages prefixes="net.sourceforge.fraglets.zeig"/>
       </library>
-      <library name="lib/xalan.jar">
-         <packages prefixes="org.apache.xml,org.apache.xpath,org.apache.xalan"/>
-         <packages prefixes="org.apache.regexp,org.apache.bcel,org.w3c.dom.xpath"/>
-         <packages prefixes="JLex,java_cup"/>
-      </library>
-      <library name="lib/bsf.jar">
-         <packages prefixes="com.ibm.bsf"/>
-      </library>
-      <library name="lib/log4j-core.jar">
-         <packages prefixes="org.apache.log4j"/>
-      </library>
-      <library name="lib/activation.jar">
-         <packages prefixes="javax.activation,com.sun.activation"/>
-      </library>
-      <library name="lib/mysql-connector-java-3.0.6-stable-bin.jar">
-         <packages prefixes="com.mysql.jdbc,org.gjt.mm.mysql"/>
-      </library>
       <library name="lib/otphash.jar">
          <packages prefixes="net.sourceforge.fraglets.codec"/>
       </library>

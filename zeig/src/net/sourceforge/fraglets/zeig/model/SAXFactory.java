@@ -11,7 +11,8 @@ import java.io.StringReader;
 import java.sql.SQLException;
 import java.util.Stack;
 
-import org.apache.log4j.Category;
+import net.sourceforge.fraglets.zeig.eclipse.CorePlugin;
+
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.ErrorHandler;
@@ -24,7 +25,7 @@ import org.xml.sax.helpers.XMLReaderFactory;
 
 /**
  * @author marion@users.souceforge.net
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class SAXFactory implements ContentHandler, ErrorHandler {
     private NodeFactory nf;
@@ -234,7 +235,7 @@ public class SAXFactory implements ContentHandler, ErrorHandler {
      */
     public void error(SAXParseException ex) throws SAXException {
         if (!silent) {
-            Category.getInstance(getClass()).error("SAX error", ex);
+            CorePlugin.error("SAX error", ex);
         }
         throw ex;
     }
@@ -244,7 +245,7 @@ public class SAXFactory implements ContentHandler, ErrorHandler {
      */
     public void fatalError(SAXParseException ex) throws SAXException {
         if (!silent) {
-            Category.getInstance(getClass()).error("SAX fatal error", ex);
+            CorePlugin.error("SAX fatal error", ex);
         }
         throw ex;
     }
@@ -254,7 +255,7 @@ public class SAXFactory implements ContentHandler, ErrorHandler {
      */
     public void warning(SAXParseException ex) throws SAXException {
         if (!silent) {
-            Category.getInstance(getClass()).error("SAX warning", ex);
+            CorePlugin.warn("SAX warning", ex);
         }
     }
 

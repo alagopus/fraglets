@@ -35,10 +35,11 @@ import javax.naming.spi.NamingManager;
 
 import net.sourceforge.fraglets.zeig.dom.DocumentImpl;
 import net.sourceforge.fraglets.zeig.dom.NamedNodeMapImpl;
-import net.sourceforge.fraglets.zeig.model.*;
+import net.sourceforge.fraglets.zeig.eclipse.CorePlugin;
+import net.sourceforge.fraglets.zeig.model.ConnectionContext;
+import net.sourceforge.fraglets.zeig.model.NodeFactory;
 import net.sourceforge.fraglets.zeig.model.SAXFactory;
 
-import org.apache.log4j.Category;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -48,7 +49,7 @@ import org.xml.sax.SAXException;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.23 $
+ * @version $Revision: 1.24 $
  */
 public class DOMContext implements Context {
     /** Context option. */
@@ -139,8 +140,6 @@ public class DOMContext implements Context {
         nameParser = new SimpleNameParser(environment);
         ve = getRoot();
         this.atom = "";
-        Category.getInstance(getClass())
-            .debug("init DOMContext environment="+environment);
     }
     
     /**
@@ -165,7 +164,6 @@ public class DOMContext implements Context {
                 return NamingManager.getObjectInstance
                     (in, new CompositeName().add(atom), this, environment);
             } catch (Exception ex) {
-                Category.getInstance(getClass()).error("lookup", ex);
                 throw namingException("getObjectInstance", ex);
             }
         } else {
@@ -498,7 +496,6 @@ public class DOMContext implements Context {
      * @see javax.naming.Context#close()
      */
     public void close() throws NamingException {
-        Category.getInstance(getClass()).debug("close DOMContext");
         ConnectionContext sc = connectionContext;
         connectionContext = null;
         if (sc != null) {
@@ -790,16 +787,13 @@ public class DOMContext implements Context {
         }
         
         protected void init(Properties defaults) {
-            Category.getInstance(SimpleNameParser.class)
-                .debug("loading syntax");
             InputStream in = SimpleNameParser.class
                 .getResourceAsStream("jndiprovider.properties");
             try {
                 defaults = new Properties(defaults);
                 defaults.load(in);
             } catch (IOException ex) {
-                Category.getInstance(SimpleNameParser.class)
-                    .error("loading syntax", ex);
+                CorePlugin.error("loading syntax", ex);
             } finally {
                 try { in.close(); } catch (IOException ex) {}
             }
@@ -810,20 +804,14 @@ public class DOMContext implements Context {
                     syntax.setProperty(key.substring(LENGTH_PREFIX),
                         defaults.getProperty(key));
                 } else {
-                    Category.getInstance(SimpleNameParser.class)
-                        .debug("ignore property: "+key+"="+defaults.getProperty(key));
                 }
             }
-            Category.getInstance(SimpleNameParser.class)
-                .debug("syntax: "+syntax);
         }
         
         /**
          * @see javax.naming.NameParser#parse(java.lang.String)
          */
         public Name parse(String name) throws NamingException {
-            Category.getInstance(SimpleNameParser.class)
-                .debug("parsing name '"+name+"'");
             return new CompoundName(name, syntax);
         }
     }

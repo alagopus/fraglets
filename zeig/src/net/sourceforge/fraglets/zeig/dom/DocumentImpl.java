@@ -10,10 +10,10 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.sql.SQLException;
 
+import net.sourceforge.fraglets.zeig.eclipse.CorePlugin;
 import net.sourceforge.fraglets.zeig.model.ConnectionContext;
 import net.sourceforge.fraglets.zeig.model.NodeBuffer;
 
-import org.apache.log4j.Category;
 import org.apache.xml.serialize.OutputFormat;
 import org.apache.xml.serialize.XMLSerializer;
 import org.w3c.dom.Attr;
@@ -33,7 +33,7 @@ import org.w3c.dom.Text;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class DocumentImpl extends NodeImpl implements Document {
     protected ConnectionContext cc;
@@ -243,8 +243,7 @@ public class DocumentImpl extends NodeImpl implements Document {
             try {
                 cc.close();
             } catch (Exception ex) {
-                Category.getInstance(getClass())
-                    .error("closing connection context", ex);
+                CorePlugin.error("closing connection context", ex);
             }
         }
     }

@@ -21,12 +21,16 @@ import net.sourceforge.fraglets.zeig.zeigURLStreamHandler;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPluginDescriptor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 /**
  * The main plugin class to be used in the desktop.
  */
 public class CorePlugin extends AbstractUIPlugin {
+    /** The plugin id. */
+    public static final String ID = "net.sourceforge.fraglets.zeig.core";
     //The shared instance.
     private static CorePlugin plugin;
     //Resource bundle.
@@ -83,6 +87,17 @@ public class CorePlugin extends AbstractUIPlugin {
      */
     public ResourceBundle getResourceBundle() {
         return resourceBundle;
+    }
+    
+    public static void warn(String message, Throwable ex) {
+        getDefault().getLog().log
+            (new Status(IStatus.WARNING, ID, IStatus.OK, message, ex));
+    }
+    
+    public static void error(String message, Throwable ex)
+    {
+        getDefault().getLog().log
+            (new Status(IStatus.ERROR, ID, IStatus.OK, message, ex));
     }
     
     public Context newContext(final Hashtable env) throws NamingException {
