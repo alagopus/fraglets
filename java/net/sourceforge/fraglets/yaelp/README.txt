@@ -16,9 +16,9 @@ Invocation: With Sun JRE 1.2 or higher installed, double-click the yaelp.jar fil
 Required libraries: sax.jar, xp.jar, xt.jar
 
 Example output:
-http://pub70.ezboard.com/fmadwanderer51780frm3.showMessage?topicID=2.topic
+http://webster.ij.net/~eop/members.html
 
-License: GPL
+License: GPL, see the file gpl.txt
 
 Platform: Java 1.2, see http://java.sun.com/
 
