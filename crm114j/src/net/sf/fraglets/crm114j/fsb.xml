@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tree name="tree" weightx="1" weighty="1" init="init(this)"
+    perform="choose(item)" expand="expand(item)" collapse="collapse(item)"
+    angle="true" line="false"/>

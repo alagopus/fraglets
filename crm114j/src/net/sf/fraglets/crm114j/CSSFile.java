@@ -1,5 +1,5 @@
 /*
- * $Id: CSSFile.java,v 1.1 2004-03-21 21:52:26 marion Exp $
+ * $Id: CSSFile.java,v 1.2 2004-04-03 23:36:47 marion Exp $
  * Copyright (C) 2004 Klaus Rennecke, all rights reserved.
  * Algorithm from CRM114 Copyright 2001-2004  William S. Yerazunis.
  *
@@ -29,12 +29,12 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 
 /**
- * @version $Id: CSSFile.java,v 1.1 2004-03-21 21:52:26 marion Exp $
+ * @version $Id: CSSFile.java,v 1.2 2004-04-03 23:36:47 marion Exp $
  */
 public class CSSFile {
     public static final int BYTES_PER_BUCKET = 12;
 
-    public static final long DEFAULT_BUCKET_COUNT = 1048577;
+    public static final int DEFAULT_BUCKET_EXP = 20;
 
     public static final int INITIAL = 0xDEADBEEF;
 
@@ -54,15 +54,45 @@ public class CSSFile {
         this.fc = fc;
     }
 
-    public CSSFile(String fileName) throws IOException {
-        RandomAccessFile ras = new RandomAccessFile(fileName, "rw");
+    public CSSFile(File file) throws IOException {
+        this(file, "rw");
+    }
+    
+    public CSSFile(File file, String mode) throws IOException {
+        this(file, mode, DEFAULT_BUCKET_EXP);
+    }
+
+    public CSSFile(File file, String mode, int exp) throws IOException {
+        RandomAccessFile ras = new RandomAccessFile(file, mode);
         fc = ras.getChannel();
         if (fc.size() == 0) {
-            inflate(ras, DEFAULT_BUCKET_COUNT * BYTES_PER_BUCKET);
+            long count = nextPrime(1L << exp);
+            if (mode.indexOf('w') >= 0) {
+                inflate(ras, count * BYTES_PER_BUCKET);
+            } else {
+                throw new IOException("zero size file: " + file);
+            }
+        } else {
+            long count = fc.size() / BYTES_PER_BUCKET;
+            if (factor(count) != count) {
+                throw new IOException(
+                    "invalid file size: "
+                        + count
+                        + " % "
+                        + factor(count)
+                        + " = 0");
+            }
         }
     }
 
     public static CSSFile create(File file, long size) throws IOException {
+        long count = size / BYTES_PER_BUCKET;
+        if (count * BYTES_PER_BUCKET != size) {
+            throw new IllegalArgumentException(
+                "not a muitiple of " + BYTES_PER_BUCKET + ": " + size);
+        } else if (factor(count) != count) {
+            throw new IllegalArgumentException("not prime: " + count);
+        }
         RandomAccessFile ras = new RandomAccessFile(file, "rw");
         inflate(ras, size);
         return new CSSFile(ras.getChannel());
@@ -83,11 +113,20 @@ public class CSSFile {
 
     protected final IntBuffer getBuffer() throws IOException {
         if (fl == null) {
-            fl = fc.lock();
+            try {
+                fl = fc.tryLock();
+            } catch (Exception e) {
+            }
+            if (fl == null) {
+                fl = fc.lock(0, Long.MAX_VALUE, true);
+            }
         }
         if (ib == null) {
-//            fl = fc.lock();
-            mb = fc.map(FileChannel.MapMode.READ_WRITE, 0, fc.size());
+            if (fl.isShared()) {
+                mb = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size());
+            } else {
+                mb = fc.map(FileChannel.MapMode.READ_WRITE, 0, fc.size());
+            }
             ib = mb.asIntBuffer();
         }
         return ib;
@@ -118,6 +157,57 @@ public class CSSFile {
         if (fc != null) {
             fc.close();
         }
+    }
+    
+    private static long factor(long n) {
+        if (n < 2) {
+            return n;
+        } else if ((n & 1) == 0) {
+            return 2;
+        } else if (n % 3 == 0) {
+            return 3;
+        } else if (n % 5 == 0) {
+            return 5;
+        } else {
+            // wheel factorization mod 30
+            long[] spoke = {
+                1, 7, 11, 13, 17, 19, 23, 29
+            };
+            int wheel = 0;
+            long d;
+            do {
+                d = spoke[++wheel];
+                if (d * d > n) {
+                    break;
+                }
+                if (wheel == spoke.length - 1) {
+                    while (wheel >= 0) {
+                        spoke[wheel--] += 30;
+                    }
+                }
+            } while (n % d != 0);
+            return d * d > n ? n : d;
+        }
+    }
+    
+    private static long nextPrime(long n) {
+        if (n <= 2) {
+            return 2;
+        }
+        if ((n & 1) == 0) {
+            n += 1;
+        }
+        if (n == 3) {
+            return n;
+        }
+        while (factor(n) != n) {
+            if (n < Long.MAX_VALUE - 2) {
+                n += 2;
+            } else {
+                throw new IllegalArgumentException("no next prime");
+            }
+        }
+        return n;
     }
 
     public final void fillBucket(int index, int[] bucket) throws IOException {
@@ -262,7 +352,7 @@ public class CSSFile {
             if (args.length >= 3 && "learn".equals(args[0])) {
                 FileReader input = new FileReader(args[1]);
                 BufferedReader br = new BufferedReader(input);
-                CSSFile css = new CSSFile(args[2]);
+                CSSFile css = new CSSFile(new File(args[2]));
                 String line;
                 while ((line = br.readLine()) != null) {
                     css.learn(new Tokenizer(line), 1);
@@ -275,7 +365,7 @@ public class CSSFile {
                 BufferedReader br = new BufferedReader(input);
                 CSSFile[] classes = new CSSFile[args.length - 2];
                 for (int i = 0; i < classes.length; i++) {
-                    classes[i] = new CSSFile(args[i + 2]);
+                    classes[i] = new CSSFile(new File(args[i + 2]), "r");
                 }
                 String line;
                 while ((line = br.readLine()) != null) {
@@ -292,7 +382,7 @@ public class CSSFile {
                 BufferedReader br = new BufferedReader(input);
                 CSSFile[] classes = new CSSFile[args.length - 2];
                 for (int i = 0; i < classes.length; i++) {
-                    classes[i] = new CSSFile(args[i + 2]);
+                    classes[i] = new CSSFile(new File(args[i + 2]), "r");
                 }
                 String line;
                 while ((line = br.readLine()) != null) {
@@ -306,6 +396,8 @@ public class CSSFile {
                     classes[i].close();
                 }
             }
+        } catch (Error e) {
+            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }
