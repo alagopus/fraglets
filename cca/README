@@ -1,12 +1,19 @@
-CruiseControl add-on (plugin) enabling use of the CVS history file for
-modification detection. Using this is much faster and the history file
-can be pulled via HTTP, enabling builds from viewcvs tarballs.
+Introduction
+============
+
+CruiseControl add-ons (plugins) enabling use of the CVS history file for
+modification detection, and using an ANT script for bootstrapping.
+Using this is much faster and the history file can be pulled via HTTP,
+enabling builds from viewcvs tarballs.
 
 This software is Copyright(C) 2004 Klaus Rennecke, see LICENSE for details.
 
 The CruiseControl home page is at http://cruisecontrol.sourceforge.net
 
-Add the following line to your <project .../>:
+CVSHistory
+==========
+
+To use CVSHistory, add the following line to your <project .../>:
 
 	<plugin name="cvshistory" classname="net.sf.fraglets.cca.CVSHistory"/>
 	
@@ -37,3 +44,16 @@ But in that case you can chain another project in between that triggers
 a regular cvs modification set. The benefit is that you will only check
 the more precise modification set when some change has occured in your
 modules, as opposed to continuous polling of the repository.
+
+
+ANTBootstrapper
+===============
+
+To use the ANTBootstrapper, add the following line to your <project .../>:
+
+	<plugin name="antbootstrapper" classname="net.sf.fraglets.cca.ANTBootstrapper"/>
+
+And use it just like the ANT builder. In fact, it is just the ANT builder,
+with the bootstrap() method calling the build. So you can set properties
+and build files with the standard builder.
+
