@@ -6,21 +6,27 @@
 
 package net.sourceforge.fraglets.aotools.codec;
 
-import com.jclark.xsl.sax.XSLProcessorImpl;
 import com.jclark.xml.output.UTF8XMLWriter;
+import com.jclark.xsl.sax.XSLProcessorImpl;
+import java.io.InputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.Iterator;
 import net.sourceforge.fraglets.aotools.model.BaseNanoCluster;
 import net.sourceforge.fraglets.aotools.model.BaseNanoList;
 import net.sourceforge.fraglets.aotools.model.Body;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 /** XML encoder for nano lists.
  *
  * @author kre
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class NanoListPresenter {    
     /** The UTF8 writer. */
@@ -121,6 +127,55 @@ public class NanoListPresenter {
         out.write('\n');
     }
     
+    public static void encode(BaseNanoList list, URL style, OutputStream out) throws IOException, SAXException {
+        XSLProcessorImpl processor = ProcessorFactory.createProcessor(style, out);
+        EncoderThread writer = new EncoderThread(list);
+        try {
+            writer.start();
+            processor.parse(writer.getInputSource());
+            writer.join();
+        } catch (InterruptedException ex) {
+            // oops!
+        }
+    }
+    
+    public static class EncoderThread extends Thread {
+        private BaseNanoList list;
+        
+        private PipedOutputStream out;
+        
+        private PipedInputStream in;
+        
+        public EncoderThread(BaseNanoList list) throws IOException {
+            this.list = list;
+            this.out = new PipedOutputStream();
+            this.in = new PipedInputStream(this.out);
+        }
+        
+        public InputSource getInputSource() {
+            try {
+                java.io.InputStreamReader reader =
+                    new java.io.InputStreamReader(in, "UTF-8");
+                InputSource source = new InputSource(reader);
+                return source;
+            } catch (UnsupportedEncodingException ex) {
+                throw new RuntimeException
+                    ("unsupported mandatory encoding: "+ex);
+            }
+        }
+        
+        public void run() {
+                try {
+                    NanoListPresenter presenter = new NanoListPresenter(out);
+                    presenter.encodeBaseNanoList(list);
+                    presenter.flush();
+                    out.close();
+                } catch (java.io.IOException ex) {
+                    ex.printStackTrace();
+                }
+        }
+    }
+    
     /** Flush the output stream.
      * @throws IOException on IO failures
      */    
@@ -133,14 +188,31 @@ public class NanoListPresenter {
      */    
     public static void main(String args[]) {
         try {
-            NanoListPresenter encoder;
-            if (args.length > 0) {
-                encoder = new NanoListPresenter(new java.io.FileOutputStream(args[0]));
+            int arg = 0;
+            boolean doHtml;
+            if (arg < args.length && args[arg].equals("-html")) {
+                arg += 1;
+                doHtml = true;
             } else {
-                encoder = new NanoListPresenter(System.out);
+                doHtml = false;
             }
-            encoder.encodeBaseNanoList(BaseNanoList.getBaseNanoList());
-            encoder.flush();
+            OutputStream out;
+            if (args.length > arg) {
+                out = new java.io.FileOutputStream(args[arg]);
+            } else {
+                out = System.out;
+            }
+            if (doHtml) {
+                encode(BaseNanoList.getBaseNanoList(), NanoListPresenter.class
+                    .getResource("PresentNanoList.xsl"), out);
+            } else {
+                NanoListPresenter encoder = new NanoListPresenter(out);
+                encoder.encodeBaseNanoList(BaseNanoList.getBaseNanoList());
+                encoder.flush();
+            }
+            if (out != System.out) {
+                out.close();
+            }
         } catch (Exception ex) {
             ex.printStackTrace();
         }

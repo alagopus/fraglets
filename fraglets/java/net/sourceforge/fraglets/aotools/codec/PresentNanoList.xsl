@@ -24,22 +24,16 @@
 </xsl:template>
 
 <xsl:template match="present-nano-list">
-<center>
-    <table border="1" width="100%" cellpadding="2" cellspacing="0" align="left" valign="middle">
-    <thead>
-    <tr>
-        <th>Name</th>
-        <th>Skill</th>
-        <th>Faded</th>
-        <th>Bright</th>
-        <th>Shining</th>
-    </tr>
-    </thead>
-    <tbody>
-    <xsl:apply-templates/>
-    </tbody>
-    </table>
-</center>
+<table border="1" cellpadding="2" cellspacing="0" align="left" valign="middle">
+<tr>
+    <th>Name</th>
+    <th>Skill</th>
+    <th>Faded</th>
+    <th>Bright</th>
+    <th>Shining</th>
+</tr>
+<xsl:apply-templates/>
+</table>
 </xsl:template>
 
 <xsl:template match="present-nano-cluster">
