@@ -48,12 +48,18 @@ import org.xml.sax.SAXException;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.18 $
+ * @version $Revision: 1.19 $
  */
 public class DOMContext implements Context {
     /** Context option. */
     public static final String VERSION_COMMENT =
         "net.sourceforge.fraglets.zeig.jndi.versionComment";
+    public static final String URL_CONTEXT_PARENT =
+        "net.sourceforge.fraglets.zeig.jndi.urlContextParent";
+    public static final String PRESENTATION_MEDIA =
+        "net.sourceforge.fraglets.zeig.presentation.media";
+    public static final String PRESENTATION_CHARSET =
+        "net.sourceforge.fraglets.zeig.presentation.charset";
     
     public static final String CONTEXT_NAMESPACE =
         "http://fraglets.sourceforge.net/zeig/DOMContext";
@@ -63,7 +69,7 @@ public class DOMContext implements Context {
     public static final String BINDING_TAGNAME = "binding";
     
     protected ConnectionContext connectionContext;
-    private Properties environment;
+    private Environment environment;
     private NameParser nameParser;
     private DOMContext parent;
     private Document binding;
@@ -81,7 +87,7 @@ public class DOMContext implements Context {
     }
     
     protected DOMContext(DOMContext blueprint) {
-        this.environment = new Properties(blueprint.environment);
+        this.environment = new Environment(blueprint.environment);
         this.connectionContext = blueprint.connectionContext.open();
         this.nameParser = blueprint.nameParser;
         this.binding = blueprint.binding;
@@ -91,7 +97,7 @@ public class DOMContext implements Context {
     }
     
     protected DOMContext(DOMContext parent, String atom, Document binding, int ve) {
-        this.environment = new Properties(parent.environment);
+        this.environment = new Environment(parent.environment);
         this.connectionContext = parent.connectionContext.open();
         this.nameParser = parent.nameParser;
         this.binding = binding;
@@ -101,7 +107,7 @@ public class DOMContext implements Context {
     }
     
     protected void init(Hashtable defaults) throws NamingException {
-        environment = new Properties();
+        environment = new Environment();
         environment.putAll(defaults);
         String auth = environment.getProperty(Context.SECURITY_AUTHENTICATION);
         if (auth != null) {
@@ -118,6 +124,8 @@ public class DOMContext implements Context {
         nameParser = new SimpleNameParser(environment);
         ve = getRoot();
         this.atom = "";
+        Category.getInstance(getClass())
+            .debug("init DOMContext environment="+environment);
     }
     
     /**
@@ -463,13 +471,18 @@ public class DOMContext implements Context {
      * @see javax.naming.Context#getEnvironment()
      */
     public Hashtable getEnvironment() throws NamingException {
-        return new Properties(environment);
+        return environment.copyInto(new Hashtable());
+    }
+    
+    public String getProperty(String key) {
+        return environment.getProperty(key);
     }
 
     /**
      * @see javax.naming.Context#close()
      */
     public void close() throws NamingException {
+        Category.getInstance(getClass()).debug("close DOMContext");
         ConnectionContext sc = connectionContext;
         connectionContext = null;
         if (sc != null) {
@@ -479,6 +492,10 @@ public class DOMContext implements Context {
                 throw namingException(ex);
             }
         }
+    }
+    
+    public boolean isOpen() {
+        return connectionContext != null;
     }
 
     /**
@@ -493,6 +510,7 @@ public class DOMContext implements Context {
         Name name = nameParser.parse("");
         while (up != null && up.atom != null) {
             name.add(0, up.atom);
+            up = up.parent;
         }
         
         return name.toString();
@@ -792,4 +810,11 @@ public class DOMContext implements Context {
         }
     }
     
+    /**
+     * @see java.lang.Object#finalize()
+     */
+    protected void finalize() throws Throwable {
+        close();
+    }
+
 }
