@@ -22,7 +22,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.  */
 
-package net.sourceforge.shelf.swing;
+package net.sourceforge.fraglets.swing;
 
 import java.beans.*;
 import javax.swing.*;
@@ -36,7 +36,7 @@ import javax.swing.*;
  * action, but this is now implemented in java SDK 1.3.
  *
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class JMenuAction extends JMenuItem implements PropertyChangeListener
 {
