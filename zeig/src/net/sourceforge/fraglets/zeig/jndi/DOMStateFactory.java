@@ -26,7 +26,7 @@ import org.xml.sax.InputSource;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class DOMStateFactory implements StateFactory {
     protected SAXFactory sf = new SAXFactory(ConnectionFactory.getInstance());
@@ -45,6 +45,8 @@ public class DOMStateFactory implements StateFactory {
                 int id;
                 if (obj instanceof Document) {
                     id = NodeFactory.getInstance().getId((Document)obj);
+                } else if (obj instanceof DOMContext) {
+                    id = NodeFactory.getInstance().getId(((DOMContext)obj).getBinding());
                 } else {
                     InputSource in;
                     if (obj instanceof InputSource) {
