@@ -36,7 +36,7 @@ import java.util.Collections;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class Avatar {
     public static final String GUILD_UNGUILDED = "-";
@@ -71,33 +71,33 @@ public class Avatar {
     /** Holds value of property guildTimestamp. */
     private long guildTimestamp;
     
-    /** Holds the avatar history. */
-    private StringBuffer history;
-    
-    private static final MessageFormat historyMessage =
-        new MessageFormat("[{0,date,EEE MMM dd HH:mm:ss yyyy}] {1} = {2}\n");
-    
+//    /** Holds the avatar history. */
+//    private StringBuffer history;
+//    
+//    private static final MessageFormat historyMessage =
+//        new MessageFormat("[{0,date,EEE MMM dd HH:mm:ss yyyy}] {1} = {2}\n");
+//    
     /** Creates new Avatar
      * @param timestamp time stamp of log line where the character was seen.
      */
     public Avatar(long timestamp) {
         this.timestamp = timestamp;
-        this.history = new StringBuffer();
+//        this.history = new StringBuffer();
     }
     
-    protected void addHistory(long timestamp, Object key, Object value) {
-        history.append(historyMessage.format(new Object[] {new java.util.Date(timestamp), key, value}));
-    }
-    
-    public String getHistory() {
-        return history.toString();
-    }
-    
-    public void setHistory(String text) {
-        history.setLength(0);
-        history.append(text);
-    }
-    
+//    protected void addHistory(long timestamp, Object key, Object value) {
+//        history.append(historyMessage.format(new Object[] {new java.util.Date(timestamp), key, value}));
+//    }
+//    
+//    public String getHistory() {
+//        return history.toString();
+//    }
+//    
+//    public void setHistory(String text) {
+//        history.setLength(0);
+//        history.append(text);
+//    }
+//    
     public String getProperty(String name) {
         if (name.equals("class")) {
             return clazz.getName();
@@ -163,13 +163,13 @@ public class Avatar {
                 if (entry == null) {
                     entry = new TimestampEntry(value, timestamp);
                     properties.put(name, entry);
-                    addHistory(timestamp, name, value);
+//                    addHistory(timestamp, name, value);
                     fireNewProperty(this, name);
                 } else if (timestamp >= entry.timestamp && value != entry.value
                     && !value.equals(entry.value)) {
                     entry.value = value;
                     entry.timestamp = timestamp;
-                    addHistory(timestamp, name, value);
+//                    addHistory(timestamp, name, value);
                     fireNewProperty(this, name);
                 }
             }
@@ -198,10 +198,10 @@ public class Avatar {
      * @param level New value of property level.
      */
     public void setLevel(int level) {
-        if (level != this.level) {
-            addHistory(timestamp, "level", new Integer(level));
+//        if (level != this.level) {
+//            addHistory(timestamp, "level", new Integer(level));
             this.level = level;
-        }
+//        }
     }
     
     /** Getter for property name.
@@ -215,10 +215,10 @@ public class Avatar {
      * @param name New value of property name.
      */
     public void setName(String name) {
-        if (!name.equals(this.name)) {
-            addHistory(timestamp, "name", name);
+//        if (!name.equals(this.name)) {
+//            addHistory(timestamp, "name", name);
             this.name = name;
-        }
+//        }
     }
     
     /** Getter for property clazz.
@@ -232,10 +232,10 @@ public class Avatar {
      * @param clazz New value of property clazz.
      */
     public void setClazz(Class clazz) {
-        if (clazz != this.clazz) {
-            addHistory(timestamp, "class", clazz);
+//        if (clazz != this.clazz) {
+//            addHistory(timestamp, "class", clazz);
             this.clazz = clazz;
-        }
+//        }
     }
     
     /** Getter for property guild.
@@ -252,11 +252,11 @@ public class Avatar {
         if (timestamp >= this.guildTimestamp) {
             if (guild != this.guild) {
                 this.guild = guild;
-                addHistory(timestamp, "guild", guild);
+//                addHistory(timestamp, "guild", guild);
                 if (guild == null || Avatar.GUILD_UNGUILDED.equals(guild.getName())) {
                     if (properties != null) {
                         properties.remove("Rank"); // unguilded
-                        addHistory(timestamp, "Rank", "null");
+//                        addHistory(timestamp, "Rank", "null");
                     }
                 }
             }
@@ -290,10 +290,10 @@ public class Avatar {
      * @param culture New value of property culture.
      */
     public void setCulture(Culture culture) {
-        if (culture != this.culture) {
-            addHistory(timestamp, "culture", culture);
+//        if (culture != this.culture) {
+//            addHistory(timestamp, "culture", culture);
             this.culture = culture;
-        }
+//        }
     }
     
     /** Fire a property change event signaling that a new instance was created. */

@@ -93,7 +93,7 @@ import net.sourceforge.fraglets.yaelp.model.Recognizer;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.31 $
+ * @version $Revision: 1.32 $
  */
 public class RosterFrame extends javax.swing.JFrame implements ActionContext {
     /** The file chooser map used to select files to parse and export.
@@ -269,7 +269,6 @@ public class RosterFrame extends javax.swing.JFrame implements ActionContext {
 
         styleButtonGroup = new javax.swing.ButtonGroup();
         contextMenu = new javax.swing.JPopupMenu();
-        historyMenuItem = new javax.swing.JMenuItem();
         jSeparator3 = new javax.swing.JSeparator();
         newEntryItem = new javax.swing.JMenuItem();
         hideMenuItem = new javax.swing.JMenuItem();
@@ -281,8 +280,6 @@ public class RosterFrame extends javax.swing.JFrame implements ActionContext {
         gplLicenseAction = new net.sourceforge.fraglets.yaelp.action.ShowLicenseAction();
         xpLicenseAction = new net.sourceforge.fraglets.yaelp.action.ShowLicenseAction();
         xtLicenseAction = new net.sourceforge.fraglets.yaelp.action.ShowLicenseAction();
-        historyAction = new net.sourceforge.fraglets.yaelp.action.HistoryAction();
-        Defaults.configure(historyAction);
         tableScroll = new javax.swing.JScrollPane();
         rosterTable = new javax.swing.JTable();
         statusPanel = new javax.swing.JPanel();
@@ -334,9 +331,6 @@ public class RosterFrame extends javax.swing.JFrame implements ActionContext {
 
         contextMenu.add(Defaults.configure(new PropertyEditorAction()));
         contextMenu.setLabel("Edit");
-        historyMenuItem.setAction(historyAction);
-        contextMenu.add(historyMenuItem);
-
         contextMenu.add(jSeparator3);
 
         newEntryItem.setText("new entry");
@@ -1674,9 +1668,9 @@ public class RosterFrame extends javax.swing.JFrame implements ActionContext {
                     pw.println("\"/>");
                 }
             }
-            pw.print("  <history>");
-            pw.print(quote(avatar.getHistory(), "&<>"));
-            pw.println("</history>");
+//            pw.print("  <history>");
+//            pw.print(quote(avatar.getHistory(), "&<>"));
+//            pw.println("</history>");
             pw.println(" </avatar>");
         }
         pw.println("</roster>");
@@ -2035,8 +2029,8 @@ public class RosterFrame extends javax.swing.JFrame implements ActionContext {
     private javax.swing.JMenu styleMenu;
     private net.sourceforge.fraglets.yaelp.bean.SelectionButton selectionButton;
     private javax.swing.JSeparator separator6;
-    private javax.swing.JRadioButtonMenuItem mwStyleItem;
     private javax.swing.JPopupMenu contextMenu;
+    private javax.swing.JRadioButtonMenuItem mwStyleItem;
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JTable rosterTable;
     private javax.swing.JMenuItem hideMenuItem;
@@ -2054,7 +2048,6 @@ public class RosterFrame extends javax.swing.JFrame implements ActionContext {
     private javax.swing.JCheckBoxMenuItem mainFilterItem;
     private javax.swing.JCheckBoxMenuItem memberFilterItem;
     private javax.swing.JMenuItem styleWizardItem;
-    private net.sourceforge.fraglets.yaelp.action.HistoryAction historyAction;
     private javax.swing.JSeparator separator5;
     private javax.swing.JScrollPane tableScroll;
     private javax.swing.JRadioButtonMenuItem ssStyleItem;
@@ -2064,7 +2057,6 @@ public class RosterFrame extends javax.swing.JFrame implements ActionContext {
     private javax.swing.JMenuItem exportHTMLItem;
     private javax.swing.JMenuItem importFileItem;
     private javax.swing.JTextField status;
-    private javax.swing.JMenuItem historyMenuItem;
     private javax.swing.JMenuItem saveFileItem;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JRadioButtonMenuItem defaultStyleItem;
