@@ -2,5 +2,5 @@ M40420b1e|kre|<remote>|build|1.3|build-get_projectset.xml
 M40420b1e|kre|<remote>|build|1.8|config.xml
 A40420b1e|kre|<remote>|build|1.1|build-get_history.xml
 R40420b1e|kre|<remote>|build|1.2|build-get_from_cvs.xml
-M40420b1e|kre|<remote>|build|1.2|config.properties
+M40420b1e|kre|<remote>|build/config|1.2|config.properties
 R40420b1e|kre|<remote>|build/logs/get_from_cvs|1.2|plug.txt

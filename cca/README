@@ -1,0 +1,18 @@
+CruiseControl add-on (plugin) enabling use of the CVS history file for
+modification detection. Using this is much faster and the history file
+can be pulled via HTTP, enabling builds from viewcvs tarballs.
+
+This software is Copyright(C) 2004 Klaus Rennecke, see LICENSE for deails.
+
+The CrouseControl home page is at http://cruisecontrol.sourceforge.net
+
+Add the following line to your <project .../>:
+
+	<plugin name="cvshistory" classname="net.sf.fraglets.cca.CVSHistory"/>
+	
+And use the plugin in the <modificationset .../>:
+
+	<cvshistory historyfilename="checkout/cvshistory/history"/>
+
+You can pull the history from CVS in a separate project and make your
+project dependent on it using the buildstatus modification set.

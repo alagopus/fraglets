@@ -3,7 +3,7 @@
 	<name>cca</name>
 	<comment></comment>
 	<projects>
-		<project>cruisecontrol-2.1.5</project>
+		<project>cruisecontrol</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
