@@ -72,7 +72,7 @@ import org.xml.sax.Locator;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author  marion@users.sourceforge.net
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class UpdateWizard extends javax.swing.JPanel implements Runnable, Observer, Comparator, ListSelectionListener {
     
@@ -103,9 +103,19 @@ public class UpdateWizard extends javax.swing.JPanel implements Runnable, Observ
      */
     private void initComponents() {//GEN-BEGIN:initComponents
         javax.swing.JTextArea jTextArea2;
+        javax.swing.JLabel mageloLabel;
+        javax.swing.JLabel mainLabel;
+        javax.swing.JButton browseButton;
+        javax.swing.JTextArea jTextArea1;
+        javax.swing.JPanel jPanel1;
+        javax.swing.JPanel savePanel;
+        javax.swing.JPanel buttonPanel;
+        javax.swing.JPanel sendPanel;
+        javax.swing.JPanel loadPanel;
         javax.swing.JLabel mailLabel;
         javax.swing.JScrollPane jScrollPane1;
         javax.swing.JLabel jLabel1;
+        javax.swing.JLabel aaLabel;
         java.awt.GridBagConstraints gridBagConstraints;
         javax.swing.JLabel rankLabel;
         javax.swing.JLabel jLabel2;
@@ -113,20 +123,11 @@ public class UpdateWizard extends javax.swing.JPanel implements Runnable, Observ
         javax.swing.JLabel imLabel;
         javax.swing.JTextArea jTextArea3;
         javax.swing.JScrollPane jScrollPane2;
-        javax.swing.JLabel mageloLabel;
         javax.swing.JPanel parsePanel;
         javax.swing.JPanel introPanel;
         javax.swing.JButton exitButton;
-        javax.swing.JLabel mainLabel;
         javax.swing.JPanel editPanel;
-        javax.swing.JButton browseButton;
-        javax.swing.JTextArea jTextArea1;
-        javax.swing.JPanel jPanel1;
-        javax.swing.JPanel savePanel;
-        javax.swing.JPanel buttonPanel;
         javax.swing.JButton aboutButton;
-        javax.swing.JPanel sendPanel;
-        javax.swing.JPanel loadPanel;
         javax.swing.JScrollPane jScrollPane3;
         javax.swing.JButton browseButton1;
 
@@ -151,16 +152,19 @@ public class UpdateWizard extends javax.swing.JPanel implements Runnable, Observ
         jPanel1 = new javax.swing.JPanel();
         mainLabel = new javax.swing.JLabel();
         mainField = new javax.swing.JTextField();
+        aaLabel = new javax.swing.JLabel();
+        aaField = new javax.swing.JTextField();
         rankLabel = new javax.swing.JLabel();
         rankChoice = new javax.swing.JComboBox();
         mineCheck = new javax.swing.JCheckBox();
-        newButton = new javax.swing.JButton();
+        jPanel2 = new javax.swing.JPanel();
         mageloLabel = new javax.swing.JLabel();
         mageloField = new javax.swing.JTextField();
         mailLabel = new javax.swing.JLabel();
         mailField = new javax.swing.JTextField();
         imLabel = new javax.swing.JLabel();
         imField = new javax.swing.JTextField();
+        newButton = new javax.swing.JButton();
         savePanel = new javax.swing.JPanel();
         jTextArea3 = new javax.swing.JTextArea();
         jLabel2 = new javax.swing.JLabel();
@@ -281,8 +285,8 @@ public class UpdateWizard extends javax.swing.JPanel implements Runnable, Observ
         mainLabel.setLabelFor(mainField);
         mainLabel.setText("Main:");
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         gridBagConstraints.insets = new java.awt.Insets(5, 4, 5, 4);
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         jPanel1.add(mainLabel, gridBagConstraints);
 
         mainField.setColumns(8);
@@ -302,15 +306,43 @@ public class UpdateWizard extends javax.swing.JPanel implements Runnable, Observ
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 0.5;
         gridBagConstraints.insets = new java.awt.Insets(5, 4, 5, 4);
+        gridBagConstraints.weightx = 0.5;
         jPanel1.add(mainField, gridBagConstraints);
+
+        aaLabel.setLabelFor(aaField);
+        aaLabel.setText("AA:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.insets = new java.awt.Insets(5, 4, 5, 4);
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        jPanel1.add(aaLabel, gridBagConstraints);
+
+        aaField.setColumns(2);
+        aaField.setToolTipText("Alternate Advancement points spent.");
+        aaField.setEnabled(false);
+        aaField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                inputFieldActionPerformed(evt);
+            }
+        });
+
+        aaField.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                aaFieldFocusLost(evt);
+            }
+        });
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(5, 4, 5, 4);
+        gridBagConstraints.weightx = 0.5;
+        jPanel1.add(aaField, gridBagConstraints);
 
         rankLabel.setLabelFor(rankChoice);
         rankLabel.setText("Rank:");
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         gridBagConstraints.insets = new java.awt.Insets(5, 4, 5, 4);
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         jPanel1.add(rankLabel, gridBagConstraints);
 
         rankChoice.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "", "a regular member", "an officer", "leader", "retired" }));
@@ -323,7 +355,6 @@ public class UpdateWizard extends javax.swing.JPanel implements Runnable, Observ
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 0.5;
         gridBagConstraints.insets = new java.awt.Insets(5, 4, 5, 4);
         jPanel1.add(rankChoice, gridBagConstraints);
 
@@ -337,28 +368,18 @@ public class UpdateWizard extends javax.swing.JPanel implements Runnable, Observ
         });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.insets = new java.awt.Insets(5, 4, 5, 4);
         jPanel1.add(mineCheck, gridBagConstraints);
 
-        newButton.setText("New ...");
-        newButton.setToolTipText("Create a new entry.");
-        newButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                newButtonActionPerformed(evt);
-            }
-        });
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.insets = new java.awt.Insets(5, 4, 5, 4);
-        jPanel1.add(newButton, gridBagConstraints);
+        jPanel2.setLayout(new java.awt.GridBagLayout());
 
         mageloLabel.setLabelFor(mageloField);
         mageloLabel.setText("Magelo:");
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         gridBagConstraints.insets = new java.awt.Insets(5, 4, 5, 4);
-        jPanel1.add(mageloLabel, gridBagConstraints);
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        jPanel2.add(mageloLabel, gridBagConstraints);
 
         mageloField.setColumns(8);
         mageloField.setToolTipText("Magelo profile number.");
@@ -377,16 +398,16 @@ public class UpdateWizard extends javax.swing.JPanel implements Runnable, Observ
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 0.33;
         gridBagConstraints.insets = new java.awt.Insets(5, 4, 5, 4);
-        jPanel1.add(mageloField, gridBagConstraints);
+        gridBagConstraints.weightx = 1.0;
+        jPanel2.add(mageloField, gridBagConstraints);
 
         mailLabel.setLabelFor(mailField);
         mailLabel.setText("Email:");
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         gridBagConstraints.insets = new java.awt.Insets(5, 4, 5, 4);
-        jPanel1.add(mailLabel, gridBagConstraints);
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        jPanel2.add(mailLabel, gridBagConstraints);
 
         mailField.setColumns(8);
         mailField.setToolTipText("Email contact address");
@@ -405,16 +426,16 @@ public class UpdateWizard extends javax.swing.JPanel implements Runnable, Observ
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 0.33;
         gridBagConstraints.insets = new java.awt.Insets(5, 4, 5, 4);
-        jPanel1.add(mailField, gridBagConstraints);
+        gridBagConstraints.weightx = 1.0;
+        jPanel2.add(mailField, gridBagConstraints);
 
         imLabel.setLabelFor(imField);
         imLabel.setText("IM:");
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
         gridBagConstraints.insets = new java.awt.Insets(5, 4, 5, 4);
-        jPanel1.add(imLabel, gridBagConstraints);
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        jPanel2.add(imLabel, gridBagConstraints);
 
         imField.setColumns(4);
         imField.setToolTipText("Instant messenger handle, like ICQ or Yahoo");
@@ -432,11 +453,28 @@ public class UpdateWizard extends javax.swing.JPanel implements Runnable, Observ
         });
 
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 0.33;
         gridBagConstraints.insets = new java.awt.Insets(5, 4, 5, 4);
-        jPanel1.add(imField, gridBagConstraints);
+        gridBagConstraints.weightx = 1.0;
+        jPanel2.add(imField, gridBagConstraints);
+
+        newButton.setText("New ...");
+        newButton.setToolTipText("Create a new entry.");
+        newButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                newButtonActionPerformed(evt);
+            }
+        });
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.insets = new java.awt.Insets(5, 4, 5, 4);
+        jPanel2.add(newButton, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        jPanel1.add(jPanel2, gridBagConstraints);
 
         editPanel.add(jPanel1, java.awt.BorderLayout.SOUTH);
 
@@ -569,6 +607,13 @@ public class UpdateWizard extends javax.swing.JPanel implements Runnable, Observ
 
     }//GEN-END:initComponents
 
+    private void aaFieldFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_aaFieldFocusLost
+        // Add your handling code here:
+        if (selectedAvatar != null) {
+            updateProperty(selectedAvatar, "AA", aaField.getText());
+        }
+    }//GEN-LAST:event_aaFieldFocusLost
+
     private void newButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newButtonActionPerformed
         // Add your handling code here:
         String name = JOptionPane.showInputDialog
@@ -586,6 +631,12 @@ public class UpdateWizard extends javax.swing.JPanel implements Runnable, Observ
                 // new entry
                 Avatar grow[] = new Avatar[roster.length + 1];
                 System.arraycopy(roster, 0, grow, 1, roster.length);
+                if (recognizer != null) {
+                    Avatar old = recognizer.getAvatar(probe.getName());
+                    if (old != null) {
+                        probe = old; // use old entry
+                    }
+                }
                 grow[0] = probe;
                 model.setRoster(grow);
                 roster = model.getRoster();
@@ -858,17 +909,24 @@ public class UpdateWizard extends javax.swing.JPanel implements Runnable, Observ
                     }
                 }
             }
+            Avatar search[] = new Avatar[avatars.length];
+            System.arraycopy(avatars, 0, search, 0, search.length);
+            Arrays.sort(search, this);
+            Avatar probe = new Avatar(0);
             int start = 0;
             for (scan = 0; scan < avatars.length; scan++) {
-                Avatar.Guild now = avatars[scan].getGuild();
-                String ex = avatars[scan].getProperty("EX");
-                if ((now != null && guilds.contains(now.getName())) ||
-                    (ex != null && guilds.contains(ex))) {
-                    if (start == scan) {
-                        start += 1;
-                    } else {
-                        avatars[start++] = avatars[scan];
-                    }
+                if (!accept(avatars[scan], guilds)) {
+                    String name = avatars[scan].getProperty("Main");
+                    if (name == null) continue;
+                    probe.setName(name);
+                    int index = Arrays.binarySearch(search, probe, this);
+                    if (index < 0) continue;
+                    if (!accept(search[index], guilds)) continue;
+                }
+                if (start == scan) {
+                    start += 1;
+                } else {
+                    avatars[start++] = avatars[scan];
                 }
             }
             if (start < avatars.length) {
@@ -896,6 +954,13 @@ public class UpdateWizard extends javax.swing.JPanel implements Runnable, Observ
             rosterTable.getColumn("Level").setPreferredWidth(20);
             rosterTable.getColumn("Guild").setPreferredWidth(120);
         }
+    }
+    
+    protected static boolean accept(Avatar avatar, HashSet guilds) {
+        Avatar.Guild now = avatar.getGuild();
+        if (now != null && guilds.contains(now.getName())) return true;
+        String ex = avatar.getProperty("EX");
+        return ex != null && guilds.contains(ex);
     }
     
     protected void initEditor(Class editingClass, Collection values) {
@@ -1401,6 +1466,7 @@ public class UpdateWizard extends javax.swing.JPanel implements Runnable, Observ
             mageloField.setEnabled(false);
             mailField.setEnabled(false);
             imField.setEnabled(false);
+            aaField.setEnabled(false);
         } else {
             Avatar avatar = selectedAvatar = model.getAvatar(row);
             mainField.setText(avatar.getProperty("Main"));
@@ -1415,6 +1481,8 @@ public class UpdateWizard extends javax.swing.JPanel implements Runnable, Observ
             mailField.setEnabled(true);
             imField.setText(avatar.getProperty("IM"));
             imField.setEnabled(true);
+            aaField.setText(avatar.getProperty("AA"));
+            aaField.setEnabled(true);
         }
     }
     
@@ -1465,24 +1533,26 @@ public class UpdateWizard extends javax.swing.JPanel implements Runnable, Observ
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.border.LineBorder blackBorder;
-    private javax.swing.JButton newButton;
     private javax.swing.JList logfileList;
     private javax.swing.JComboBox loadChoice;
-    private javax.swing.JButton backButton;
-    private javax.swing.JCheckBox mineCheck;
     private javax.swing.JComboBox saveChoice;
     private javax.swing.JTextArea sendText;
     private javax.swing.JComboBox rankChoice;
     private javax.swing.JTextField mailField;
-    private javax.swing.JTextField mainField;
     private javax.swing.JTable rosterTable;
     private javax.swing.JFileChooser chooser;
     private javax.swing.JTextField imField;
-    private javax.swing.JProgressBar progressBar;
-    private javax.swing.border.EmptyBorder defaultMargin;
     private javax.swing.JTabbedPane tabPane;
-    private javax.swing.JButton nextButton;
     private javax.swing.JTextField mageloField;
+    private javax.swing.JButton newButton;
+    private javax.swing.JButton backButton;
+    private javax.swing.JCheckBox mineCheck;
+    private javax.swing.JTextField aaField;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JTextField mainField;
+    private javax.swing.border.EmptyBorder defaultMargin;
+    private javax.swing.JProgressBar progressBar;
+    private javax.swing.JButton nextButton;
     // End of variables declaration//GEN-END:variables
     
 }
