@@ -28,7 +28,7 @@ import org.xml.sax.SAXException;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class NodeFactory implements NodeTags {
     protected ConnectionFactory cf;
@@ -77,6 +77,9 @@ public class NodeFactory implements NodeTags {
     }
     
     public int getName(String uri, String name) throws SQLException {
+        if (uri == null) {
+            uri = "";
+        }
         String key = uri + '\n' + name;
         int hc = OTPHash.hash(key);
         NameCacheEntry entry = (NameCacheEntry )nameCache.get(hc, key);
