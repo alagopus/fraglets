@@ -33,7 +33,7 @@ import org.eclipse.jface.viewers.Viewer;
 
 /**
  * @author marion@users.souceforge.net
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 class ZeigContentProvider
     implements IStructuredContentProvider, ITreeContentProvider {
@@ -82,8 +82,8 @@ class ZeigContentProvider
     /**
      * @param root
      */
-    protected void addRoot(ZeigContainerNode root) {
-        invisibleRoot.addChild(root);
+    protected void addRoot(String url) {
+        invisibleRoot.getProject(url);
     }
     /**
      * @return

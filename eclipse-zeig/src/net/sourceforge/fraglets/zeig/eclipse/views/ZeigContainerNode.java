@@ -44,7 +44,7 @@ import org.eclipse.jface.viewers.TreeViewer;
 
 /**
  * @author marion@users.souceforge.net
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 class ZeigContainerNode extends ZeigNode implements IFolder {
     protected ArrayList children;
@@ -103,7 +103,7 @@ class ZeigContainerNode extends ZeigNode implements IFolder {
         children.add(child);
         child.setParent(this);
         if (getViewer() instanceof TreeViewer) {
-            System.out.println("notify add child "+child+" to "+this);
+            CorePlugin.info("notify add child "+child+" to "+this, null);
             ((TreeViewer)getViewer()).add(this, child);
         }
     }
@@ -111,7 +111,7 @@ class ZeigContainerNode extends ZeigNode implements IFolder {
         children.remove(child);
         child.setParent(null);
         if (getViewer() instanceof TreeViewer) {
-            System.out.println("notify remove child "+child+" from "+this);
+            CorePlugin.info("notify remove child "+child+" from "+this, null);
             ((TreeViewer)getViewer()).remove(child);
         }
     }

@@ -59,7 +59,7 @@ import org.eclipse.ui.part.ViewPart;
 
 /**
  * @author marion@users.souceforge.net
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class ZeigView extends ViewPart {
     private TreeViewer viewer;
@@ -168,7 +168,7 @@ public class ZeigView extends ViewPart {
                 }
                 String url = id.getValue();
                 settings.put(Context.PROVIDER_URL, url);
-                vcp.addRoot(new ZeigDatabaseNode(url));
+                vcp.addRoot(url);
             }
         };
         connectAction.setText("Connect database...");

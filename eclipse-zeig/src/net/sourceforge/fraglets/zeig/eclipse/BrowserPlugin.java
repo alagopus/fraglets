@@ -23,28 +23,54 @@
  */
 package net.sourceforge.fraglets.zeig.eclipse;
 
-import org.eclipse.ui.plugin.*;
-import org.eclipse.core.runtime.*;
-import org.eclipse.core.resources.*;
-import org.eclipse.jface.dialogs.MessageDialog;
-
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
+
+import org.eclipse.core.internal.properties.PropertyStore;
+import org.eclipse.core.internal.properties.ResourceName;
+import org.eclipse.core.internal.properties.StoredProperty;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IPluginDescriptor;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.QualifiedName;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 /**
  * The browser plugin class to be used in the desktop.
  * @author marion@users.souceforge.net
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class BrowserPlugin extends AbstractUIPlugin {
     /** The plugin id. */
     public static final String ID = "net.sourceforge.fraglets.zeig.browser";
+    
+    public static boolean OPTION_INFO;
+    public static boolean OPTION_INFO_DIALOG;
+    public static boolean OPTION_WARN;
+    public static boolean OPTION_WARN_DIALOG;
+    public static boolean OPTION_ERROR_DIALOG;
+    
+    
     //The shared instance.
     private static BrowserPlugin plugin;
     //Resource bundle.
     private ResourceBundle resourceBundle;
+    // property stores
+    private HashMap propertyStores;
 
     /**
      * The constructor.
@@ -119,16 +145,109 @@ public class BrowserPlugin extends AbstractUIPlugin {
         return m == null ? new NullProgressMonitor() : m;
     }
     
+    public static void info(String message, Throwable ex) {
+        if (OPTION_INFO) {
+            getDefault().getLog().log
+                (new Status(IStatus.INFO, ID, IStatus.OK, message, ex));
+            if (OPTION_INFO_DIALOG) {
+                MessageDialog.openInformation(getDefault().getWorkbench()
+                    .getActiveWorkbenchWindow().getShell(), ID, message);
+            }
+        }
+    }
+    
     public static void warn(String message, Throwable ex) {
-        getDefault().getLog().log
-            (new Status(IStatus.WARNING, ID, IStatus.OK, message, ex));
+        if (OPTION_WARN) {
+            getDefault().getLog().log
+                (new Status(IStatus.WARNING, ID, IStatus.OK, message, ex));
+            if (OPTION_WARN_DIALOG) {
+                MessageDialog.openWarning(getDefault().getWorkbench()
+                    .getActiveWorkbenchWindow().getShell(), ID, message);
+            }
+        }
     }
     
     public static void error(String message, Throwable ex)
     {
         getDefault().getLog().log
             (new Status(IStatus.ERROR, ID, IStatus.OK, message, ex));
-        MessageDialog.openError(getDefault().getWorkbench()
-            .getActiveWorkbenchWindow().getShell(), ID, message);
+        if (OPTION_ERROR_DIALOG) {
+            MessageDialog.openError(getDefault().getWorkbench()
+                .getActiveWorkbenchWindow().getShell(), ID, message);
+        }
     }
+    
+    public void setProperty(IResource target, QualifiedName key, String value) throws CoreException {
+        ResourceName name = new ResourceName("", target.getProjectRelativePath());
+        PropertyStore store = getPropertyStore(target);
+        synchronized (store) {
+            if (value == null) {
+                store.remove(name, key);
+            } else {
+                store.set(name, new StoredProperty(key, value));
+            }
+            store.commit();
+        }
+    }
+    
+    public String getProperty(IResource target, QualifiedName key) throws CoreException {
+        ResourceName name = new ResourceName("", target.getProjectRelativePath());
+        PropertyStore store = getPropertyStore(target);
+        synchronized (store) {
+            StoredProperty result = store.get(name, key);
+            return result == null ? null : result.getStringValue();
+        }
+    }
+    
+    protected PropertyStore getPropertyStore(IResource target) {
+        IPath location = getStateLocation();
+        switch (target.getType()) {
+            default:
+                target = target.getProject();
+            case IResource.PROJECT:
+                location = location.append(".project").append(target.getName()).append(".properties");
+                break;
+            case IResource.ROOT:
+                location = location.append(".root").append(".properties");
+                break;
+        }
+        if (propertyStores == null) {
+            propertyStores = new HashMap();
+        }
+        PropertyStore store = (PropertyStore)propertyStores.get(location);
+        if (store == null) {
+            location.toFile().getParentFile().mkdirs();
+            store = new PropertyStore(location);
+            propertyStores.put(location, store);
+        }
+        return store;
+    }
+    
+    /**
+     * @see org.eclipse.core.runtime.Plugin#startup()
+     */
+    public void startup() throws CoreException {
+        super.startup();
+        String t = Boolean.TRUE.toString(); 
+        OPTION_INFO = t.equalsIgnoreCase(Platform.getDebugOption(ID+"/info"));
+        OPTION_INFO_DIALOG = t.equalsIgnoreCase(Platform.getDebugOption(ID+"/info/dialog"));
+        OPTION_WARN = t.equalsIgnoreCase(Platform.getDebugOption(ID+"/warn"));
+        OPTION_WARN_DIALOG = t.equalsIgnoreCase(Platform.getDebugOption(ID+"/warn/dialog"));
+        OPTION_ERROR_DIALOG = t.equalsIgnoreCase(Platform.getDebugOption(ID+"/error/dialog"));
+    }
+
+    /**
+     * @see org.eclipse.core.runtime.Plugin#shutdown()
+     */
+    public void shutdown() throws CoreException {
+        if (propertyStores != null) {
+            // shut down property stores
+            for (Iterator i = propertyStores.values().iterator(); i.hasNext();) {
+                PropertyStore store = (PropertyStore)i.next();
+                store.shutdown(null);
+            }
+        }
+        super.shutdown();
+    }
+
 }

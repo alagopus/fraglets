@@ -39,6 +39,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceProxyVisitor;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -50,9 +51,10 @@ import org.eclipse.jface.viewers.Viewer;
 
 /**
  * @author marion@users.souceforge.net
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 abstract class ZeigNode extends PlatformObject implements IResource {
+    private IPath path;
     private String name;
     private ZeigContainerNode parent;
 
@@ -214,8 +216,13 @@ abstract class ZeigNode extends PlatformObject implements IResource {
      * @see org.eclipse.core.resources.IResource#getFullPath()
      */
     public IPath getFullPath() {
-        return getParent().getFullPath().append(getName());
+        if (path != null) {
+            return path;
+        } else {
+            return path = getParent().getFullPath().append(getName());
+        }
     }
+    
     /**
      * @see org.eclipse.core.resources.IResource#getLocation()
      */
@@ -224,6 +231,7 @@ abstract class ZeigNode extends PlatformObject implements IResource {
         BrowserPlugin.warn("getLocation()", null);
         return null;
     }
+    
     /* (non-Javadoc)
      * @see org.eclipse.core.resources.IResource#getMarker(long)
      */
@@ -240,13 +248,12 @@ abstract class ZeigNode extends PlatformObject implements IResource {
         BrowserPlugin.warn("getModificationStamp()", null);
         return 0;
     }
-    /* (non-Javadoc)
+    /**
      * @see org.eclipse.core.resources.IResource#getPersistentProperty(org.eclipse.core.runtime.QualifiedName)
      */
     public String getPersistentProperty(QualifiedName key) throws CoreException {
-        // TODO Auto-generated method stub
-        BrowserPlugin.warn("getPersistentProperty(QualifiedName \""+key+"\")", null);
-        return null;
+        BrowserPlugin.info("getPersistentProperty(QualifiedName \""+key+"\")", null);
+        return BrowserPlugin.getDefault().getProperty(this, key);
     }
     /**
      * @see org.eclipse.core.resources.IResource#getProject()
@@ -255,14 +262,13 @@ abstract class ZeigNode extends PlatformObject implements IResource {
         BrowserPlugin.warn("getProject()", null);
         return getDatabaseNode();
     }
-    /* (non-Javadoc)
+    /**
      * @see org.eclipse.core.resources.IResource#getProjectRelativePath()
      */
     public IPath getProjectRelativePath() {
-        // TODO Auto-generated method stub
-        BrowserPlugin.warn("getProjectRelativePath()", null);
-        return null;
+        return getFullPath().removeFirstSegments(1);
     }
+    
     /* (non-Javadoc)
      * @see org.eclipse.core.resources.IResource#getRawLocation()
      */
@@ -271,6 +277,7 @@ abstract class ZeigNode extends PlatformObject implements IResource {
         BrowserPlugin.warn("getRawLocation()", null);
         return null;
     }
+    
     /* (non-Javadoc)
      * @see org.eclipse.core.resources.IResource#getSessionProperty(org.eclipse.core.runtime.QualifiedName)
      */
@@ -284,8 +291,8 @@ abstract class ZeigNode extends PlatformObject implements IResource {
      */
     public IWorkspace getWorkspace() {
         BrowserPlugin.warn("getWorkspace()", null);
-//        return ResourcesPlugin.getWorkspace();
-        return null;
+        return ResourcesPlugin.getWorkspace();
+//        return null;
     }
     /**
      * @see org.eclipse.core.resources.IResource#isAccessible()
@@ -402,13 +409,12 @@ abstract class ZeigNode extends PlatformObject implements IResource {
             throw new UnsupportedOperationException("setLocal(boolean flag, int depth, IProgressMonitor monitor)");
         }
     }
-    /* (non-Javadoc)
+    /**
      * @see org.eclipse.core.resources.IResource#setPersistentProperty(org.eclipse.core.runtime.QualifiedName, java.lang.String)
      */
     public void setPersistentProperty(QualifiedName key, String value) throws CoreException {
-        // TODO not supported yet
-        BrowserPlugin.warn("setPersistentProperty(QualifiedName \""+key+"\", String value)", null);
-        throw new UnsupportedOperationException("setPersistentProperty(QualifiedName key, String value)");
+        BrowserPlugin.info("setPersistentProperty(QualifiedName \""+key+"\", String \""+value+"\")", null);
+        BrowserPlugin.getDefault().setProperty(this, key, value);
     }
     /* (non-Javadoc)
      * @see org.eclipse.core.resources.IResource#setReadOnly(boolean)
@@ -446,7 +452,7 @@ abstract class ZeigNode extends PlatformObject implements IResource {
         BrowserPlugin.warn("touch(IProgressMonitor monitor)", null);
     }
     
-    protected CoreException coreException(String message, Exception ex) {
+    protected static CoreException coreException(String message, Exception ex) {
         return new CoreException(new Status(IStatus.ERROR,
             BrowserPlugin.ID, IStatus.OK, message, ex));
     }
