@@ -26,7 +26,7 @@ import java.util.Iterator;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class Recognizer {
     /** Known avatars. */
@@ -91,7 +91,8 @@ public class Recognizer {
     public Avatar updateAvatar(long timestamp, String name, int level,
                                   Avatar.Class clazz, Avatar.Culture culture,
                                   Avatar.Guild guild, Avatar.Zone zone) {
-        Avatar result = (Avatar)avatars.get(name.toString());
+        name = Avatar.normalizeName(name);
+        Avatar result = (Avatar)avatars.get(name);
         if (result == null) {
             result = new Avatar(timestamp);
             result.setName(name);
