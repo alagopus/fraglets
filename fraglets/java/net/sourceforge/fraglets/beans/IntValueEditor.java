@@ -22,7 +22,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.  */
 
-package net.sourceforge.shelf.beans;
+package net.sourceforge.fraglets.beans;
 
 import java.awt.BorderLayout;
 import java.awt.event.WindowAdapter;
@@ -41,7 +41,7 @@ import javax.swing.event.EventListenerList;
  * adjusting the value with the pointer.
  *
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class IntValueEditor extends JPanel implements BoundedRangeModel, DocumentListener, Runnable {
   /** The event listener list to multiplex the ChangeEvents
