@@ -47,8 +47,6 @@ public class SearcherTest extends TestCase {
             s.search(input);
         }
         long t2 = System.currentTimeMillis();
-        System.out.println("t1-t0="+(t1-t0));
-        System.out.println("t2-t1="+(t2-t1));
         assertTrue("t1-t0 >= t2-t1", t1-t0 >= t2-t1);
     }
     
