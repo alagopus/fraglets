@@ -66,7 +66,7 @@ import thinlet.Thinlet;
  * </ul> 
  * 
  * @author Klaus Rennecke
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class Main extends Thinlet implements Comparator {
     
@@ -252,7 +252,7 @@ public class Main extends Thinlet implements Comparator {
 
     public void actionAbout() {
         add("about.xml");
-        setString(find("revisionLabel"), "text", "$Revision: 1.8 $");
+        setString(find("revisionLabel"), "text", "$Revision: 1.9 $");
     }
     
     public void actionHelp() {
@@ -790,15 +790,36 @@ public class Main extends Thinlet implements Comparator {
     protected void parseRemoteList(String line, Object list, int width[]) {
         // drwxr-xr-x   19 root     root         4096 Mar 27 13:49 .
         // crw-rw-rw-    1 root     root            0 Mar 16 17:02 tty
+        
+        // 041777 0 3 657 1049222674 .
+        // 040755 0 0 1024 1048099314 ..
+        // 040775 0 0 176 1048099412 .X11-pipe
+        // 040775 0 0 176 1048099412 .X11-unix
+        // 0100600 900 10 1 1049186395 .root_display
+        // 0100600 900 10 1 1049186395 .root_xauthority
+        
         StringTokenizer tok = new StringTokenizer(line, " ");
-        String perms = tok.nextToken(); // permissions
-        String links = tok.nextToken(); // link count
-        String owner = tok.nextToken(); // owner
-        String group = tok.nextToken(); // group
-        String size = tok.nextToken();
-        String rest = tok.nextToken("");
-        String date = rest.substring(0, 13);
-        String name = rest.substring(14);
+        String perms, owner, group, size, date, name;
+        perms = tok.nextToken(); // permissions
+        if (perms.startsWith("0")) {
+            // numeric format
+            owner = tok.nextToken();
+            group = tok.nextToken();
+            size = tok.nextToken();
+            date = tok.nextToken();
+            name = tok.nextToken("").substring(1); // skip last delimiter
+            
+            date = new Date(Long.parseLong(date)).toString();
+        } else {
+            // string format
+            String links = tok.nextToken();
+            owner = tok.nextToken(); // owner
+            group = tok.nextToken(); // group
+            size = tok.nextToken();
+            String rest = tok.nextToken("");
+            date = rest.substring(0, 13);
+            name = rest.substring(14);
+        }
         
         if (name.equals(".")) {
             // ignore .
@@ -1203,6 +1224,8 @@ public class Main extends Thinlet implements Comparator {
         
         protected StringBuffer buffer = new StringBuffer();
         
+        protected ChatEvent promptEvent = new ChatEvent(null, null);
+        
         public ChatStream(InputStream in, String prompt) {
             this.in = in;
             if (prompt != null) {
@@ -1227,7 +1250,8 @@ public class Main extends Thinlet implements Comparator {
                 case '\r':
                 case '\n':
                     if (buffer.length() > 0) {
-                        append(buffer.toString());
+                        EventQueue.invokeLater
+                            (new ChatEvent(buffer.toString(), in));
                         buffer.setLength(0);
                         match = prompt != null;
                     }
@@ -1245,16 +1269,16 @@ public class Main extends Thinlet implements Comparator {
                     match = prompt[index] == buffer.charAt(index);
                     if (match && index + 1 == prompt.length) {
                         buffer.setLength(0);
-                        parsePrompt(); 
+                        try {
+                            EventQueue.invokeLater(promptEvent); 
+                        } catch (RuntimeException ex) {
+                            ex.printStackTrace();
+                        }
                     }
                 } else {
                     match = false; // unlikely
                 }
             }
-        }
-        
-        public void append(String s) {
-            parseSession(s, in);
         }
         
         /**
@@ -1277,6 +1301,22 @@ public class Main extends Thinlet implements Comparator {
             }
         }
 
+    }
+    
+    public class ChatEvent implements Runnable {
+        private String text;
+        private InputStream source;
+        public ChatEvent(String text, InputStream source) {
+            this.text = text;
+            this.source = source;
+        }
+        public void run() {
+            if (text != null) {
+                parseSession(text, source);
+            } else {
+                parsePrompt();
+            }
+        }
     }
     
     /**
