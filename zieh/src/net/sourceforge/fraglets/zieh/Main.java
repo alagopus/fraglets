@@ -65,7 +65,7 @@ import thinlet.Thinlet;
  * </ul> 
  * 
  * @author Klaus Rennecke
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class Main extends Thinlet implements Comparator {
     
@@ -241,7 +241,7 @@ public class Main extends Thinlet implements Comparator {
 
     public void actionAbout() {
         add("about.xml");
-        setString(find("revisionLabel"), "text", "$Revision: 1.5 $");
+        setString(find("revisionLabel"), "text", "$Revision: 1.6 $");
     }
     
     public void actionHelp() {
@@ -447,16 +447,17 @@ public class Main extends Thinlet implements Comparator {
         return;
     }
 
-    public void license(Object old) {
+    public void license(Object old, Object which) {
+        String name = getString(which, "name");
         remove(old);
         add("license.xml");
-        loadLicense(find("licenseText"));
+        loadLicense(find("licenseText"), name);
     }
     
-    public void loadLicense(Object area) {
+    public void loadLicense(Object area, String name) {
         InputStream inputstream = null;
         try {
-            inputstream = getClass().getResourceAsStream("COPYING");
+            inputstream = getClass().getResourceAsStream(name);
         } catch (Exception ex) {
             ex.printStackTrace();
             return;
@@ -467,6 +468,7 @@ public class Main extends Thinlet implements Comparator {
         String line;
         try {
             while ((line = reader.readLine()) != null) {
+                line = line.replace('\f', '\n').replace('\t', ' ');
                 buffer.append(line).append('\n');
             }
             reader.close();
