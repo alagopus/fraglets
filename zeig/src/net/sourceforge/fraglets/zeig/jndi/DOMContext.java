@@ -47,7 +47,7 @@ import net.sourceforge.fraglets.zeig.model.VersionFactory;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class DOMContext implements Context {
     /** Context option. */
@@ -453,7 +453,7 @@ public class DOMContext implements Context {
             new CompositeName().add(atom), this, environment);
         if (obj != old) {
             try {
-                binding.getDocumentElement().appendChild((Node)obj);
+                binding.getDocumentElement().replaceChild((Node)obj, old);
                 VersionFactory.getInstance()
                     .addVersion(ve, ((DocumentImpl)binding).getId(), 0);
             } catch (SQLException ex) {
