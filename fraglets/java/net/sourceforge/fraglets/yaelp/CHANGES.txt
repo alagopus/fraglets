@@ -1,3 +1,6 @@
+Changes for version 1.22:
+    - Fixed link color in NEoP style.
+
 Changes for version 1.21:
     - Fix 610864 ArrayIndexOutOfBounds on huge line
 
