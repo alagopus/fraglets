@@ -6,12 +6,13 @@
 
 package net.sourceforge.fraglets.aotools.editor;
 
+import net.sourceforge.fraglets.aotools.codec.NanoListEncoder;
 import net.sourceforge.fraglets.aotools.model.*;
 
 /**
  *
  * @author sas
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class EditBaseNanoPanel extends javax.swing.JPanel {
 
@@ -316,7 +317,30 @@ public class EditBaseNanoPanel extends javax.swing.JPanel {
 
     private void saveBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveBActionPerformed
         // Add your handling code here:
-        BaseNanoList.getBaseNanoList().save();
+        javax.swing.JFileChooser chooser = new javax.swing.JFileChooser();
+        if (chooser.showSaveDialog(this) != chooser.APPROVE_OPTION)
+            return;
+        java.io.File file = chooser.getSelectedFile();
+        if (file.exists()) {
+            if (javax.swing.JOptionPane.showConfirmDialog(this,
+                "Overwrite "+file+"?", "Save Base Nano List",
+                javax.swing.JOptionPane.OK_CANCEL_OPTION) !=
+                javax.swing.JOptionPane.OK_OPTION)
+                return;
+        }
+        try {
+            java.io.FileOutputStream out =
+                new java.io.FileOutputStream(chooser.getSelectedFile());
+            NanoListEncoder encoder = new NanoListEncoder(out);
+            encoder.encodeBaseNanoList(BaseNanoList.getBaseNanoList());
+            encoder.flush();
+            out.close();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            javax.swing.JOptionPane.showMessageDialog(this, ex.getMessage(),
+                "Save Failed", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+        // BaseNanoList.getBaseNanoList().save();
     }//GEN-LAST:event_saveBActionPerformed
 
     private void nanoListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_nanoListValueChanged

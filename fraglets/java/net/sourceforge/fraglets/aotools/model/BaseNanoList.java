@@ -26,15 +26,17 @@ public class BaseNanoList {
     /** Creates new BaseNanoList */
     private BaseNanoList() {
         allNano = new ArrayList();
-        listModel = new BaseNanoListModel();
         selectedNano = allNano;
         try {
             new NanoListDecoder(this)
                 .decode(getClass().getResource("DefaultBaseNanoList.xml"));
         } catch (Exception ex) {
+            ex.printStackTrace();
             System.err.println
-                ("loading default base nano list failed: "+ex.getMessage());
+                ("loading default base nano list failed: "+ex);
         }
+        // must initialize this after parsing, or the addNano method will NPE
+        listModel = new BaseNanoListModel();
     }
     
     public static BaseNanoList getBaseNanoList(){
@@ -130,7 +132,9 @@ public class BaseNanoList {
             if(selectedNano != allNano){
                 selectedNano.add(b);
             }
-            listModel.update();
+            if (listModel != null) {
+                listModel.update();
+            }
         }
     }
     
