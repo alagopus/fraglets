@@ -66,7 +66,7 @@ import thinlet.Thinlet;
  * </ul> 
  * 
  * @author Klaus Rennecke
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class Main extends Thinlet implements Comparator {
     
@@ -252,7 +252,7 @@ public class Main extends Thinlet implements Comparator {
 
     public void actionAbout() {
         add("about.xml");
-        setString(find("revisionLabel"), "text", "$Revision: 1.7 $");
+        setString(find("revisionLabel"), "text", "$Revision: 1.8 $");
     }
     
     public void actionHelp() {
@@ -1188,7 +1188,6 @@ public class Main extends Thinlet implements Comparator {
     public static void main(String[] args) {
         Main main = new Main(args);
         new FrameLauncher("Zieh", main, 620, 440);
-        main.init();
     }
     
     /////
@@ -1324,6 +1323,7 @@ public class Main extends Thinlet implements Comparator {
      */
     public void addNotify() {
         super.addNotify();
+        init();
         if (chatOutput.length() > 0) {
             EventQueue.invokeLater(updater);
         }
