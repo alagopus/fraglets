@@ -3,7 +3,7 @@
  * Copyright (C) 2001, 2002 Klaus Rennecke.
  */
 
-package net.sourceforge.fraglets.yaelp;
+package net.sourceforge.fraglets.yaelp.model;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -26,7 +26,7 @@ import java.util.Iterator;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.1 $
  */
 public class Recognizer {
     /** Known avatars. */

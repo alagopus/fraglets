@@ -49,6 +49,19 @@ import java.io.OutputStream;
 import javax.swing.JEditorPane;
 import java.io.StringWriter;
 import javax.swing.RepaintManager;
+import net.sourceforge.fraglets.yaelp.bean.AvatarCellRenderer;
+import net.sourceforge.fraglets.yaelp.bean.DateInput;
+import net.sourceforge.fraglets.yaelp.bean.DocumentStream;
+import net.sourceforge.fraglets.yaelp.bean.LevelLabel;
+import net.sourceforge.fraglets.yaelp.bean.LevelSlider;
+import net.sourceforge.fraglets.yaelp.bean.PropertyInput;
+import net.sourceforge.fraglets.yaelp.bean.RosterTableModel;
+import net.sourceforge.fraglets.yaelp.bean.TransferableTableSelection;
+import net.sourceforge.fraglets.yaelp.model.Avatar;
+import net.sourceforge.fraglets.yaelp.model.AvatarFilter;
+import net.sourceforge.fraglets.yaelp.model.EqXMLParser;
+import net.sourceforge.fraglets.yaelp.model.EqlogParser;
+import net.sourceforge.fraglets.yaelp.model.Recognizer;
 
 /** This class implements a simple GUI to invoke the log recognizer and
  * display the results.
@@ -68,7 +81,7 @@ import javax.swing.RepaintManager;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.27 $
+ * @version $Revision: 1.28 $
  */
 public class RosterFrame extends javax.swing.JFrame {
     /** The file chooser map used to select files to parse and export.
@@ -243,13 +256,13 @@ public class RosterFrame extends javax.swing.JFrame {
         jSeparator1 = new javax.swing.JSeparator();
         dingMenuItem = new javax.swing.JMenuItem();
         dohMenuItem = new javax.swing.JMenuItem();
-        propertyInput = new net.sourceforge.fraglets.yaelp.PropertyInput();
-        propertyEditor = new net.sourceforge.fraglets.yaelp.PropertyEditor();
+        propertyInput = new net.sourceforge.fraglets.yaelp.bean.PropertyInput();
+        propertyEditor = new net.sourceforge.fraglets.yaelp.bean.PropertyEditor();
         tableScroll = new javax.swing.JScrollPane();
         rosterTable = new javax.swing.JTable();
         statusPanel = new javax.swing.JPanel();
         status = new javax.swing.JTextField();
-        selectionButton = new net.sourceforge.fraglets.yaelp.SelectionButton();
+        selectionButton = new net.sourceforge.fraglets.yaelp.bean.SelectionButton();
         menuBar = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
         parseFileItem = new javax.swing.JMenuItem();
@@ -314,7 +327,9 @@ public class RosterFrame extends javax.swing.JFrame {
         });
 
         contextMenu.add(propertyMenuItem);
+
         contextMenu.add(jSeparator3);
+
         newEntryItem.setText("new entry");
         newEntryItem.setToolTipText("Create a new entry.");
         newEntryItem.addActionListener(new java.awt.event.ActionListener() {
@@ -324,6 +339,7 @@ public class RosterFrame extends javax.swing.JFrame {
         });
 
         contextMenu.add(newEntryItem);
+
         hideMenuItem.setText("hide selected");
         hideMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -332,7 +348,9 @@ public class RosterFrame extends javax.swing.JFrame {
         });
 
         contextMenu.add(hideMenuItem);
+
         contextMenu.add(jSeparator1);
+
         dingMenuItem.setText("DING!");
         dingMenuItem.setToolTipText("Increase level by one.");
         dingMenuItem.addActionListener(new java.awt.event.ActionListener() {
@@ -342,6 +360,7 @@ public class RosterFrame extends javax.swing.JFrame {
         });
 
         contextMenu.add(dingMenuItem);
+
         dohMenuItem.setText("DOH :(");
         dohMenuItem.setToolTipText("Decrease level by one.");
         dohMenuItem.addActionListener(new java.awt.event.ActionListener() {
@@ -351,6 +370,7 @@ public class RosterFrame extends javax.swing.JFrame {
         });
 
         contextMenu.add(dohMenuItem);
+
         propertyEditor.setModal(true);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
@@ -382,7 +402,6 @@ public class RosterFrame extends javax.swing.JFrame {
         status.setToolTipText("");
         statusPanel.add(status);
 
-        selectionButton.setBackground(new java.awt.Color(204, 204, 204));
         selectionButton.setBorder(new javax.swing.border.EmptyBorder(new java.awt.Insets(1, 5, 1, 5)));
         selectionButton.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("selectionButton.text"));
         selectionButton.setToolTipText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("selectionButton.tooltip"));
@@ -400,7 +419,9 @@ public class RosterFrame extends javax.swing.JFrame {
         });
 
         fileMenu.add(parseFileItem);
+
         fileMenu.add(jSeparator5);
+
         saveFileItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("saveFileItem.text"));
         saveFileItem.setToolTipText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("saveFileItem.tooltip"));
         saveFileItem.addActionListener(new java.awt.event.ActionListener() {
@@ -410,6 +431,7 @@ public class RosterFrame extends javax.swing.JFrame {
         });
 
         fileMenu.add(saveFileItem);
+
         importFileItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("importFileItem.text"));
         importFileItem.setToolTipText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("importFileItem.tooltip"));
         importFileItem.addActionListener(new java.awt.event.ActionListener() {
@@ -419,6 +441,7 @@ public class RosterFrame extends javax.swing.JFrame {
         });
 
         fileMenu.add(importFileItem);
+
         loadFileItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("loadFileItem.text"));
         loadFileItem.setToolTipText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("loadFileItem.tooltip"));
         loadFileItem.addActionListener(new java.awt.event.ActionListener() {
@@ -428,7 +451,9 @@ public class RosterFrame extends javax.swing.JFrame {
         });
 
         fileMenu.add(loadFileItem);
+
         fileMenu.add(separator1);
+
         exportTableItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("exportTableItem.text"));
         exportTableItem.setToolTipText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("exportTableItem.tooltip"));
         exportTableItem.addActionListener(new java.awt.event.ActionListener() {
@@ -438,6 +463,7 @@ public class RosterFrame extends javax.swing.JFrame {
         });
 
         fileMenu.add(exportTableItem);
+
         exportXMLItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("exportXMLItem.text"));
         exportXMLItem.setToolTipText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("exportXMLItem.tooltip"));
         exportXMLItem.addActionListener(new java.awt.event.ActionListener() {
@@ -447,6 +473,7 @@ public class RosterFrame extends javax.swing.JFrame {
         });
 
         fileMenu.add(exportXMLItem);
+
         exportHTMLItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("exportHTMLItem.text"));
         exportHTMLItem.setToolTipText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("exportHTMLItem.tooltip"));
         exportHTMLItem.addActionListener(new java.awt.event.ActionListener() {
@@ -456,7 +483,9 @@ public class RosterFrame extends javax.swing.JFrame {
         });
 
         fileMenu.add(exportHTMLItem);
+
         fileMenu.add(separator2);
+
         quitItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("quitItem.text"));
         quitItem.setToolTipText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("quitItem.tooltip"));
         quitItem.addActionListener(new java.awt.event.ActionListener() {
@@ -466,7 +495,9 @@ public class RosterFrame extends javax.swing.JFrame {
         });
 
         fileMenu.add(quitItem);
+
         menuBar.add(fileMenu);
+
         filterMenu.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("filterMenu.text"));
         filterMenu.setToolTipText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("filterMenu.tooltip"));
         noFilterItem.setText("no filter");
@@ -478,6 +509,7 @@ public class RosterFrame extends javax.swing.JFrame {
         });
 
         filterMenu.add(noFilterItem);
+
         invertFilterItem.setText("invert filter");
         invertFilterItem.setToolTipText("Invert all selected filter items.");
         invertFilterItem.addActionListener(new java.awt.event.ActionListener() {
@@ -487,7 +519,9 @@ public class RosterFrame extends javax.swing.JFrame {
         });
 
         filterMenu.add(invertFilterItem);
+
         filterMenu.add(jSeparator2);
+
         mainFilterItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("mainFilterItem.text"));
         mainFilterItem.setToolTipText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("mainFilterItem.tooltip"));
         mainFilterItem.addActionListener(new java.awt.event.ActionListener() {
@@ -497,6 +531,7 @@ public class RosterFrame extends javax.swing.JFrame {
         });
 
         filterMenu.add(mainFilterItem);
+
         level1FilterItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("level1FilterItem.text"));
         level1FilterItem.setToolTipText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("level1FilterItem.tooltip"));
         level1FilterItem.addActionListener(new java.awt.event.ActionListener() {
@@ -506,7 +541,9 @@ public class RosterFrame extends javax.swing.JFrame {
         });
 
         filterMenu.add(level1FilterItem);
+
         filterMenu.add(separator3);
+
         defaultFilterItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("defaultFilterItem.text"));
         defaultFilterItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -515,6 +552,7 @@ public class RosterFrame extends javax.swing.JFrame {
         });
 
         filterMenu.add(defaultFilterItem);
+
         alliedFilterItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("alliedFilterItem.text"));
         alliedFilterItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -523,6 +561,7 @@ public class RosterFrame extends javax.swing.JFrame {
         });
 
         filterMenu.add(alliedFilterItem);
+
         friendFilterItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("friendFilterItem.text"));
         friendFilterItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -531,7 +570,9 @@ public class RosterFrame extends javax.swing.JFrame {
         });
 
         filterMenu.add(friendFilterItem);
+
         filterMenu.add(jSeparator4);
+
         memberFilterItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("memberFilterItem.text"));
         memberFilterItem.setToolTipText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("memberFilterItem.tooltip"));
         memberFilterItem.addActionListener(new java.awt.event.ActionListener() {
@@ -541,6 +582,7 @@ public class RosterFrame extends javax.swing.JFrame {
         });
 
         filterMenu.add(memberFilterItem);
+
         officerFilterItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("officerFilterItem.text"));
         officerFilterItem.setToolTipText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("officerFilterItem.tooltip"));
         officerFilterItem.addActionListener(new java.awt.event.ActionListener() {
@@ -550,7 +592,9 @@ public class RosterFrame extends javax.swing.JFrame {
         });
 
         filterMenu.add(officerFilterItem);
+
         filterMenu.add(separator4);
+
         newFilterMenu.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("newFilterMenu.text"));
         newGuildFilterItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("newGuildFilterItem.text"));
         newGuildFilterItem.setToolTipText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("newGuildFilterItem.tooltip"));
@@ -561,6 +605,7 @@ public class RosterFrame extends javax.swing.JFrame {
         });
 
         newFilterMenu.add(newGuildFilterItem);
+
         levelFilterItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("levelFilterItem.text"));
         levelFilterItem.setToolTipText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("levelFilterItem.tooltip"));
         levelFilterItem.addActionListener(new java.awt.event.ActionListener() {
@@ -570,6 +615,7 @@ public class RosterFrame extends javax.swing.JFrame {
         });
 
         newFilterMenu.add(levelFilterItem);
+
         propertyFilterItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("propertyFilterItem.text"));
         propertyFilterItem.setToolTipText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("propertyFilterItem.tooltip"));
         propertyFilterItem.addActionListener(new java.awt.event.ActionListener() {
@@ -579,6 +625,7 @@ public class RosterFrame extends javax.swing.JFrame {
         });
 
         newFilterMenu.add(propertyFilterItem);
+
         classFilterItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("classFilterItem.text"));
         classFilterItem.setToolTipText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("classFilterItem.tooltip"));
         classFilterItem.addActionListener(new java.awt.event.ActionListener() {
@@ -588,6 +635,7 @@ public class RosterFrame extends javax.swing.JFrame {
         });
 
         newFilterMenu.add(classFilterItem);
+
         cultureFilterItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("cultureFilterItem.text"));
         cultureFilterItem.setToolTipText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("cultureFilterItem.tooltip"));
         cultureFilterItem.addActionListener(new java.awt.event.ActionListener() {
@@ -597,6 +645,7 @@ public class RosterFrame extends javax.swing.JFrame {
         });
 
         newFilterMenu.add(cultureFilterItem);
+
         afterFilterItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("afterFilterItem.text"));
         afterFilterItem.setToolTipText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("afterFilterItem.tooltip"));
         afterFilterItem.addActionListener(new java.awt.event.ActionListener() {
@@ -606,33 +655,44 @@ public class RosterFrame extends javax.swing.JFrame {
         });
 
         newFilterMenu.add(afterFilterItem);
+
         filterMenu.add(newFilterMenu);
+
         menuBar.add(filterMenu);
+
         styleMenu.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("styleMenu.text"));
         styleMenu.setToolTipText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("styleMenu.tooltip"));
         defaultStyleItem.setSelected(true);
         defaultStyleItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("defaultStyleItem.text"));
         defaultStyleItem.setToolTipText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("defaultStyleItem.tooltip"));
         styleMenu.add(defaultStyleItem);
+
         styleMenu.add(separator5);
+
         neopStyleItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("neopStyleItem.text"));
         neopStyleItem.setToolTipText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("neopStyleItem.tooltip"));
         styleMenu.add(neopStyleItem);
+
         vlStyleItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("vlStyleItem.text"));
         vlStyleItem.setToolTipText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("vlStyleItem.tooltip"));
         styleMenu.add(vlStyleItem);
+
         mwStyleItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("mwStyleItem.text"));
         mwStyleItem.setToolTipText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("mwStyleItem.tooltip"));
         styleMenu.add(mwStyleItem);
+
         ssStyleItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("ssStyleItem.text"));
         ssStyleItem.setToolTipText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("ssStyleItem.tooltip"));
         styleMenu.add(ssStyleItem);
+
         styleMenu.add(separator6);
+
         newStyleMenu.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("newStyleMenu.text"));
         styleWizardItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("styleWizardItem.text"));
         styleWizardItem.setToolTipText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("styleWizardItem.tooltip"));
         styleWizardItem.setEnabled(false);
         newStyleMenu.add(styleWizardItem);
+
         styleFileItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("styleFileItem.text"));
         styleFileItem.setToolTipText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("styleFileItem.tooltip"));
         styleFileItem.addActionListener(new java.awt.event.ActionListener() {
@@ -642,16 +702,22 @@ public class RosterFrame extends javax.swing.JFrame {
         });
 
         newStyleMenu.add(styleFileItem);
+
         styleMenu.add(newStyleMenu);
+
         menuBar.add(styleMenu);
+
         optionsMenu.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("optionsMenu.text"));
         displayHTMLItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("displayHTMLItem.text"));
         displayHTMLItem.setToolTipText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("displayHTMLItem.tooltip"));
         optionsMenu.add(displayHTMLItem);
+
         exportToClipboardItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("exportToClipboardItem.text"));
         exportToClipboardItem.setToolTipText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("exportToClipboardItem.tooltip"));
         optionsMenu.add(exportToClipboardItem);
+
         menuBar.add(optionsMenu);
+
         helpMenu.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("helpMenu.text"));
         aboutItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("aboutItem.text"));
         aboutItem.addActionListener(new java.awt.event.ActionListener() {
@@ -661,6 +727,7 @@ public class RosterFrame extends javax.swing.JFrame {
         });
 
         helpMenu.add(aboutItem);
+
         licenseItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("licenseItem.text"));
         licenseItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -669,6 +736,7 @@ public class RosterFrame extends javax.swing.JFrame {
         });
 
         helpMenu.add(licenseItem);
+
         xpLicenseItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("xpLicenseItem.text"));
         xpLicenseItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -677,6 +745,7 @@ public class RosterFrame extends javax.swing.JFrame {
         });
 
         helpMenu.add(xpLicenseItem);
+
         xtLicenseItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("xtLicenseItem.text"));
         xtLicenseItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -685,7 +754,9 @@ public class RosterFrame extends javax.swing.JFrame {
         });
 
         helpMenu.add(xtLicenseItem);
+
         menuBar.add(helpMenu);
+
         setJMenuBar(menuBar);
 
         pack();
@@ -1977,8 +2048,9 @@ public class RosterFrame extends javax.swing.JFrame {
                     break;
                 }
             }
+            String version = java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/version").getString("version");
             aboutText =
-            "YAELP log file parser, version 1.22.\n"+
+            "YAELP log file parser, version "+version+".\n"+
             "Copyright © 2001, 2002 Klaus Rennecke.\n"+
             "XML parser Copyright © 1997, 1998 James Clark.\n"+
             "XSL transformation Copyright © 1998, 1999 James Clark.\n"+
@@ -2125,74 +2197,74 @@ public class RosterFrame extends javax.swing.JFrame {
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup styleButtonGroup;
-    private javax.swing.JMenu fileMenu;
-    private javax.swing.JSeparator jSeparator5;
-    private javax.swing.JSeparator jSeparator4;
-    private javax.swing.JMenuItem cultureFilterItem;
-    private javax.swing.JSeparator jSeparator3;
-    private javax.swing.JMenu filterMenu;
+    private javax.swing.JCheckBoxMenuItem level1FilterItem;
+    private javax.swing.JMenuItem xtLicenseItem;
+    private javax.swing.JMenuItem noFilterItem;
     private javax.swing.JSeparator jSeparator2;
-    private javax.swing.JSeparator jSeparator1;
-    private javax.swing.JMenuItem exportXMLItem;
-    private net.sourceforge.fraglets.yaelp.PropertyInput propertyInput;
-    private javax.swing.JMenuItem licenseItem;
-    private javax.swing.JMenuItem hideMenuItem;
-    private javax.swing.JMenuItem importFileItem;
-    private javax.swing.JTextField status;
-    private javax.swing.JSeparator separator6;
+    private javax.swing.JSeparator jSeparator4;
+    private javax.swing.JMenu fileMenu;
+    private javax.swing.JMenuItem propertyFilterItem;
+    private javax.swing.JSeparator jSeparator5;
     private javax.swing.JMenu newStyleMenu;
-    private javax.swing.JSeparator separator5;
-    private javax.swing.JMenuItem dohMenuItem;
+    private javax.swing.JMenuItem dingMenuItem;
+    private javax.swing.JMenuItem exportTableItem;
+    private javax.swing.JMenuItem invertFilterItem;
+    private javax.swing.JCheckBoxMenuItem officerFilterItem;
+    private javax.swing.JMenuItem xpLicenseItem;
     private javax.swing.JSeparator separator4;
+    private javax.swing.JMenuItem cultureFilterItem;
+    private javax.swing.JMenuItem loadFileItem;
+    private net.sourceforge.fraglets.yaelp.bean.PropertyInput propertyInput;
+    private net.sourceforge.fraglets.yaelp.bean.PropertyEditor propertyEditor;
+    private javax.swing.JMenuItem aboutItem;
+    private javax.swing.JMenu styleMenu;
+    private net.sourceforge.fraglets.yaelp.bean.SelectionButton selectionButton;
+    private javax.swing.JSeparator separator6;
+    private javax.swing.JRadioButtonMenuItem mwStyleItem;
+    private javax.swing.JPopupMenu contextMenu;
+    private javax.swing.JMenuBar menuBar;
+    private javax.swing.JTable rosterTable;
+    private javax.swing.JMenuItem hideMenuItem;
+    private javax.swing.JMenuItem quitItem;
     private javax.swing.JSeparator separator3;
+    private javax.swing.JPanel statusPanel;
+    private javax.swing.JRadioButtonMenuItem neopStyleItem;
+    private javax.swing.JSeparator jSeparator3;
     private javax.swing.JSeparator separator2;
     private javax.swing.JSeparator separator1;
-    private javax.swing.JRadioButtonMenuItem neopStyleItem;
-    private javax.swing.JCheckBoxMenuItem friendFilterItem;
-    private javax.swing.JMenuItem newEntryItem;
-    private javax.swing.JCheckBoxMenuItem memberFilterItem;
-    private javax.swing.JRadioButtonMenuItem ssStyleItem;
-    private javax.swing.JMenuItem propertyFilterItem;
-    private net.sourceforge.fraglets.yaelp.SelectionButton selectionButton;
-    private javax.swing.JMenuItem xpLicenseItem;
-    private javax.swing.JRadioButtonMenuItem mwStyleItem;
-    private javax.swing.JMenuItem xtLicenseItem;
-    private javax.swing.JMenuItem levelFilterItem;
-    private javax.swing.JRadioButtonMenuItem vlStyleItem;
-    private javax.swing.JMenuItem saveFileItem;
-    private javax.swing.JMenuItem noFilterItem;
-    private javax.swing.JCheckBoxMenuItem defaultFilterItem;
-    private javax.swing.JCheckBoxMenuItem mainFilterItem;
-    private javax.swing.JMenuItem classFilterItem;
-    private javax.swing.JMenuItem aboutItem;
-    private javax.swing.JMenu helpMenu;
-    private javax.swing.JMenuItem newGuildFilterItem;
-    private javax.swing.JScrollPane tableScroll;
-    private javax.swing.JCheckBoxMenuItem exportToClipboardItem;
-    private javax.swing.JCheckBoxMenuItem level1FilterItem;
-    private javax.swing.JMenu newFilterMenu;
-    private javax.swing.JMenuItem loadFileItem;
-    private javax.swing.JMenuBar menuBar;
-    private javax.swing.JPanel statusPanel;
-    private javax.swing.JMenuItem dingMenuItem;
-    private javax.swing.JMenu styleMenu;
-    private javax.swing.JMenuItem styleWizardItem;
-    private javax.swing.JPopupMenu contextMenu;
-    private javax.swing.JMenuItem exportTableItem;
-    private javax.swing.JMenuItem afterFilterItem;
-    private javax.swing.JRadioButtonMenuItem defaultStyleItem;
-    private net.sourceforge.fraglets.yaelp.PropertyEditor propertyEditor;
-    private javax.swing.JMenuItem invertFilterItem;
-    private javax.swing.JCheckBoxMenuItem displayHTMLItem;
     private javax.swing.JMenu optionsMenu;
-    private javax.swing.JMenuItem exportHTMLItem;
     private javax.swing.JCheckBoxMenuItem alliedFilterItem;
     private javax.swing.JMenuItem propertyMenuItem;
-    private javax.swing.JTable rosterTable;
-    private javax.swing.JMenuItem parseFileItem;
-    private javax.swing.JMenuItem quitItem;
-    private javax.swing.JCheckBoxMenuItem officerFilterItem;
+    private javax.swing.JMenuItem dohMenuItem;
+    private javax.swing.JCheckBoxMenuItem defaultFilterItem;
+    private javax.swing.JCheckBoxMenuItem mainFilterItem;
+    private javax.swing.JCheckBoxMenuItem memberFilterItem;
+    private javax.swing.JMenu newFilterMenu;
+    private javax.swing.JMenuItem styleWizardItem;
+    private javax.swing.JSeparator separator5;
+    private javax.swing.JScrollPane tableScroll;
+    private javax.swing.JRadioButtonMenuItem ssStyleItem;
     private javax.swing.JMenuItem styleFileItem;
+    private javax.swing.JMenuItem exportXMLItem;
+    private javax.swing.JCheckBoxMenuItem displayHTMLItem;
+    private javax.swing.JMenuItem exportHTMLItem;
+    private javax.swing.JMenuItem importFileItem;
+    private javax.swing.JMenuItem classFilterItem;
+    private javax.swing.JTextField status;
+    private javax.swing.JMenuItem saveFileItem;
+    private javax.swing.JRadioButtonMenuItem vlStyleItem;
+    private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JRadioButtonMenuItem defaultStyleItem;
+    private javax.swing.JMenuItem licenseItem;
+    private javax.swing.JMenuItem parseFileItem;
+    private javax.swing.JMenuItem levelFilterItem;
+    private javax.swing.JMenuItem newGuildFilterItem;
+    private javax.swing.JMenuItem afterFilterItem;
+    private javax.swing.JMenu helpMenu;
+    private javax.swing.JMenu filterMenu;
+    private javax.swing.JCheckBoxMenuItem exportToClipboardItem;
+    private javax.swing.JMenuItem newEntryItem;
+    private javax.swing.JCheckBoxMenuItem friendFilterItem;
     // End of variables declaration//GEN-END:variables
 
     /** Holds value of property changed. */

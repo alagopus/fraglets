@@ -4,7 +4,7 @@
  * Created on July 19, 2002, 5:02 AM
  */
 
-package net.sourceforge.fraglets.yaelp;
+package net.sourceforge.fraglets.yaelp.bean;
 
 import javax.swing.table.TableModel;
 import javax.swing.ListSelectionModel;
@@ -46,7 +46,7 @@ import java.awt.dnd.DnDConstants;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author  marion@users.sourceforge.net
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.1 $
  */
 public class TransferableTableSelection implements Transferable {
     public static final Comparator flavorComparator = new FlavorComparator();

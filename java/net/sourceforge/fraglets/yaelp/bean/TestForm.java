@@ -70,7 +70,11 @@ public class TestForm extends javax.swing.JFrame implements ActionContext {
     }
     
     public String getVersion() {
-        return "$Revision: 1.1 $";
+        return "$Revision: 1.2 $";
+    }
+    
+    public Object getCurrentSelection() {
+        return null;
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables

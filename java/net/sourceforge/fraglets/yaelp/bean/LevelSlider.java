@@ -4,7 +4,7 @@
  * Created on 12. Juli 2002, 13:11
  */
 
-package net.sourceforge.fraglets.yaelp;
+package net.sourceforge.fraglets.yaelp.bean;
 
 import java.util.Hashtable;
 import javax.swing.JLabel;

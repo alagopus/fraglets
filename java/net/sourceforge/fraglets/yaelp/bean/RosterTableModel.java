@@ -3,9 +3,10 @@
  * Copyright (C) 2001, 2002 Klaus Rennecke.
  */
 
-package net.sourceforge.fraglets.yaelp;
+package net.sourceforge.fraglets.yaelp.bean;
 
 import java.util.Comparator;
+import net.sourceforge.fraglets.yaelp.model.Avatar;
 
 /**
  *
@@ -24,7 +25,7 @@ import java.util.Comparator;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.1 $
  */
 public class RosterTableModel extends javax.swing.table.AbstractTableModel {
     /** Headers for the roster table. */    

@@ -4,7 +4,7 @@
  * Created on 12. Juli 2002, 15:05
  */
 
-package net.sourceforge.fraglets.yaelp;
+package net.sourceforge.fraglets.yaelp.bean;
 
 import javax.swing.UIManager;
 import javax.swing.JDialog;

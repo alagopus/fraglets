@@ -4,7 +4,7 @@
  * Created on July 15, 2002, 3:39 AM
  */
 
-package net.sourceforge.fraglets.yaelp;
+package net.sourceforge.fraglets.yaelp.bean;
 
 import javax.swing.JButton;
 import javax.swing.Icon;
@@ -45,7 +45,7 @@ import java.awt.Insets;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author  marion@users.sourceforge.net
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.1 $
  */
 public class SelectionButton extends JButton implements ActionListener, ClipboardOwner {
     
@@ -150,7 +150,7 @@ public class SelectionButton extends JButton implements ActionListener, Clipboar
     /** Setter for property owner.
      * @param owner New value of property owner.
      */
-    protected void setOwner(boolean owner) {
+    public void setOwner(boolean owner) {
         this.owner = owner;
         setBackground(owner ?
             UIManager.getColor("activeCaption") :

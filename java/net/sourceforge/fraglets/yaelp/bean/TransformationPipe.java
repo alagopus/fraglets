@@ -4,7 +4,7 @@
  * Created on July 19, 2002, 7:45 AM
  */
 
-package net.sourceforge.fraglets.yaelp;
+package net.sourceforge.fraglets.yaelp.bean;
 
 import org.xml.sax.SAXParseException;
 import org.xml.sax.SAXException;
@@ -44,7 +44,7 @@ import java.io.OutputStreamWriter;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author  marion@users.sourceforge.net
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.1 $
  */
 public class TransformationPipe extends PipedInputStream implements ErrorHandler, Destination {
     protected XSLProcessor processor;

@@ -4,7 +4,7 @@
  * Created on 12. Juli 2002, 13:56
  */
 
-package net.sourceforge.fraglets.yaelp;
+package net.sourceforge.fraglets.yaelp.bean;
 
 import javax.swing.JLabel;
 import javax.swing.event.ChangeListener;
