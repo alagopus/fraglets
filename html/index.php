@@ -2,7 +2,7 @@
 // Default Web Page for groups that haven't setup their page yet
 // Please replace this file with your own website
 //
-// $Id: index.php,v 1.2 2000-04-28 09:03:54 marion Exp $
+// $Id: index.php,v 1.3 2000-04-29 12:20:36 marion Exp $
 //
 $headers = getallheaders();
 ?>
@@ -64,18 +64,18 @@ $headers = getallheaders();
 <OBJECT classid="clsid:8AD9C840-044E-11D1-B3E9-00805F499D93"
      width="416" height="321" align="baseline"
      codebase="http://java.sun.com/products/plugin/1.2.2/jinstall-1_2_2-win.cab#Version=1,2,2,0">
- <PARAM NAME="archive" VALUE="fraglets-beans.jar">
+ <PARAM NAME="archive" VALUE="fraglet-beans.jar">
  <PARAM NAME="code" VALUE="net.sourceforge.fraglets.beans.Showcase.class">
  <PARAM NAME="type" VALUE="application/x-java-applet;version=1.2.2">
  <PARAM NAME="scriptable" VALUE="false">
  <COMMENT>
      <EMBED type="application/x-java-applet;version=1.2.2"
        width="416" height="321" align="baseline"
-       archive="fraglets-beans.jar"
+       archive="fraglet-beans.jar"
        code="net.sourceforge.fraglets.beans.Showcase.class"
        pluginspage="http://java.sun.com/products/plugin/1.2/plugin-install.html">
      <NOEMBED>
-	<APPLET WIDTH=416 HEIGHT=321 ARCHIVE="fraglets-beans.jar"
+	<APPLET WIDTH=416 HEIGHT=321 ARCHIVE="fraglet-beans.jar"
 	  CODE="net.sourceforge.fraglets.beans.Showcase.class">
             No JDK 1.2 support for APPLET!!
 	</APPLET>
@@ -86,6 +86,9 @@ $headers = getallheaders();
 href="http://cvs.sourceforge.net/cgi-bin/cvsweb.cgi/fraglets/java/net/sourceforge/fraglets/beans/?cvsroot=fraglets"
 	>here in the CVS repository</a>, and standard
         JavaDoc is <a href="javadoc/">here</a>.
+
+	Automatically generated daily snapshots are provided as
+	<A HREF="http://cvs.sourceforge.net/cvstarballs/fraglets-cvsroot.tar.gz">tarballs</A>.
 
       </P>
     </TD>
