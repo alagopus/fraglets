@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+    <classpathentry exported="true" kind="lib" path="3rd/jaf-1.0.2/activation.jar"/>
+    <classpathentry exported="true" kind="lib" path="3rd/mysql-connector-java-3.0.6-stable/mysql-connector-java-3.0.6-stable-bin.jar"/>
+    <classpathentry exported="true" kind="lib" path="3rd/xalan-j_2_5_0/bin/xalan.jar"/>
+    <classpathentry exported="true" kind="lib" path="3rd/xalan-j_2_5_0/bin/bsf.jar"/>
+    <classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
+    <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+    <classpathentry kind="output" path="bin"/>
+</classpath>
