@@ -25,13 +25,12 @@
 
 package net.sourceforge.fraglets.swing;
 
-import javax.swing.table.TableModel;
-import javax.swing.event.TableModelListener;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.EventListenerList;
-import java.util.Comparator;
 import java.util.Arrays;
-
+import java.util.Comparator;
+import javax.swing.table.TableModel;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
+import javax.swing.event.EventListenerList;
 
 /**
  * Proxy table model to sort a delegate table model.
@@ -110,10 +109,21 @@ public class SortedTableProxy implements SortedTableModel, TableModelListener {
         return model.getValueAt(toDelegate(row), col);
     }
     
+    /** Determine whether the cell at <var>row</var>,<var>col</var>
+     * is editable.
+     * @param row the row index
+     * @param col the column index
+     * @return true if the cell is editable, false otherwise.
+     */
     public boolean isCellEditable(int row, int col) {
         return model.isCellEditable(toDelegate(row), col);
     }
     
+    /** Set the value of the cell at <var>row</var>,<var>col</var>.
+     * @param value the value to set at the specified cell
+     * @param row the row index
+     * @param col the column index
+     */
     public void setValueAt(Object value, int row, int col) {
         model.setValueAt(value, toDelegate(row), col);
     }
@@ -135,7 +145,8 @@ public class SortedTableProxy implements SortedTableModel, TableModelListener {
      * @param ascending whether to sort ascending 
      * @param comparator the comparator to use for sorting
      */    
-    public synchronized void sortColumn(int column, boolean ascending, Comparator comparator) {
+    public synchronized
+    void sortColumn(int column, boolean ascending, Comparator comparator) {
         this.sortedColumn = column;
         this.ascending = ascending;
         this.comparator = comparator;
@@ -163,7 +174,7 @@ public class SortedTableProxy implements SortedTableModel, TableModelListener {
     /** Getter for property comparator.
      * @return Value of property comparator.
      */
-    public java.util.Comparator getComparator() {
+    public Comparator getComparator() {
         return this.comparator;
     }
     
@@ -206,6 +217,9 @@ public class SortedTableProxy implements SortedTableModel, TableModelListener {
         }
     }
     
+    /**
+     * Initialize the transformation with the identity transformation.
+     */
     protected void initTransformation() {
         int scan = getRowCount();
         this.transformation = new Transformation[scan];
@@ -214,15 +228,15 @@ public class SortedTableProxy implements SortedTableModel, TableModelListener {
         }
     }
     
-    /**
-     * Process TableModelEvent from delegate.
-     * @param tableModelEvent the event to process.
+    /** Process TableModelEvent from delegate.
+     * @param ev the event to process.
      */    
     public void tableChanged(TableModelEvent ev) {
         if (ev.getColumn() == ev.ALL_COLUMNS || ev.getColumn() == sortedColumn) {
             // simplistic implementation...
             initTransformation();
-            sortColumn(sortedColumn, ascending); // this fires its own event
+            // this fires its own event
+            sortColumn(sortedColumn, ascending, comparator);
         } else {
             if (listenerList == null) return;
             TableModelEvent proxyEvent = new TableModelEvent(this,
@@ -234,7 +248,8 @@ public class SortedTableProxy implements SortedTableModel, TableModelListener {
         }
     }
     
-    /** Registers TableModelListener to receive events.
+    /**
+     * Registers TableModelListener to receive events.
      * @param listener The listener to register.
      */
     public synchronized void addTableModelListener(TableModelListener listener) {
@@ -254,7 +269,6 @@ public class SortedTableProxy implements SortedTableModel, TableModelListener {
     
     /**
      * Notifies all registered listeners about the event.
-     *
      * @param event The event to be fired
      */
     private void fireTableModelListenerTableChanged(TableModelEvent event) {
@@ -267,14 +281,16 @@ public class SortedTableProxy implements SortedTableModel, TableModelListener {
         }
     }
     
-    /** Getter for property ascending.
+    /**
+     * Getter for property ascending.
      * @return Value of property ascending.
      */
     public boolean isAscending() {
         return ascending;
     }
     
-    /** Setter for property ascending.
+    /**
+     * Setter for property ascending.
      * @param ascending New value of property ascending.
      */
     public void setAscending(boolean ascending) {
@@ -283,14 +299,16 @@ public class SortedTableProxy implements SortedTableModel, TableModelListener {
         }
     }
     
-    /** Getter for property sortedColumn.
+    /**
+     * Getter for property sortedColumn.
      * @return Value of property sortedColumn.
      */
     public int getSortedColumn() {
         return this.sortedColumn;
     }
     
-    /** Setter for property sortedColumn.
+    /**
+     * Setter for property sortedColumn.
      * @param sortedColumn New value of property sortedColumn.
      */
     public void setSortedColumn(int sortedColumn) {
@@ -299,6 +317,13 @@ public class SortedTableProxy implements SortedTableModel, TableModelListener {
         }
     }
     
+    /**
+     * The Transformation class is the data holder for mapping
+     * the sorted order, and the inverse mapping. Implementing
+     * the Comparable allows us to sort arrays of Transformation
+     * without creating an intermetiate Comparator or implementing
+     * it somewhere else.
+     */
     protected class Transformation implements Comparable {
         /** Holds the delegate index. */
         private int index;
