@@ -29,7 +29,7 @@ import org.xml.sax.SAXException;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class DOMStateFactory implements StateFactory {
     /**
@@ -58,7 +58,7 @@ public class DOMStateFactory implements StateFactory {
                     try {
                         InputSource is = new InputSource(in);
                         is.setSystemId(file.toString());
-                        id = new SAXFactory(nf).parse(is);
+                        id = new SAXFactory(nf, true).parse(is);
                     } catch (SAXException ex) {
                         MediaFactory.RetryInputException rex = null;
                         MediaFactory mf = dctx.connectionContext.getMediaFactory();
