@@ -20,7 +20,7 @@ import net.sourceforge.fraglets.zeig.dom.DocumentImpl;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class DOMObjectFactory implements ObjectFactory {
 
@@ -41,6 +41,10 @@ public class DOMObjectFactory implements ObjectFactory {
         } else {
             return null;
         }
+    }
+    
+    public static boolean isDOMContext(int id) {
+        return isDOMContext(new DocumentImpl(id));
     }
 
     public static boolean isDOMContext(Document d) {
