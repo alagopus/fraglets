@@ -11,7 +11,7 @@ import junit.framework.*;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class UTF8DecoderTest extends TestCase {
     
@@ -39,7 +39,6 @@ public class UTF8DecoderTest extends TestCase {
         int sample[] = new int[count];
         int check[] = new int[count];
         byte test[] = null;
-        String sampleCheck = null;
         java.util.Random random = new java.util.Random(count);
         UTF8Encoder encoder = new UTF8Encoder();
         UTF8Decoder decoder = new UTF8Decoder();
@@ -71,7 +70,6 @@ public class UTF8DecoderTest extends TestCase {
         char sample[] = new char[count];
         char check[] = new char[count];
         byte test[] = null;
-        String sampleCheck = null;
         java.util.Random random = new java.util.Random(count);
         UTF8Encoder encoder = new UTF8Encoder();
         UTF8Decoder decoder = new UTF8Decoder();

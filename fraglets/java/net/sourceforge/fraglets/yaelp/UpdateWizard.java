@@ -72,7 +72,7 @@ import org.xml.sax.Locator;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author  marion@users.sourceforge.net
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class UpdateWizard extends javax.swing.JPanel implements Runnable, Observer, Comparator, ListSelectionListener {
     
@@ -669,7 +669,7 @@ public class UpdateWizard extends javax.swing.JPanel implements Runnable, Observ
         // Add your handling code here:
         if (selectedAvatar != null) {
             Avatar avatar = selectedAvatar;
-            long now = System.currentTimeMillis();
+//            long now = System.currentTimeMillis();
             if (mineCheck.isSelected()) {
                 updateProperty(avatar, "Login", "true");
             } else {
