@@ -11,6 +11,11 @@ import java.beans.PropertyChangeSupport;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Properties;
+import java.util.Map;
+import java.util.StringTokenizer;
+import java.io.IOException;
+import java.util.Iterator;
 
 /** This is the object model for the avatar of a player in
  * the game, a "character" in RPG speak.
@@ -30,7 +35,7 @@ import java.util.HashMap;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author Klaus Rennecke
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class Avatar {
     public static final PropertyChangeSupport CHANGE =
@@ -57,11 +62,91 @@ public class Avatar {
     /** Time last seen in logs. */
     private long timestamp;
     
+    /** Optional properties. */
+    private HashMap properties;
+    
     /** Creates new Avatar
      * @param timestamp time stamp of log line where the character was seen.
      */
     public Avatar(long timestamp) {
         this.timestamp = timestamp;
+    }
+    
+    public String getProperty(String name) {
+        if (name.equals("class")) {
+            return clazz.getName();
+        } else if (name.equals("culture")) {
+            return culture.getName();
+        } else if (name.equals("guild")) {
+            return guild.getName();
+        } else if (name.equals("level")) {
+            return String.valueOf(level);
+        } else if (name.equals("name")) {
+            return name;
+        } else if (name.equals("timestamp")) {
+            return new java.sql.Date(timestamp).toString();
+        } else if (name.equals("zone")) {
+            return zone.getName();
+        } else if (properties != null) {
+            return properties.get(name).toString();
+        } else {
+            return null;
+        }
+    }
+    
+    public void setProperty(String name, String value, long timestamp) {
+        if (name.equals("class")) {
+            if (timestamp >= this.timestamp) {
+                setClazz(Avatar.Class.create(value));
+                this.timestamp = timestamp;
+            }
+        } else if (name.equals("culture")) {
+            if (timestamp >= this.timestamp) {
+                setCulture(Avatar.Culture.create(value));
+                this.timestamp = timestamp;
+            }
+        } else if (name.equals("guild")) {
+            if (timestamp >= this.timestamp) {
+                setGuild(Avatar.Guild.create(value));
+                this.timestamp = timestamp;
+            }
+        } else if (name.equals("level")) {
+            if (timestamp >= this.timestamp) {
+                setLevel(Integer.parseInt(value));
+                this.timestamp = timestamp;
+            }
+        } else if (name.equals("name")) {
+            throw new IllegalStateException("cannot reset avatar name");
+        } else if (name.equals("timestamp")) {
+            throw new IllegalStateException("cannot reset avatar timestamp");
+        } else if (name.equals("zone")) {
+            if (timestamp >= this.timestamp) {
+                setZone(Avatar.Zone.create(value));
+                this.timestamp = timestamp;
+            }
+        } else {
+            if (properties == null) {
+                properties = new HashMap();
+            }
+            System.err.println("set property '"+name+"'='"+value+"' ...");
+            TimestampEntry entry = (TimestampEntry)properties.get(name);
+            if (entry == null) {
+                System.err.println("... new entry.");
+                entry = new TimestampEntry(value, timestamp);
+                properties.put(name, entry);
+            } else if (timestamp >= entry.timestamp) {
+                System.err.println("... new timestamp : "+timestamp+">="+entry.timestamp);
+                entry.value = value;
+                entry.timestamp = timestamp;
+            } else {
+                System.err.println("... old timestamp : "+timestamp+"<"+entry.timestamp);
+            }
+        }
+    }
+    
+    public Iterator getProperties() {
+        return properties == null ? null :
+            properties.entrySet().iterator();
     }
 
     /** Getter for property level.
@@ -264,6 +349,20 @@ public class Avatar {
         }
         
     }
+    
+    public static class TimestampEntry {
+        public Object value;
+        public long timestamp;
+        
+        public TimestampEntry(Object value, long timestamp) {
+            this.value = value;
+            this.timestamp = timestamp;
+        }
+        
+        public String toString() {
+            return value.toString();
+        }
+    }
 
     /** This class implements the object model of a class. */
     public static class Class implements Comparable {
@@ -292,6 +391,7 @@ public class Avatar {
          * @return the created or already existing class
          */
         public static Class create(String name) {
+            name = canonicalName(name);
             Class result = (Class)shared.get(name);
             if (result == null) {
                 result = new Class(name);
@@ -337,6 +437,39 @@ public class Avatar {
             return comparator.compare(this, obj);
         }
         
+        private static HashMap equivalenceMap;
+        
+        public static String canonicalName(String name) {
+            if (equivalenceMap == null) {
+                synchronized(Avatar.Class.class) {
+                    if (equivalenceMap == null) {
+                        try {
+                            equivalenceMap = new HashMap();
+                            Properties loader = new Properties();
+                            loader.load(Avatar.Class.class.getResourceAsStream
+                                ("ClassEquivalence.properties"));
+                            Iterator i = loader.entrySet().iterator();
+                            while (i.hasNext()) {
+                                Map.Entry entry = (Map.Entry)i.next();
+                                StringTokenizer tok = new StringTokenizer
+                                    ((String)entry.getValue(), " \t,");
+                                String canonical = tok.nextToken();
+                                equivalenceMap.put(canonical, canonical);
+                                while(tok.hasMoreTokens()) {
+                                    equivalenceMap.put(tok.nextToken(), canonical);
+                                }
+                            }
+                        } catch (IOException ex) {
+                            ex.printStackTrace();
+                            System.err.println
+                                ("could not load class equivalence map");
+                        }
+                    }
+                }
+            }
+            String equivalent = (String)equivalenceMap.get(name);
+            return equivalent != null ? equivalent : name;
+        }
     }
     
     /** This class implements the object model of a culture. */
