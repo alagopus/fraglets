@@ -1,0 +1,453 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN"><html><head>
+  
+  
+  
+  
+  
+  <meta http-equiv="CONTENT-TYPE" content="text/html; charset=iso-8859-15">
+  <title>YAELP User Manual</title>
+
+  
+
+</head>
+
+<body lang="en-US">
+<h1 style="text-align: center;">Yet Another
+<a href="http://eqlive.station.sony.com/">Everquest</a><a href="#EverQuest_trademark">®</a> Log file Parser &#8211; YAELP</h1>
+
+
+
+
+
+<h2>Overview</h2>
+
+
+
+
+
+YAELP is an EverQuest<a href="#EverQuest_trademark">®</a> log file parser
+designed to create and maintain one or more guild rosters. There are some
+functions which deal with attributes of your personal characters, but these
+are limited to skill attributes. If you need more detail and statistics on
+your own characters, you should look for one of <a href="http://www.google.de/search?q=everquest+parser">the other parsers out there</a>.<br>
+
+
+
+
+
+<br>
+
+
+
+
+
+A globally universal and compact <a href="#YAELP_Save_file_format">save file format</a> allows you to <a href="#Sharing_roster_information">share character roster information</a> 
+with other players through email. Roster information for 300+ characters
+takes less than 10k of save file size. The same roster, stripped of all extra 
+information and properties and exported in CSV text format takes up more
+than twice the space.<br>
+
+
+
+
+
+<br>
+
+You will need a recent version of the <a href="http://java.sun.com/j2se/1.4/download.html">Java&#8482; virtual machine</a>
+to run this program. If you do not plan to develop and just want to run the
+program choose a download from the JRE column for your platform. Some operating
+systems already come with Java&#8482; preinstalled. Try running <code>java -version</code>
+from a command line. If it does not report an error and the version printed
+is 1.3.x or above, you should be fine and won't need to download it.<br>
+
+<br>
+
+
+
+
+
+<a href="http://sourceforge.net/"><img src="http://sourceforge.net/sflogo.php?group_id=5068&amp;type=1" style="border: 0px solid ; width: 88px; height: 31px;" align="right" alt="Hosted by SourceForge" hspace="8" vspace="8"></a>Development is currently done as a part of the <a href="http://fraglets.sourceforge.net/">fraglets project</a> at <a href="http://sourceforge.com/">sourceforge</a>. You can <a href="http://sourceforge.net/project/showfiles.php?group_id=5068">download the latest release</a> from the files section. Open bugs are <a href="http://sourceforge.net/tracker/?group_id=5068&amp;atid=105068">tracked here</a>, please submit any new bugs you might happen to find. YAELP is distributed under the <a href="http://www.gnu.org/copyleft/gpl.html">GNU Public License</a>
+which allows you to copy and modify it as long as you keep the license and
+copyright intact and put the results under the same license.<br>
+<h2>Installation</h2>
+Unpack the <code>yaelp-<span style="font-style: italic;">X</span>.<span style="font-style: italic;">XX</span><span style="font-style: italic;"></span>.zip</code>
+archive to an empty directory of your choice. There is no installer and no
+configuration to be done other than unpacking it. Just remember where you
+put it.<br>
+<h2>Starting the program</h2>
+This is something I have not cared for much yet. Procedures vary depending
+on operation system and configuration. If your platform supports it, you
+may start the program by double-clicking the <code>yaelp-<span style="font-style: italic;">X</span>.<span style="font-style: italic;">XX</span><span style="font-style: italic;"></span>.jar</code> file. This is an executable jar file which contains the main program code.<br>
+<br>
+If that doesn't work for you, start a command line interface and change to the directory where you unpacked the archive. Type <code>java -jar yaelp-<span style="font-style: italic;">X</span>.<span style="font-style: italic;">XX</span>.jar</code> to start the program. You may have to provide the full path to the java executable if it is not in your current execution path.<br>
+<br>
+After program initialization a window looking similar like this should open:<br>
+<div style="text-align: center;"><img src="yaelp_start.png" alt="Starting YAELP" style="width: 467px; height: 224px;" align="top">
+<br>
+</div>
+
+
+
+
+
+<h2>The <span style="text-decoration: underline;">File</span> menu.</h2>
+
+
+
+
+
+<p><img src="File_menu.png" alt="Figure 1: The File menu" style="width: 156px; height: 240px;" align="left" hspace="8" vspace="8">
+This is where you will almost always start working. If you have
+previouosly used YAELP and saved some of the results, you might want
+to <u><a name="Load_"></a>Load ...</u>
+these now. This will restore all entries which were visible in the character
+roster at the time they were saved. Loading a new roster will clear all current
+entries. You may be asked for confirmation if the program detects that unsaved
+changes exist.</p>
+
+
+
+
+<p><img style="border: 0px solid ; height: 59px; width: 313px;" alt="Status line with all entries hidden" src="all_hidden.png" align="right" ismap="">
+The current <a href="#The_Filter_menu">filter settings</a> remain active
+when loading new data. Filter settings are not stored in the save file. So
+if you don't see what you expected, have a look at the status line at the
+bottom of the window. If  there are many characters hidden just clear the
+filter settings.<br>
+
+</p>
+
+
+
+
+
+
+
+
+
+
+
+<p>Now you may want <span style="text-decoration: underline;"><a name="Parse_logs_"></a>Parse logs ...</span>
+to update the roster with new information from the latest log files. YAELP
+can parse the plain text log files (eqlog_*.txt) as well as gzip compressed
+log files (eqlog_*.txt.gz). Information in the roster is updated according to the <a href="#Timestamps_and_roster_updating">timestamp mechanism</a>. This allows you to parse a bunch of intermixed log files which may be in any order.<br>
+</p>
+
+
+
+
+
+
+<p>Since the time recorded in the log files is the local time according to your time zone, you should <span style="font-style: italic;">not </span>parse log files you got from a different time zone. Dont exchange raw log files, better exchange the saved roster information.<br>
+</p>
+
+
+
+
+
+<p> To keep things accurate, make sure your system clock is set correctly.
+This can be automatically done using a network time client like <a href="http://nettime.sourceforge.net/">NetTime</a>. Note that you may have to watch out that this does not constantly open your dialup connection. See the <a href="http://sourceforge.net/tracker/?group_id=10109&amp;atid=210109">support forum for NetTime</a> if it causes you trouble.<br>
+</p>
+
+
+
+
+
+
+
+
+
+
+<p><img src="Parse_logs.png" alt="Figure 2: Parse log files" style="width: 220px; height: 197px;" align="right" hspace="8" vspace="8">
+ The file chooser for parsing tries to find your Everquest<a href="#EverQuest_trademark">®</a> install directory when opened the fist time. Since the average Everquest<a href="file:///C:/home/kre/fraglets/fraglets/html/yaelp/userman.html#EverQuest_trademark">®</a> directory
+contains well over a thousand files, the file filter is initialized such
+that only log files should be visible. If you renamed your log files so that
+they don't show up here, change the <span style="text-decoration: underline;">Files of type:</span> setting to <span style="text-decoration: underline;">All Files</span> in the file chooser.<br>
+</p>
+
+
+
+
+
+
+
+
+
+
+<p>Scanning this directory takes some time since it contains so many files.
+Don't panic if no files show up for the first few seconds. Specifically with
+Java versions 1.4 there is no visual indication that it is still busy searching
+files; it is working in the background.<br>
+</p>
+
+
+<p><span style="text-decoration: underline;"><a name="Save_"></a>Save ...</span> saves the currently visible portion of the roster into a <a href="#YAELP_Save_file_format">YAELP format save file</a>. Note that this means that all characters excluded from the table <span style="font-style: italic;">are not included</span> in the information saved. So be sure to <a href="#The_Filter_menu">disable all filters</a> if you want to save all information loaded.<br>
+</p>
+
+
+
+
+
+
+
+
+
+
+<span style="text-decoration: underline;"><a name="Import_"></a>Import ...</span> loads some previously saved YAELP roster and adds the information to the current roster.
+
+It uses the same <a href="#Timestamps_and_roster_updating">timestamp mechanism</a>
+as the log file parser. However, timestamps in <a href="#YAELP_Save_file_format">YAELP save files</a>
+are timezone independent so that you can exchange these file with other people.
+Loading automatically detects if the file is compressed, so you can load
+exported XML as well.<br>
+
+
+
+
+
+<br>
+
+
+
+
+
+<span style="text-decoration: underline;"><a name="Export_table_"></a>Export table ...</span> stores the current table contents as a <a href="#CSV_file_format">comma separated text file</a>.
+This may be used later to import into a spreadsheet or further manipulate
+the information with other software. This format contains much less information
+so you cannot load it again.<br>
+
+
+
+<br>
+
+
+
+<span style="text-decoration: underline;"><a name="Export_XML_"></a>Export XML ...</span> saves all roster information in an uncompressed XML file. This is the same as using <span style="text-decoration: underline;">Save ...</span>,
+but without the compression step. Since this is the XML input which will
+be passed to the XSL transformation when creating HTML this option is useful
+when creating new style sheets to examine the XML for things to match on.<br>
+
+
+
+<br>
+
+
+
+<span style="text-decoration: underline;"><a name="Export_HTML_"></a>Export HTML ...</span> transforms the current roster list with column and sorting settings into a HTML file using the <a href="#The_Style_menu">selected XSL style</a>.
+Depending on the style used, this creates a complete HTML page for use in
+your web site, or a fragment to post on forums. Or even a different XML format
+you may need for another program. In that sense, the menu entry is a bit
+of a misnomer, but it reflects the most common usage. This is what the test data from the <a href="#YAELP_Save_file_format">save file section</a> looks when exported with one of the predefined styles:<br>
+
+
+<br>
+
+
+
+<table style="width: 80%; background-color: rgb(153,51,0); vertical-align: middle; text-align: left; margin-left: auto; margin-right: auto;" border="0" cellspacing="1" cellpadding="2">
+
+
+<tbody><tr style="background-color: rgb(204,153,102); color: rgb(245,245,220);"><td class="headings"><b>Name</b></td><td class="headings"><b>Culture</b></td><td class="headings"><b>Class</b></td><td class="headings"><b>Level</b></td><td class="headings"><b>Time</b></td></tr><tr style="background-color: rgb(227,190,140);"><td class="m">Testator </td><td class="m">Testling </td><td class="m">Tester </td><td class="m">6 </td><td class="m">2002-07-13 </td></tr></tbody>
+</table>
+
+
+
+
+<br>
+
+
+Note that the style used here omits the Guild column, which makes sense when all characters listed are in the same guild anyway.
+<h2><a name="The_Filter_menu"></a>The <span style="text-decoration: underline;">Filter</span> menu</h2>
+<img src="Filter_menu.png" alt="The Filter menu" width="179" height="284" align="left">
+<img src="new_filter_menu.png" alt="New filter menu" width="168" height="164" align="right">
+<br clear="all">
+<br>
+<br>
+
+
+
+<h2><a name="The_Style_menu"></a>The <span style="text-decoration: underline;">Style</span> menu<br>
+</h2>
+
+
+
+<img src="Style_menu.png" alt="The Style menu" width="168" height="182" align="left">
+<br>
+<br clear="all">
+<br>
+
+
+
+
+
+<h2><a name="Sharing_roster_information"></a>Sharing roster information</h2>
+
+
+
+
+
+<a href="#Import_">Importing YAELP save files</a> from other players will
+be the easiest way to share character roster information. For instance, have
+your officers send you filtered updates on the guild roster in YAELP file
+format from their log files and combine them to create a fairly complete
+guild roster. Since officers are the persons who invite others to the guild,
+their log files will probably show all the members joining the guild. You
+should get a <span style="text-decoration: underline;">Rank</span> property
+on all guild members who are seen joining the guild, with the timestamp on
+that property the last time of joining the guild or being promoted.<br clear="all">
+
+
+
+
+
+
+
+<h2><a name="Timestamps_and_roster_updating"></a>Timestamps and roster updating</h2>
+
+
+
+
+
+some text explaining timestamps<br>
+
+
+
+
+
+<h2><a name="YAELP_Save_file_format"></a>YAELP Save file format</h2>
+
+
+
+
+
+YAELP save files get a file name extension of <code style="font-weight: bold;">.yxr</code>
+by default. YXR is an abbreviation for YAELP XML Roster. And that is exactly
+what it is: an XML representation of the roster information, <a href="http://www.gzip.org/">GZIP</a> compressed. If you have the gzip program, you can look at it using <code>gzip -dc myroster.yxr</code> for instance.<br>
+
+
+
+
+
+<br>
+
+
+
+
+
+Here is a short example of the (uncompressed) XML file contents:<br>
+
+
+
+
+
+<blockquote>
+  <pre><small>&lt;<span class="start-tag">roster</span><span class="attribute-name"> title</span>=<span class="attribute-value">"Roster"</span>&gt;<br> &lt;<span class="start-tag">heading</span>&gt;<br>  &lt;<span class="start-tag">column</span><span class="attribute-name"> id</span>=<span class="attribute-value">"name"</span>&gt;Name&lt;/<span class="end-tag">column</span>&gt;<br>  &lt;<span class="start-tag">column</span><span class="attribute-name"> id</span>=<span class="attribute-value">"culture"</span>&gt;Culture&lt;/<span class="end-tag">column</span>&gt;<br>  &lt;<span class="start-tag">column</span><span class="attribute-name"> id</span>=<span class="attribute-value">"class"</span>&gt;Class&lt;/<span class="end-tag">column</span>&gt;<br>  &lt;<span class="start-tag">column</span><span class="attribute-name"> id</span>=<span class="attribute-value">"level"</span>&gt;Level&lt;/<span class="end-tag">column</span>&gt;<br>  &lt;<span class="start-tag">column</span><span class="attribute-name"> id</span>=<span class="attribute-value">"guild"</span>&gt;Guild&lt;/<span class="end-tag">column</span>&gt;<br>  &lt;<span class="start-tag">column</span><span class="attribute-name"> id</span>=<span class="attribute-value">"zone"</span>&gt;Zone&lt;/<span class="end-tag">column</span>&gt;<br>  &lt;<span class="start-tag">column</span><span class="attribute-name"> id</span>=<span class="attribute-value">"time"</span>&gt;Time&lt;/<span class="end-tag">column</span>&gt;<br> &lt;/<span class="end-tag">heading</span>&gt;<br> &lt;<span class="start-tag">avatar</span><span class="attribute-name"> time</span>=<span class="attribute-value">"1026571151670"</span>&gt;<br>  &lt;<span class="start-tag">name</span>&gt;Testator&lt;/<span class="end-tag">name</span>&gt;<br>  &lt;<span class="start-tag">culture</span>&gt;Testling&lt;/<span class="end-tag">culture</span>&gt;<br>  &lt;<span class="start-tag">class</span>&gt;Tester&lt;/<span class="end-tag">class</span>&gt;<br>  &lt;<span class="start-tag">level</span>&gt;6&lt;/<span class="end-tag">level</span>&gt;<br>  &lt;<span class="start-tag">guild</span><span class="attribute-name"> time</span>=<span class="attribute-value">"1026571218560"</span>&gt;The Testing Testers&lt;/<span class="end-tag">guild</span>&gt;<br>  &lt;<span class="start-tag">zone</span>&gt;void&lt;/<span class="end-tag">zone</span>&gt;<br>  &lt;<span class="start-tag">time</span>&gt;2002-07-13&lt;/<span class="end-tag">time</span>&gt;<br>  &lt;<span class="start-tag">property</span><span class="attribute-name"> name</span>=<span class="attribute-value">"Rank" </span><span class="attribute-name">value</span>=<span class="attribute-value">"a regular member" </span><span class="attribute-name">time</span>=<span class="attribute-value">"1026571243120"</span><span class="attribute-name">/</span>&gt;<br> &lt;/<span class="end-tag">avatar</span>&gt;<br>&lt;/<span class="end-tag">roster</span>&gt;</small><br></pre>
+</blockquote>
+
+
+
+
+
+This example contains information for only one character named Testator. For each successive character, the <code>avatar</code> section will repeated. Most tags in the avatar section should be self-explanatory. The <code>time</code>
+attributes store the timestamp of the last change in milliseconds since midnight,
+January 1, 1970 UTC. There are three things which get a timestamp: the avatar
+section as a whole, the guild and each property. These are explained in detail
+in the <a href="#Timestamps_and_roster_updating">timestamps and roster updating</a> section. The extra <code>&lt;time&gt;</code> tag is redundant and only retained for HTML formatting. It contains the avatar time truncated to a date, in ISO format.<br>
+
+
+
+
+
+<br>
+
+
+
+
+
+The <code>&lt;heading&gt;</code> section is currently only used in styles
+for HTML output and ignored when loading the file. The column id attributes
+map to the avatar sub-tags, assigning a table header name to each tag. They
+are listed in column order, as well as the tags in the avatar sections. Predefined
+XSL styles make use of that fact so that the transformation becomes much
+simpler and faster.<br>
+
+
+
+
+
+<h2><a name="CSV_file_format"></a>CSV file format</h2>
+
+
+
+
+
+Here is an example of a CSV export:<br>
+
+
+
+
+
+<blockquote>
+  <pre><small>"Name", "Culture", "Class", "Level", "Guild", "Zone", "Time"<br>"Testator", "Testling", "Tester", "6", "The Testing Testers", "void", "2002-07-13"</small><br></pre>
+</blockquote>
+
+
+
+
+
+<img src="CSV_import.png" alt="Importing CSV to OpenOffice Calc" style="width: 327px; height: 118px;" align="right">
+
+
+
+
+
+This is the same example as in the <a href="#YAELP_Save_file_format">save file format section</a>. However, since only information from the table is exported, all timestamp and property information is lost.<br>
+
+
+
+
+
+<br>
+
+
+
+
+
+If you want to import this into <a href="http://www.openoffice.org/">OpenOffice</a>
+Calc or some other spreadsheet application, use double quote as text delimiter
+and comma and space as a field delimiter and combine delimiters. This should
+import the table nice and clean. Note that the screen shot shows the german
+version so your options may be named differently.<br clear="all">
+
+
+
+
+
+<br>
+
+
+
+
+
+
+
+
+
+<hr style="width: 100%; height: 1px;" noshade="">
+<p style="text-align: center;"><a name="EverQuest_trademark"></a>EverQuest is a registered trademark of Sony Computer Entertainment America Inc. © 
+      2002 Sony Online Entertainment Inc.<br>
+</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body></html>
