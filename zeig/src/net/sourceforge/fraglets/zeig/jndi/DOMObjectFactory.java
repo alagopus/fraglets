@@ -20,7 +20,7 @@ import net.sourceforge.fraglets.zeig.dom.DocumentImpl;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class DOMObjectFactory implements ObjectFactory {
 
@@ -50,6 +50,6 @@ public class DOMObjectFactory implements ObjectFactory {
     public static boolean isDOMContext(Element e) {
         return e != null &&
         DOMContext.CONTEXT_NAMESPACE.equals(e.getNamespaceURI()) &&
-        "context".equals(e.getLocalName());
+        DOMContext.CONTEXT_TAGNAME.equals(e.getLocalName());
     }
 }

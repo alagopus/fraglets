@@ -47,7 +47,7 @@ import net.sourceforge.fraglets.zeig.model.VersionFactory;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class DOMContext implements Context {
     /** Context option. */
@@ -58,6 +58,7 @@ public class DOMContext implements Context {
         "http://fraglets.sourceforge.net/zeig/DOMContext";
     
     public static final String CONTEXT_TAGNAME = "context";
+    
     public static final String BINDING_TAGNAME = "binding";
     
     private Properties environment;
@@ -518,7 +519,7 @@ public class DOMContext implements Context {
         
         try  {
             SAXFactory sf = new SAXFactory(ConnectionFactory.getInstance());
-            return emptyId = sf.parse("<ctx:context xmlns:ctx=\""+CONTEXT_NAMESPACE+"\"/>");
+            return emptyId = sf.parse("<ctx:"+CONTEXT_TAGNAME+" xmlns:ctx=\""+CONTEXT_NAMESPACE+"\"/>");
         } catch (Exception ex) {
             throw namingException(ex);
         }
