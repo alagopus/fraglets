@@ -9,13 +9,11 @@ package net.sourceforge.fraglets.zeig.model;
 import java.sql.SQLException;
 import java.util.Properties;
 
-import javax.naming.NamingException;
-
 import net.sourceforge.fraglets.zeig.jdbc.ConnectionFactory;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class ConnectionContext {
     private ConnectionFactory connectionFactory;
@@ -23,7 +21,7 @@ public class ConnectionContext {
     private NodeFactory nodeFactory;
     private int shares;
     
-    public ConnectionContext(Properties environment) throws NamingException {
+    public ConnectionContext(Properties environment) {
         open();
         connectionFactory = new ConnectionFactory(environment);
     }
