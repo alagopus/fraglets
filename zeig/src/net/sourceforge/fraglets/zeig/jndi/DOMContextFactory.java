@@ -12,20 +12,23 @@ import javax.naming.Context;
 import javax.naming.NamingException;
 import javax.naming.spi.InitialContextFactory;
 
+import net.sourceforge.fraglets.zeig.zeigURLContextFactory;
+
 import org.apache.log4j.Category;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
-public class DOMContextFactory implements InitialContextFactory {
+public class DOMContextFactory extends zeigURLContextFactory implements InitialContextFactory {
 
     /**
      * @see javax.naming.spi.InitialContextFactory#getInitialContext(java.util.Hashtable)
      */
     public Context getInitialContext(Hashtable environment) throws NamingException {
         Category.getInstance(DOMContext.class).debug("initializing DOMContext");
-        return new DOMContext(environment);
+        return (Context)createURLContext(environment)
+            .lookup((String)environment.get(Context.PROVIDER_URL));
     }
 
 }
