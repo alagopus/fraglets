@@ -28,7 +28,7 @@ package net.sourceforge.fraglets.codec;
 /**
  *
  * @author  marion@users.sourceforge.net
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class EventDecoder extends EventCodec {
     /** Decoder for UTF-8 stream. */
@@ -46,6 +46,7 @@ public class EventDecoder extends EventCodec {
     
     public void setBuffer(byte buffer[]) {
         decoder.setBuffer(buffer);
+        reset();
     }
     
     public boolean hasNext() {
@@ -55,7 +56,9 @@ public class EventDecoder extends EventCodec {
     public int next() {
         int result;
         while ((result = decoder.decodeUCS4()) == STRING_WORD) {
-            continue;
+            int len = decoder.decodeUCS4();
+            int ucs4[] = decoder.decodeUCS4(null, 0, len);
+            insert(ucs4);
         }
         return result;
     }

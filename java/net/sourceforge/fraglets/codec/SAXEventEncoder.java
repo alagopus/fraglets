@@ -33,7 +33,7 @@ import org.xml.sax.SAXException;
 /**
  *
  * @author  marion@users.sourceforge.net
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class SAXEventEncoder extends EventEncoder
     implements SAXEventCodes, DocumentHandler {
@@ -41,6 +41,10 @@ public class SAXEventEncoder extends EventEncoder
     /** Creates a new instance of SAXEventEncoder */
     public SAXEventEncoder() {
         nextLiteral = NEXT_WORD;
+    }
+    
+    public int getFirstLiteral() {
+        return NEXT_WORD;
     }
     
     public void characters(char[] values, int off, int len)
@@ -72,7 +76,7 @@ public class SAXEventEncoder extends EventEncoder
     }
     
     public void setDocumentLocator(Locator locator) {
-        throw new RuntimeException("not implemented");
+        // ignore throw new RuntimeException("not implemented");
     }
     
     public void startDocument() throws SAXException {
