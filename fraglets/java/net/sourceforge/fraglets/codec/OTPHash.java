@@ -83,7 +83,7 @@ public class OTPHash {
         int scan = off + len;
         int part = len;
         int bits[] = getOTP(scan + 255);
-        while (--scan >= 0) {
+        while (--scan >= off) {
             step = roll(step) ^ bits[--part + (key[scan] & 0xff)];
         }
         return step;
@@ -115,7 +115,7 @@ public class OTPHash {
         int scan = off + len;
         int part = len * 2;
         int bits[] = getOTP(part + 255);
-        while (--scan >= 0) {
+        while (--scan >= off) {
             fold = (int) key[scan];
             step = roll(step) ^ bits[--part + (fold & 0xff)];
             step = roll(step) ^ bits[--part + (fold >>> 8)];
