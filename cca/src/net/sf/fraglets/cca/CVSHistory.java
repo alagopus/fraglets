@@ -1,5 +1,5 @@
 /*
- * $Id: CVSHistory.java,v 1.5 2004-05-06 13:16:10 marion Exp $
+ * $Id: CVSHistory.java,v 1.6 2004-06-11 07:12:37 marion Exp $
  * Copyright (C) 2004 Klaus Rennecke, all rights reserved.
  * 
  * Permission is hereby granted, free of charge, to any person
@@ -26,11 +26,13 @@
 package net.sf.fraglets.cca;
 
 import java.io.BufferedReader;
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -51,7 +53,7 @@ import org.apache.log4j.Logger;
  * Perform modification check based on a plain history file.
  * 
  * @author  Klaus Rennecke
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class CVSHistory implements SourceControl {
     /** The properties set for ANT. */
@@ -68,6 +70,9 @@ public class CVSHistory implements SourceControl {
 
     /** The URL where to fetch the history. */
     private String historyUrl;
+    
+    /** The URL of the viewcvs gateway. */
+    private String viewcvsUrl;
 
     /** The module name to check for. */
     private List modules = new ArrayList();
@@ -102,16 +107,7 @@ public class CVSHistory implements SourceControl {
             if (historyFileName != null) {
                 fin = new FileReader(historyFileName);
             } else {
-                URLConnection connection = new URL(historyUrl).openConnection();
-                String encoding = connection.getContentEncoding();
-                if (encoding == null) {
-                    fin = new InputStreamReader(connection.getInputStream());
-                } else {
-                    fin =
-                        new InputStreamReader(
-                            connection.getInputStream(),
-                            encoding);
-                }
+                fin = openUrl(historyUrl);
             }
             try {
                 BufferedReader in = new BufferedReader(fin);
@@ -141,12 +137,14 @@ public class CVSHistory implements SourceControl {
      * @param result the list where to put results
      * @param lastBuild lower bound
      * @param now upper bound
+     * @param cvslog the CVS log map, updated as necessary
      */
     private void parseModification(
         String line,
         List result,
         Date lastBuild,
-        Date now) {
+        Date now)
+        throws MalformedURLException, UnsupportedEncodingException, IOException {
         if (line.length() >= MINIMUM_HISTORY_LINE) {
             String type;
             switch (line.charAt(0)) {
@@ -183,23 +181,38 @@ public class CVSHistory implements SourceControl {
                 tok.nextToken(); // delimiter
                 String folderName = tok.nextToken();
 
-                if (!isInModules(folderName)) {
+                Module module = matchModule(folderName);
+                if (module == null) {
                     return; // not in modules
                 }
+                
+                tok.nextToken(); // delimiter
+                String revision = tok.nextToken();
+                tok.nextToken(); // delimiter
+                String fileName = tok.nextToken();
 
+                String comment =
+                    fetchLog(
+                        folderName + '/' + fileName,
+                        revision,
+                        module.getBranch());
+                if (comment == null) {
+                    return; // modification on a different branch
+                }
+                
                 Modification modification = new Modification();
                 modification.type = type;
                 modification.modifiedTime = new Date(time);
                 modification.userName = userName;
                 modification.folderName = folderName;
-                tok.nextToken(); // delimiter
-                modification.revision = tok.nextToken();
-                tok.nextToken(); // delimiter
-                modification.fileName = tok.nextToken();
+                modification.fileName = fileName;
+                modification.revision = revision;
+                modification.comment = comment;
 
                 if (type.equals("deleted")) { //$NON-NLS-1$
                     deletionSeen = true;
                 }
+                
                 result.add(modification);
             } catch (NoSuchElementException e) {
                 log.warn(Messages.getString(
@@ -210,18 +223,248 @@ public class CVSHistory implements SourceControl {
     }
 
     /**
+     * Fetch the log entry for the given file revision, returning its
+     * commit message. If the revision does not exist on the given
+     * branch, null is returned.
+     * 
+     * @param fileName the file name to fetch.
+     * @param revision a revision to fetch.
+     * @param branch the branch to select, or null.
+     * @param cvslog the CVS log map, updated as necessary.
+     * @return the commit message, or null.
+     */
+    private String fetchLog(String fileName, String revision, String branch)
+        throws MalformedURLException, UnsupportedEncodingException, IOException {
+        if (viewcvsUrl == null) {
+            // cannot fetch log
+            return ""; //$NON-NLS-1$
+        }
+        
+        Reader reader;
+        if (branch != null) {
+            reader =
+                openUrl(
+                    viewcvsUrl
+                        + urlquote(fileName)
+                        + "?only_with_tag=" //$NON-NLS-1$
+                        + urlquote(branch));
+        } else {
+            reader = openUrl(viewcvsUrl + urlquote(fileName));
+        }
+        
+        reader = new BufferedReader(reader);
+        try {
+            for (;;) {
+                skipTag(reader, "hr"); //$NON-NLS-1$
+                if (!"Revision".equals(readToken(reader))) { //$NON-NLS-1$
+                    continue;
+                }
+                if (!revision.equals(readToken(reader))) {
+                    continue;
+                }
+                return readBlock(reader, "pre");
+            }
+        } catch (EOFException e) {
+        } finally {
+            reader.close();
+        }
+        
+        return null;
+    }
+    
+    /**
+     * Open a URL and return a Reader that uses the appropriate encoding.
+     * @param url a URL.
+     * @return an open Reader.
+     * @throws IOException propagated.
+     * @throws MalformedURLException propagated.
+     * @throws UnsupportedEncodingException propagated.
+     */
+    private static Reader openUrl(String url)
+        throws IOException, MalformedURLException, UnsupportedEncodingException {
+        Reader fin;
+        URLConnection connection = new URL(url).openConnection();
+        String encoding = connection.getContentEncoding();
+        if (encoding == null) {
+            fin = new InputStreamReader(connection.getInputStream());
+        } else {
+            fin = new InputStreamReader(connection.getInputStream(), encoding);
+        }
+        return fin;
+    }
+
+    private static void skipTo(Reader reader, String mark) throws IOException {
+        int end = mark.length();
+        int scan = 0;
+        while (scan < end){
+            int c = reader.read();
+            if (c == mark.charAt(scan)) {
+                scan += 1;
+            } else if (c == -1) {
+                throw new EOFException();
+            } else {
+                scan = 0;
+            }
+        }
+    }
+    
+    private static boolean matchText(Reader reader, String text) throws IOException {
+        int end = text.length();
+        int scan = 0;
+        reader.mark(end);
+        while (scan < end){
+            int c = reader.read();
+            if (c == text.charAt(scan)) {
+                scan += 1;
+            } else if (c == -1) {
+                throw new EOFException();
+            } else {
+                reader.reset();
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    private static String readToken(Reader reader) throws IOException {
+        StringBuffer buffer = new StringBuffer();
+        for (;;) {
+            reader.mark(1);
+            int c = reader.read();
+            if (c == -1) {
+                break;
+            } else if (Character.isWhitespace((char)c)) {
+                if (buffer.length() > 0) {
+                    break;
+                }
+            } else if (c == '<') {
+                if (buffer.length() > 0) {
+                    break;
+                }
+                skipTo(reader, ">"); //$NON-NLS-1$
+            } else {
+                buffer.append((char)c);
+            }
+        }
+        if (buffer.length() > 0) {
+            reader.reset();
+            return buffer.toString();
+        } else {
+            throw new EOFException();
+        }
+    }
+    
+    private static String readBlock(Reader reader, String tagName) throws IOException {
+        skipTag(reader, tagName); //$NON-NLS-1$
+        StringBuffer buffer = new StringBuffer();
+        for (;;) {
+            int c = reader.read();
+            if (c == -1) {
+                break;
+            } else if (c == '<') {
+                if (matchText(reader, "/"+tagName)) {
+                    skipTo(reader, ">"); //$NON-NLS-1$
+                    break;
+                }
+            }
+            buffer.append((char)c);
+        }
+        return buffer.toString();
+    }
+    
+    private static void skipWhite(Reader reader) throws IOException {
+        do {
+            reader.mark(1);
+        } while (Character.isWhitespace((char)reader.read()));
+        reader.reset();
+    }
+    
+    private static void skipTag(Reader reader, String tagName)
+        throws IOException {
+        String found;
+        do {
+            found = readTag(reader, "<");
+            skipTo(reader, ">"); //$NON-NLS-1$
+        } while (!tagName.equals(found));
+    }
+    
+    private static String readTag(Reader reader, String start)
+        throws IOException {
+        skipTo(reader, start);
+        skipWhite(reader);
+        StringBuffer buffer = new StringBuffer();
+        for (;;) {
+            reader.mark(1);
+            int c = reader.read();
+            if (c == -1) {
+                break;
+            } else if (Character.isLetter((char)c)) {
+                buffer.append((char)c);
+            } else {
+                break;
+            }
+        }
+        reader.reset();
+        return buffer.toString();
+    }
+
+    /**
+     * Quote the give string for use in a URL.
+     * @param string a string.
+     * @return the quoted string.
+     */
+    private String urlquote(String string) {
+        byte[] data;
+        try {
+            data = string.getBytes("UTF-8"); //$NON-NLS-1$
+        } catch (UnsupportedEncodingException e) {
+            // UTF-8 must be supported
+            throw new RuntimeException(e.toString());
+        }
+
+        StringBuffer buffer = new StringBuffer();
+        for (int i = 0; i < data.length; i++) {
+            char c = (char) (data[i] & 0xff);
+            if (c == '/'
+                || c == '-'
+                || c == '_'
+                || c == '.'
+                || c == '*'
+                || Character.isLetterOrDigit(c)) {
+                if (buffer != null) {
+                    buffer.append(c);
+                }
+            } else if (c == ' ') {
+                buffer.append('+');
+            } else {
+                if (buffer == null) {
+                    buffer = new StringBuffer(string.substring(0, i));
+                }
+                buffer.append('%');
+                if (c < 16) {
+                    buffer.append('0');
+                }
+                buffer.append(Integer.toHexString(c));
+            }
+        }
+
+        return buffer.toString();
+    }
+
+    /**
      * Check of the given folder name is in the set of modules configured.
      * @param folderName the folder name to check.
-     * @return true iff the folder is in at least one of the modules.
+     * @return the module for the given folder, or null.
      */
-    public boolean isInModules(String folderName) {
+    public Module matchModule(String folderName) {
         int scan = modules.size();
         if (scan == 0) {
-            return true; // no modules set
+            return Module.DEFAULT_MODULE; // no modules set
         }
 
         while (--scan >= 0) {
-            String moduleName = ((Module)modules.get(scan)).getName();
+            Module module = (Module)modules.get(scan);
+            String moduleName = module.getName();
             if (!folderName.startsWith(moduleName)) {
                 continue; // does not match
             } else if (
@@ -229,11 +472,11 @@ public class CVSHistory implements SourceControl {
                     && folderName.charAt(moduleName.length()) != '/') {
                 continue; // different folder with equal prefix
             } else {
-                return true;
+                return module;
             }
         }
 
-        return false; // not found
+        return null; // not found
     }
 
     /**
@@ -260,6 +503,14 @@ public class CVSHistory implements SourceControl {
             log.warn(Messages.getString("CVSHistory.History_file") //$NON-NLS-1$
                 + historyFileName
                 + Messages.getString("CVSHistory.does_not_exist")); //$NON-NLS-1$
+        }
+        if (viewcvsUrl != null) {
+            try {
+                new URL(viewcvsUrl).toExternalForm();
+            } catch (MalformedURLException e) {
+                throw new CruiseControlException(Messages.getString(
+                    "CVSHistory.Malformed_viewcvsurl"), e); //$NON-NLS-1$
+            }
         }
     }
 
@@ -315,6 +566,25 @@ public class CVSHistory implements SourceControl {
     }
 
     /**
+     * @return the viewcvs URL.
+     */
+    public String getViewcvsUrl() {
+        return viewcvsUrl;
+    }
+
+    /**
+     * @param string the new viewcvs URL.
+     */
+    public void setViewcvsUrl(String string) {
+        // make sure it ends with a slash
+        if (string == null || string.endsWith("/")) { //$NON-NLS-1$
+            viewcvsUrl = string;
+        } else {
+            viewcvsUrl = string + '/';
+        }
+    }
+
+    /**
      * @param string the new module name
      */
     public void setModule(String string) {
@@ -335,12 +605,17 @@ public class CVSHistory implements SourceControl {
      * Bean implementation for the module sub-element.
      * @since 01.03.2004
      * @author Klaus Rennecke
-     * @version $Revision: 1.5 $
+     * @version $Revision: 1.6 $
      */
     public static class Module {
+        
+        public static final Module DEFAULT_MODULE = new Module();
 
         /** The module name. */
         private String name;
+
+        /** The branch name. */
+        private String branch;
 
         /**
          * @return the name
@@ -356,5 +631,20 @@ public class CVSHistory implements SourceControl {
             name = string;
         }
 
+        /**
+         * @return the branch.
+         */
+        public String getBranch() {
+            return branch;
+        }
+
+        /**
+         * @param string the new branch.
+         */
+        public void setBranch(String string) {
+            branch = string;
+        }
+
     }
+    
 }
