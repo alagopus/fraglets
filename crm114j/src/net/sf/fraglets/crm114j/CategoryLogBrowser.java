@@ -1,5 +1,5 @@
 /*
- * $Id: CategoryLogBrowser.java,v 1.4 2004-04-04 23:37:44 marion Exp $
+ * $Id: CategoryLogBrowser.java,v 1.5 2004-04-04 23:38:29 marion Exp $
  * Copyright (C) 2004 Klaus Rennecke, all rights reserved.
  */
 package net.sf.fraglets.crm114j;
@@ -21,7 +21,7 @@ import thinlet.FrameLauncher;
 import thinlet.Thinlet;
 
 /**
- * @version $Id: CategoryLogBrowser.java,v 1.4 2004-04-04 23:37:44 marion Exp $
+ * @version $Id: CategoryLogBrowser.java,v 1.5 2004-04-04 23:38:29 marion Exp $
  */
 public class CategoryLogBrowser extends Thinlet implements FilesystemBrowser.FileSelectionListener {
     
@@ -446,7 +446,6 @@ public class CategoryLogBrowser extends Thinlet implements FilesystemBrowser.Fil
             
             // update details
             if (item != null) {
-//                requestFocus(header);
                 updateDetails(item);
             }
         } catch (IOException e) {
