@@ -8,7 +8,7 @@
 
 # USER		= (getprop "user.name");
 USER		= "marion";
-SERVER		= "shelf.sourceforge.net";
+SERVER		= "fraglets.sourceforge.net";
 
 JAVA_HOME	= (getprop "java.home");
 JAR		= (cat JAVA_HOME "/bin/jar");
@@ -21,7 +21,7 @@ TOP="../../../..";
 SRC=(glob "*.java");
 OBJ=(subst ".java", ".class", SRC);
 
-jars="shelf-beans.jar";
+jars="fraglets-beans.jar";
 
 "all":;
 {
