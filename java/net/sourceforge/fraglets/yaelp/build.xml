@@ -7,8 +7,13 @@
         
         <!-- Jar signing parameters. -->
         <property name="signer-alias" value="klaus werner rennecke&apos;s thawte id #2"/>
-        <property name="signer-keystore" value="../sign/sign.p12"/>
+        <property name="signer-keystore" value="../sign/sign-noiram.p12"/>
         <property name="signer-storetype" value="PKCS12"/>
+        
+        <!-- Wizard signing parameters. -->
+        <property name="wizard-alias" value="thawte freemail member's thawte id"/>
+        <property name="wizard-keystore" value="../sign/sign-noiram.p12"/>
+        <property name="wizard-storetype" value="PKCS12"/>
         
         <!-- system and SF user configuration. -->
         <property location="C:\Programme\putty\pscp.exe" name="scp"/>
@@ -48,6 +53,16 @@
                 <include name="net/sourceforge/fraglets/targa/TGADecoder*.class"/>
             </fileset>
         </jar>
+        <query prompt="Enter keystore password for ${wizard-keystore}" property="wizard-storepass" secret="true" title="Keystore password"/>
+        <signjar alias="${wizard-alias}" jar="../jars/wizard-${version}.jar" keystore="${wizard-keystore}" signedjar="../wiz/wizard-${version}.jar" storepass="${wizard-storepass}" storetype="${wizard-storetype}"/>
+        <signjar alias="${wizard-alias}" jar="../jars/sax.jar" keystore="${wizard-keystore}" signedjar="../wiz/sax.jar" storepass="${wizard-storepass}" storetype="${wizard-storetype}"/>
+        <signjar alias="${wizard-alias}" jar="../jars/xp.jar" keystore="${wizard-keystore}" signedjar="../wiz/xp.jar" storepass="${wizard-storepass}" storetype="${wizard-storetype}"/>
+        <property name="wizard-storepass" value="*"/> <!-- minimum security measure -->
+        <exec dir="../wiz" executable="${scp}">
+            <arg value="-q"/>
+            <arg value="*.jar"/>
+            <arg value="${deploy-destination}/../wiz/."/>
+        </exec>
     </target>
     
     <target depends="compile" name="jars">
@@ -65,10 +80,9 @@
         </zip>
     </target>
     
-    <target depends="init,jars,wizard,sign-uptodate" description="Sign jars." name="sign" unless="sign-uptodate-all">
+    <target depends="init,jars,sign-uptodate" description="Sign jars." name="sign" unless="sign-uptodate-all">
         <query prompt="Enter keystore password for ${signer-keystore}" property="signer-storepass" secret="true" title="Keystore password"/>
         <signjar alias="${signer-alias}" jar="../jars/yaelp-${version}.jar" keystore="${signer-keystore}" signedjar="../sign/yaelp-${version}.jar" storepass="${signer-storepass}" storetype="${signer-storetype}"/>
-        <signjar alias="${signer-alias}" jar="../jars/wizard-${version}.jar" keystore="${signer-keystore}" signedjar="../sign/wizard-${version}.jar" storepass="${signer-storepass}" storetype="${signer-storetype}"/>
         <signjar alias="${signer-alias}" jar="../jars/sax.jar" keystore="${signer-keystore}" signedjar="../sign/sax.jar" storepass="${signer-storepass}" storetype="${signer-storetype}"/>
         <signjar alias="${signer-alias}" jar="../jars/xp.jar" keystore="${signer-keystore}" signedjar="../sign/xp.jar" storepass="${signer-storepass}" storetype="${signer-storetype}"/>
         <signjar alias="${signer-alias}" jar="../jars/xt.jar" keystore="${signer-keystore}" signedjar="../sign/xt.jar" storepass="${signer-storepass}" storetype="${signer-storetype}"/>
