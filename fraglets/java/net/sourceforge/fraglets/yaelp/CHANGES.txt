@@ -1,3 +1,6 @@
+Changes for version 1.25:
+    - Fix NPE in UpdateWizard.initRosterTable
+
 Changes for version 1.24:
     - Updated recognized to handle AFK and <LINKDEAD>
     - Fixed file headers on UpdateWizard and UpdateApplet
