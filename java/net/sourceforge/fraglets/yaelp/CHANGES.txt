@@ -1,6 +1,7 @@
 Changes for version 1.18:
     - Fixed log file format error due to new item link feature.
     - Completely revamped parser core for extra speed.
+    - Reload style when initialized from file, for style development.
 
 Changes for version 1.17:
     - Fixed predefined guilds not appearing in cell editor.
