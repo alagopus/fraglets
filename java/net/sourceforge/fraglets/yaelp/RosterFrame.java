@@ -68,7 +68,7 @@ import javax.swing.RepaintManager;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.19 $
+ * @version $Revision: 1.20 $
  */
 public class RosterFrame extends javax.swing.JFrame {
     /** The file chooser map used to select files to parse and export.
@@ -182,11 +182,11 @@ public class RosterFrame extends javax.swing.JFrame {
         level1FilterItem.putClientProperty(FILTER_PROPERTY,
             new AvatarFilter.Level(1));
         defaultFilterItem.putClientProperty(FILTER_PROPERTY,
-            new AvatarFilter.Guild("Mad Wanderer"));
+            new AvatarFilter.Guild("New Elements of Power"));
         alliedFilterItem.putClientProperty(FILTER_PROPERTY,
-            new AvatarFilter.Guild("Sovereign Storm"));
-        friendFilterItem.putClientProperty(FILTER_PROPERTY,
             new AvatarFilter.Guild("Veterans Legion"));
+        friendFilterItem.putClientProperty(FILTER_PROPERTY,
+            new AvatarFilter.Guild("Jade Dynasty"));
         memberFilterItem.putClientProperty(FILTER_PROPERTY,
             new AvatarFilter.Property("Rank", "a regular member"));
         officerFilterItem.putClientProperty(FILTER_PROPERTY,
@@ -195,6 +195,8 @@ public class RosterFrame extends javax.swing.JFrame {
         // attach styles
         defaultStyleItem.putClientProperty(STYLE_PROPERTY,
             getResource("roster.xsl"));
+        neopStyleItem.putClientProperty(STYLE_PROPERTY,
+            getResource("roster_neop.xsl"));
         mwStyleItem.putClientProperty(STYLE_PROPERTY,
             getResource("roster_mw.xsl"));
         ssStyleItem.putClientProperty(STYLE_PROPERTY,
@@ -208,6 +210,8 @@ public class RosterFrame extends javax.swing.JFrame {
         // so the text would get mangled.
         styleButtonGroup.add(defaultStyleItem);
         defaultStyleItem.addActionListener(styleSelection);
+        styleButtonGroup.add(neopStyleItem);
+        neopStyleItem.addActionListener(styleSelection);
         styleButtonGroup.add(mwStyleItem);
         mwStyleItem.addActionListener(styleSelection);
         styleButtonGroup.add(ssStyleItem);
@@ -282,9 +286,10 @@ public class RosterFrame extends javax.swing.JFrame {
         styleMenu = new javax.swing.JMenu();
         defaultStyleItem = new javax.swing.JRadioButtonMenuItem();
         separator5 = new javax.swing.JSeparator();
+        neopStyleItem = new javax.swing.JRadioButtonMenuItem();
+        vlStyleItem = new javax.swing.JRadioButtonMenuItem();
         mwStyleItem = new javax.swing.JRadioButtonMenuItem();
         ssStyleItem = new javax.swing.JRadioButtonMenuItem();
-        vlStyleItem = new javax.swing.JRadioButtonMenuItem();
         separator6 = new javax.swing.JSeparator();
         newStyleMenu = new javax.swing.JMenu();
         styleWizardItem = new javax.swing.JMenuItem();
@@ -600,15 +605,18 @@ public class RosterFrame extends javax.swing.JFrame {
         defaultStyleItem.setToolTipText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("defaultStyleItem.tooltip"));
         styleMenu.add(defaultStyleItem);
         styleMenu.add(separator5);
+        neopStyleItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("neopStyleItem.text"));
+        neopStyleItem.setToolTipText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("neopStyleItem.tooltip"));
+        styleMenu.add(neopStyleItem);
+        vlStyleItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("vlStyleItem.text"));
+        vlStyleItem.setToolTipText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("vlStyleItem.tooltip"));
+        styleMenu.add(vlStyleItem);
         mwStyleItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("mwStyleItem.text"));
         mwStyleItem.setToolTipText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("mwStyleItem.tooltip"));
         styleMenu.add(mwStyleItem);
         ssStyleItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("ssStyleItem.text"));
         ssStyleItem.setToolTipText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("ssStyleItem.tooltip"));
         styleMenu.add(ssStyleItem);
-        vlStyleItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("vlStyleItem.text"));
-        vlStyleItem.setToolTipText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("vlStyleItem.tooltip"));
-        styleMenu.add(vlStyleItem);
         styleMenu.add(separator6);
         newStyleMenu.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("newStyleMenu.text"));
         styleWizardItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("styleWizardItem.text"));
@@ -2038,6 +2046,7 @@ public class RosterFrame extends javax.swing.JFrame {
     private javax.swing.JSeparator separator4;
     private javax.swing.JSeparator separator3;
     private javax.swing.JSeparator separator2;
+    private javax.swing.JRadioButtonMenuItem neopStyleItem;
     private javax.swing.JSeparator separator1;
     private javax.swing.JCheckBoxMenuItem friendFilterItem;
     private javax.swing.JMenuItem newEntryItem;

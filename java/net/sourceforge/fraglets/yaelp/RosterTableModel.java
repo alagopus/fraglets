@@ -24,7 +24,7 @@ import java.util.Comparator;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class RosterTableModel extends javax.swing.table.AbstractTableModel {
     /** Headers for the roster table. */    
@@ -183,6 +183,7 @@ public class RosterTableModel extends javax.swing.table.AbstractTableModel {
                 } else {
                     avatar.setCulture(Avatar.Culture.create(obj.toString()));
                 }
+                avatar.setTimestamp(System.currentTimeMillis());
                 break;
             case 2:
                 if (obj instanceof Avatar.Class || obj == null) {
@@ -190,12 +191,15 @@ public class RosterTableModel extends javax.swing.table.AbstractTableModel {
                 } else {
                     avatar.setClazz(Avatar.Class.create(obj.toString()));
                 }
+                avatar.setTimestamp(System.currentTimeMillis());
                 break;
             case 3:
                 if (obj instanceof Integer) {
                     avatar.setLevel(((Integer)obj).intValue());
+                    avatar.setTimestamp(System.currentTimeMillis());
                 } else if (obj != null) {
                     avatar.setLevel(Integer.parseInt(obj.toString()));
+                    avatar.setTimestamp(System.currentTimeMillis());
                 } else {
                     avatar.setLevel(0);
                 }
@@ -207,6 +211,7 @@ public class RosterTableModel extends javax.swing.table.AbstractTableModel {
                 } else {
                     avatar.setGuild(Avatar.Guild.create(obj.toString()), timestamp);
                 }
+                avatar.setTimestamp(System.currentTimeMillis());
                 break;
             }
             case 5:
@@ -215,6 +220,7 @@ public class RosterTableModel extends javax.swing.table.AbstractTableModel {
                 } else {
                     avatar.setZone(Avatar.Zone.create(obj.toString()));
                 }
+                avatar.setTimestamp(System.currentTimeMillis());
                 break;
             default:
                 throw new IllegalArgumentException("value not editable");
