@@ -1,5 +1,5 @@
 /*
- * $Id: accept.c,v 1.1 2000-05-01 13:19:39 marion Exp $
+ * $Id: accept.c,v 1.2 2000-05-01 15:24:56 marion Exp $
  * 
  * tryst/accept.c - 
  * Jul 19 1994 by marion
@@ -26,10 +26,14 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-/* $Log: accept.c,v $
-/* Revision 1.1  2000-05-01 13:19:39  marion
-/* Shared memory and unix domain socket group IPC
 /*
+ * $Log: accept.c,v $
+ * Revision 1.2  2000-05-01 15:24:56  marion
+ * Port to linux using portable control message header.
+ *
+ * Revision 1.1  2000/05/01 13:19:39  marion
+ * Shared memory and unix domain socket group IPC
+ *
  * Revision 1.2  1994/07/20 00:38:04  marion
  * First run.
  *
@@ -45,11 +49,6 @@
 #include <unistd.h>
 #include <sys/uio.h>
 
-extern int close (int);
-extern int sendmsg (int, struct msghdr *, int);
-extern int socket (int, int, int);
-extern int socketpair (int, int, int, int *);
-
 int
 TrystAccept (const char *name)
 {
@@ -59,6 +58,10 @@ TrystAccept (const char *name)
   int			pair[2];
   int			fd;
   int			len;
+#if !defined(__svr4__) || defined(_XPG4_2)
+  struct cmsghdr *cmsg;
+  char cmsgbuf[CMSG_SPACE(sizeof (pair[1]))];
+#endif
   
   len = strlen (name);
   if (len >= sizeof (address.sun_path))
@@ -91,8 +94,22 @@ TrystAccept (const char *name)
   msg.msg_namelen = sizeof (address);
   msg.msg_iov = iov;
   msg.msg_iovlen = 1;
+#if !defined(__svr4__) || defined(_XPG4_2)
+  msg.msg_control = cmsgbuf;
+  msg.msg_controllen = sizeof (cmsgbuf);
+
+  cmsg = CMSG_FIRSTHDR(&msg);
+  cmsg->cmsg_level = SOL_SOCKET;
+  cmsg->cmsg_type = SCM_RIGHTS;
+  cmsg->cmsg_len = CMSG_LEN(sizeof (pair[1]));
+  memcpy (CMSG_DATA(cmsg), &pair[1], sizeof (pair[1]));
+
+  /* recaclulate the correct length. */
+  msg.msg_controllen = cmsg->cmsg_len;
+#else
   msg.msg_accrights = (caddr_t)&pair[1];
   msg.msg_accrightslen = sizeof (pair[1]);
+#endif
 
   if (sendmsg (fd, &msg, 0) < 0)
     {

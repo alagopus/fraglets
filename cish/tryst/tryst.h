@@ -1,5 +1,5 @@
 /*
- * $Id: tryst.h,v 1.1 2000-05-01 13:19:39 marion Exp $
+ * $Id: tryst.h,v 1.2 2000-05-01 15:24:56 marion Exp $
  * 
  * tryst/tryst.h - 
  * Jul 18 1994 by marion
@@ -26,10 +26,14 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-/* $Log: tryst.h,v $
-/* Revision 1.1  2000-05-01 13:19:39  marion
-/* Shared memory and unix domain socket group IPC
 /*
+ * $Log: tryst.h,v $
+ * Revision 1.2  2000-05-01 15:24:56  marion
+ * Port to linux using portable control message header.
+ *
+ * Revision 1.1  2000/05/01 13:19:39  marion
+ * Shared memory and unix domain socket group IPC
+ *
  * Revision 1.2  1994/07/20 00:38:32  marion
  * First run.
  *

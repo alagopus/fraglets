@@ -1,5 +1,5 @@
 /*
- * $Id: offer.c,v 1.1 2000-05-01 13:19:39 marion Exp $
+ * $Id: offer.c,v 1.2 2000-05-01 15:24:56 marion Exp $
  * 
  * tryst/offer.c - Offer a tryst to other processes.
  * Jul 18 1994 by marion
@@ -26,10 +26,14 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-/* $Log: offer.c,v $
-/* Revision 1.1  2000-05-01 13:19:39  marion
-/* Shared memory and unix domain socket group IPC
 /*
+ * $Log: offer.c,v $
+ * Revision 1.2  2000-05-01 15:24:56  marion
+ * Port to linux using portable control message header.
+ *
+ * Revision 1.1  2000/05/01 13:19:39  marion
+ * Shared memory and unix domain socket group IPC
+ *
  * Revision 1.2  1994/07/20 00:38:17  marion
  * First run.
  *
@@ -41,17 +45,11 @@
 
 #include "internal.h"
 
+#include <unistd.h>
 #include <memory.h>
 #include <errno.h>
 #include <unistd.h>
 #include <sys/uio.h>
-
-extern int bind (int, struct sockaddr *, int);
-extern int close (int);
-extern void free (char *);
-extern int recvmsg (int, struct msghdr *, int);
-extern int socket (int, int, int);
-extern int unlink (const char *);
 
 Tryst *
 TrystOffer (const char *name)
@@ -103,6 +101,10 @@ TrystPlace (Tryst *offer)
   struct msghdr		msg;
   char			buf[256];
   int			fd;
+#if !defined(__svr4__) || defined(_XPG4_2)
+  struct cmsghdr *cmsg;
+  char cmsgbuf[CMSG_SPACE(sizeof (fd))];
+#endif
   
   fd = -1;
   memset (buf, 0, sizeof (buf));
@@ -114,13 +116,30 @@ TrystPlace (Tryst *offer)
   msg.msg_namelen = 0;
   msg.msg_iov = iov;
   msg.msg_iovlen = 1;
+#if !defined(__svr4__) || defined(_XPG4_2)
+  msg.msg_control = cmsgbuf;
+  msg.msg_controllen = sizeof (cmsgbuf);
+#else
   msg.msg_accrights = (caddr_t)&fd;
   msg.msg_accrightslen = sizeof (fd);
+#endif
 
   if (recvmsg (offer->fd, &msg, 0) < 0)
     {
       return -1;
     }
+
+#if !defined(__svr4__) || defined(_XPG4_2)
+  /* Search for control message with fd. */
+  for (cmsg = CMSG_FIRSTHDR(&msg); cmsg != NULL; cmsg = CMSG_NXTHDR(&msg,cmsg))
+    {
+      if (cmsg->cmsg_level == SOL_SOCKET && cmsg->cmsg_type == SCM_RIGHTS)
+	{
+	  fd = *(int*)CMSG_DATA(cmsg);
+	  break;
+	}
+    }
+#endif
   
   if (msg.msg_iovlen == 1 && iov[0].iov_len > 0
       && memcmp (buf, HELO, MSGLEN) == 0 && fd != -1)
