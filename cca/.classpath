@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+    <classpathentry kind="src" path="src"/>
+    <classpathentry kind="src" path="/cruisecontrol-2.1.5"/>
+    <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/j2sdk1.4.2"/>
+    <classpathentry kind="lib" path="/cruisecontrol-2.1.5/main/lib/log4j.jar"/>
+    <classpathentry kind="src" path="tst"/>
+    <classpathentry kind="lib" path="/cruisecontrol-2.1.5/main/lib/junit.jar"/>
+    <classpathentry kind="output" path="bin"/>
+</classpath>
