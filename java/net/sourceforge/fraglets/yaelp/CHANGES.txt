@@ -1,3 +1,11 @@
+Changes for version 1.19:
+    - Add ordering by guild and zone.
+    - Make all order expressions complete (deferring to character name).
+    - Fixes 435751 new entry fails to find right entry.
+    - Don't reset file filters on each chooser invocation.
+    - Decouple html and csv and xml file choosers.
+    - Updated NEoP roster style.
+
 Changes for version 1.18:
     - Fixed log file format error due to new item link feature.
     - Completely revamped parser core for extra speed.
