@@ -72,7 +72,7 @@ import org.xml.sax.Locator;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author  marion@users.sourceforge.net
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class UpdateWizard extends javax.swing.JPanel implements Runnable, Observer, Comparator, ListSelectionListener {
     
@@ -574,6 +574,9 @@ public class UpdateWizard extends javax.swing.JPanel implements Runnable, Observ
         String name = JOptionPane.showInputDialog
             (this, "Character name", "New Entry",
              JOptionPane.QUESTION_MESSAGE);
+        if (name != null) {
+            name = name.trim();
+        }
         if (name != null && name.length() > 0) {
             Avatar roster[] = model.getRoster();
             Avatar probe = new Avatar(System.currentTimeMillis());
