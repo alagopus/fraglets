@@ -1,3 +1,6 @@
+Changes for version 1.14:
+    - Added export HTML to clipboard option.
+
 Changes for version 1.13:
     - Fixed a severe bug where property entries would override
       the avatar timestamp.
