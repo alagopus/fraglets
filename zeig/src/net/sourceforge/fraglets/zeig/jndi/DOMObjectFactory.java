@@ -20,7 +20,7 @@ import net.sourceforge.fraglets.zeig.dom.DocumentImpl;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class DOMObjectFactory implements ObjectFactory {
 
@@ -33,8 +33,7 @@ public class DOMObjectFactory implements ObjectFactory {
             int ve = DOMContext.getVe((Element)obj);
             int id = DOMContext.getLatest(ve);
             Document doc = new DocumentImpl(id);
-            if (DOMContext.CONTEXT_NAMESPACE.equals(doc.getDocumentElement().getNamespaceURI()) &&
-                "context".equals(doc.getDocumentElement().getLocalName())) {
+            if (isDOMContext(doc)) {
                 return new DOMContext((DOMContext)ctx, name.get(0), doc, ve);
             } else {
                 return doc;
@@ -44,4 +43,13 @@ public class DOMObjectFactory implements ObjectFactory {
         }
     }
 
+    public static boolean isDOMContext(Document d) {
+        return d != null && isDOMContext(d.getDocumentElement());
+    }
+    
+    public static boolean isDOMContext(Element e) {
+        return e != null &&
+        DOMContext.CONTEXT_NAMESPACE.equals(e.getNamespaceURI()) &&
+        "context".equals(e.getLocalName());
+    }
 }
