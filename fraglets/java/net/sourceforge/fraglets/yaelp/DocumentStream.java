@@ -24,7 +24,7 @@ package net.sourceforge.fraglets.yaelp;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author Klaus Rennecke
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class DocumentStream extends java.io.OutputStream {
 
@@ -125,6 +125,10 @@ public class DocumentStream extends java.io.OutputStream {
             if (++scan < mark) {
                 target.insertString(target.getLength(),
                     new String(values, scan, mark-scan, encoding), null);
+            }
+            if (clear && component != null) {
+                javax.swing.RepaintManager.currentManager(component)
+                    .paintDirtyRegions();
             }
         } catch (javax.swing.text.BadLocationException ex) {
             throw new RuntimeException(ex.toString());
