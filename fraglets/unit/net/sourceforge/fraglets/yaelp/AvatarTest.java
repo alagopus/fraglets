@@ -72,7 +72,7 @@ public class AvatarTest extends TestCase {
         Avatar.Culture culture = Avatar.Culture.create("Halfling");
         testling.setCulture(culture);
         Avatar.Guild guild = Avatar.Guild.create("Bug Busters");
-        testling.setGuild(guild);
+        testling.setGuild(guild, timestamp);
         int level = 24;
         testling.setLevel(level);
         String name = "Testling";
@@ -216,8 +216,11 @@ public class AvatarTest extends TestCase {
         long timestamp = System.currentTimeMillis();
         Avatar testling = new Avatar(timestamp);
         Avatar.Guild guild = Avatar.Guild.create("Bug Busters");
-        testling.setGuild(guild);
+        testling.setGuild(guild, timestamp);
         assertSame("guild", guild, testling.getGuild());
+        Avatar.Guild other = Avatar.Guild.create("Other Bug Busters");
+        testling.setGuild(other, 0L);
+        assertTrue("guild", other != testling.getGuild());
     }
     
     /** Test of setGuild method, of class net.sourceforge.fraglets.yaelp.Avatar. */
