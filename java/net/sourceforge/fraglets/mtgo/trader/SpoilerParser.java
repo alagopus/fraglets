@@ -92,12 +92,18 @@ public class SpoilerParser {
             reader.mark(MAX_LINE);
             line = reader.readLine();
             if (line != null) {
-                if (line.length() > 0 && Character.isWhitespace(line.charAt(0))) {
-                    value.append(' ').append(line.trim());
-                } else {
-                    reader.reset();
-                    break;
+                if (line.length() > 0) {
+                    if (Character.isWhitespace(line.charAt(0))) {
+                        value.append(' ').append(line.trim());
+                        continue;
+                    } else if (line.indexOf(':') == -1) {
+                        //  HACK: compensate broken format
+                        value.append(line.trim());
+                        continue;
+                    }
                 }
+                reader.reset();
+                break;
             }
         } while (line != null);
         
