@@ -3,7 +3,7 @@
 
     <target name="init">
         <property name="package" value="net/sourceforge/fraglets/yaelp"/>
-        <property name="version" value="1.20"/>
+        <property name="version" value="1.21"/>
         
         <!-- Jar signing parameters. -->
         <property name="signer-alias" value="klaus werner rennecke&apos;s thawte id #2"/>
