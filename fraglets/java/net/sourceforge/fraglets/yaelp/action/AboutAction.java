@@ -8,6 +8,7 @@ package net.sourceforge.fraglets.yaelp.action;
 
 import java.awt.event.ActionEvent;
 import javax.swing.JOptionPane;
+import net.sourceforge.fraglets.yaelp.GPL;
 
 /**
  * Action performed when an about box was requested.
@@ -42,7 +43,8 @@ public class AboutAction extends GenericAction {
         ActionContext ac = getActionContext(e);
         Object args[] = new Object[] { ac.getApplicationName(), ac.getVersion() };
         String title = formatString(ac, "aboutTitle.format", args);
-        String text = formatString(ac, "aboutText.format", args);
+        String text = GPL.format(ac.getApplicationName(),
+            ac.getResourceString("aboutText.claim"));
         JOptionPane.showMessageDialog(getRootPane(e), text, title,
             JOptionPane.INFORMATION_MESSAGE);
     }

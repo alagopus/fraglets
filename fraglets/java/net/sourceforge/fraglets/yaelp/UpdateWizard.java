@@ -1,6 +1,6 @@
 /*
  * UpdateWizard.java
- *
+ * Copyright (C) 2002 Klaus Rennecke.
  * Created on December 2, 2002, 3:08 PM
  */
 
@@ -44,10 +44,31 @@ import net.sourceforge.fraglets.yaelp.model.Tricks;
 import org.xml.sax.Locator;
 
 /**
+ * A wizard component to walk through a roster update from log files.
+ *
+ * <p>This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * <p>This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * <p>You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author  marion@users.sourceforge.net
  */
 public class UpdateWizard extends javax.swing.JPanel implements Runnable, Observer, Comparator {
+    
+    public static final String APPLICATION_NAME = "Yaelp Update Wizard";
+    
+    public static final String COPYRIGHT_CLAIM =
+        "Copyright © 2001, 2002 Klaus Rennecke.\n" +
+        "XML parser Copyright © 1997, 1998 James Clark.";
     
     /** Creates new form UpdateWizard */
     public UpdateWizard() {
@@ -64,13 +85,16 @@ public class UpdateWizard extends javax.swing.JPanel implements Runnable, Observ
         javax.swing.JScrollPane jScrollPane1;
         javax.swing.JLabel jLabel1;
         java.awt.GridBagConstraints gridBagConstraints;
+        javax.swing.JLabel jLabel2;
         javax.swing.JScrollPane jScrollPane4;
+        javax.swing.JTextArea jTextArea3;
         javax.swing.JScrollPane jScrollPane2;
         javax.swing.JPanel parsePanel;
         javax.swing.JPanel introPanel;
         javax.swing.JPanel editPanel;
         javax.swing.JPanel savePanel;
         javax.swing.JPanel buttonPanel;
+        javax.swing.JButton aboutButton;
         javax.swing.JPanel sendPanel;
         javax.swing.JPanel loadPanel;
         javax.swing.JScrollPane jScrollPane3;
@@ -102,6 +126,7 @@ public class UpdateWizard extends javax.swing.JPanel implements Runnable, Observ
         sendText = new javax.swing.JTextArea();
         progressBar = new javax.swing.JProgressBar();
         buttonPanel = new javax.swing.JPanel();
+        aboutButton = new javax.swing.JButton();
         backButton = new javax.swing.JButton();
         nextButton = new javax.swing.JButton();
         exitButton = new javax.swing.JButton();
@@ -154,9 +179,9 @@ public class UpdateWizard extends javax.swing.JPanel implements Runnable, Observ
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.insets = new java.awt.Insets(5, 4, 5, 4);
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(5, 4, 5, 4);
         loadPanel.add(jTextArea2, gridBagConstraints);
 
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -164,8 +189,8 @@ public class UpdateWizard extends javax.swing.JPanel implements Runnable, Observ
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(5, 4, 5, 4);
         gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(5, 4, 5, 4);
         loadPanel.add(jLabel1, gridBagConstraints);
 
         loadChoice.addActionListener(new java.awt.event.ActionListener() {
@@ -176,8 +201,8 @@ public class UpdateWizard extends javax.swing.JPanel implements Runnable, Observ
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(5, 4, 5, 4);
         gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(5, 4, 5, 4);
         loadPanel.add(loadChoice, gridBagConstraints);
 
         browseButton.setText("Browse ...");
@@ -224,9 +249,9 @@ public class UpdateWizard extends javax.swing.JPanel implements Runnable, Observ
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.insets = new java.awt.Insets(5, 4, 5, 4);
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(5, 4, 5, 4);
         savePanel.add(jTextArea3, gridBagConstraints);
 
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -234,14 +259,14 @@ public class UpdateWizard extends javax.swing.JPanel implements Runnable, Observ
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(5, 4, 5, 4);
         gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(5, 4, 5, 4);
         savePanel.add(jLabel2, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(5, 4, 5, 4);
         gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(5, 4, 5, 4);
         savePanel.add(saveChoice, gridBagConstraints);
 
         browseButton1.setText("Browse ...");
@@ -274,9 +299,9 @@ public class UpdateWizard extends javax.swing.JPanel implements Runnable, Observ
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.insets = new java.awt.Insets(5, 4, 5, 4);
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(5, 4, 5, 4);
         add(tabPane, gridBagConstraints);
 
         progressBar.setFont(new java.awt.Font("Dialog", 0, 10));
@@ -285,13 +310,22 @@ public class UpdateWizard extends javax.swing.JPanel implements Runnable, Observ
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(0, 4, 0, 4);
         gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 4, 0, 4);
         add(progressBar, gridBagConstraints);
 
         buttonPanel.setLayout(new java.awt.GridLayout(1, 0, 5, 5));
 
         buttonPanel.setOpaque(false);
+        aboutButton.setText("About ...");
+        aboutButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                aboutButtonActionPerformed(evt);
+            }
+        });
+
+        buttonPanel.add(aboutButton);
+
         backButton.setLabel("< Back");
         backButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -322,11 +356,19 @@ public class UpdateWizard extends javax.swing.JPanel implements Runnable, Observ
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(5, 4, 5, 4);
         gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(5, 4, 5, 4);
         add(buttonPanel, gridBagConstraints);
 
     }//GEN-END:initComponents
+
+    private void aboutButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutButtonActionPerformed
+        // Add your handling code here:
+        JOptionPane.showMessageDialog(this,
+            GPL.format(APPLICATION_NAME, COPYRIGHT_CLAIM),
+            "About: "+APPLICATION_NAME,
+            JOptionPane.INFORMATION_MESSAGE);
+    }//GEN-LAST:event_aboutButtonActionPerformed
 
     private void browseButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_browseButton1ActionPerformed
         // Add your handling code here:
@@ -977,9 +1019,7 @@ public class UpdateWizard extends javax.swing.JPanel implements Runnable, Observ
     private javax.swing.JList logfileList;
     private javax.swing.JComboBox loadChoice;
     private javax.swing.JButton backButton;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JComboBox saveChoice;
-    private javax.swing.JTextArea jTextArea3;
     private javax.swing.JTextArea sendText;
     private javax.swing.JButton exitButton;
     private javax.swing.JTable rosterTable;

@@ -1,5 +1,9 @@
 Changes for version 1.24:
     - Updated recognized to handle AFK and <LINKDEAD>
+    - Fixed file headers on UpdateWizard and UpdateApplet
+    - Separated about text generation to utility class
+    - Added about button and text to UpdateWizard
+    - Fix broken example link
 
 Changes for version 1.23:
     - Completed level 65 class titles
