@@ -65,13 +65,26 @@ public class OTPHash {
      * @return the hash code for key
      */
     public static int hash(byte key[]) {
-        if (key == null)
-            return 0;
+        if (key == null) return 0;
+        return hash(key, 0, key.length);
+    }
+    
+    /**
+     * Hash a byte array, using only a portion of the array.
+     * 
+     * @param key the array to hash
+     * @param off where to start in key
+     * @param len length of portion of key to use.
+     * @return the hash code for key
+     */
+    public static int hash(byte key[], int off, int len) {
+        if (key == null) return 0;
         int step = 0;
-        int scan = key.length;
+        int scan = off + len;
+        int part = len;
         int bits[] = getOTP(scan + 255);
         while (--scan >= 0) {
-            step = roll(step) ^ bits[scan + (key[scan] & 0xff)];
+            step = roll(step) ^ bits[--part + (key[scan] & 0xff)];
         }
         return step;
     }
@@ -83,11 +96,24 @@ public class OTPHash {
      * @return the hash code for key
      */
     public static int hash(char key[]) {
-        if (key == null)
-            return 0;
+        if (key == null) return 0;
+        return hash(key, 0, key.length);
+    }
+    
+    /**
+     * Hash a character array, using only a portion of the array.
+     * 
+     * @param key the array to hash
+     * @param off where to start in key
+     * @param len length of portion of key to use.
+     * @return the hash code for key
+     */
+    public static int hash(char key[], int off, int len) {
+        if (key == null) return 0;
+        validateBufferIndex(key.length, off, len);
         int step = 0, fold;
-        int scan = key.length;
-        int part = scan * 2;
+        int scan = off + len;
+        int part = len * 2;
         int bits[] = getOTP(part + 255);
         while (--scan >= 0) {
             fold = (int) key[scan];
