@@ -1,6 +1,9 @@
 package net.sourceforge.fraglets.codec;
 
+import junit.framework.AssertionFailedError;
 import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestResult;
 import junit.framework.TestSuite;
 
 /**
@@ -22,6 +25,8 @@ public class AllTests {
 		suite.addTestSuite(UTF8DecoderTest.class);
 		suite.addTestSuite(UTF8EncoderTest.class);
 		suite.addTestSuite(EventCodecTest.class);
+//		suite.addTest(STDHashTest.suite());
+		suite.addTest(OTPHashTest.suite());
 		//$JUnit-END$
 		return suite;
 	}
