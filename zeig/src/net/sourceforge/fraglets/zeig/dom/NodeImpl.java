@@ -24,7 +24,7 @@ import org.xml.sax.SAXException;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class NodeImpl implements Node {
     private int id;
@@ -38,6 +38,10 @@ public class NodeImpl implements Node {
         this.parent = parent;
         this.id = id;
         this.v = v;
+    }
+    
+    public boolean isSupported(String feature, String version) {
+        return false;
     }
     
     public int getId() {
