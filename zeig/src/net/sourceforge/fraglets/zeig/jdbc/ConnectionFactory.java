@@ -14,11 +14,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.Properties;
 import java.util.ResourceBundle;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class ConnectionFactory {
     
@@ -33,27 +34,30 @@ public class ConnectionFactory {
     
     private HashMap preparedStatements;
     
-    protected ConnectionFactory() throws ClassNotFoundException {
-        Class.forName("com.mysql.jdbc.Driver");
+    private Properties environment;
+    
+    public ConnectionFactory() {
+        this(null, null);
     }
     
-    public ConnectionFactory(String connectionUrl) {
-        this.connectionUrl = connectionUrl;
+    /**
+     * @param environment
+     */
+    public ConnectionFactory(Properties environment)  {
+        this(null, environment);
     }
-    
-    public static ConnectionFactory getInstance() throws SQLException {
-        if (instance == null) {
-            synchronized (ConnectionFactory.class) {
-                if (instance == null) {
-                    try {
-                        return instance = new ConnectionFactory();
-                    } catch (ClassNotFoundException ex) {
-                        throw new SQLException(ex.toString());
-                    }
-                }
-            }
+
+    public ConnectionFactory(String connectionUrl, Properties environment) {
+        this.environment = new Properties(System.getProperties());
+        if (environment != null) {
+            this.environment.putAll(environment);
         }
-        return instance;
+        if (connectionUrl != null) {
+            this.connectionUrl = connectionUrl;
+        } else {
+            this.connectionUrl = this.environment
+                .getProperty(RESOURCE_CONNECTION_URL);
+        }
     }
     
     public PreparedStatement prepareStatement(String sql) throws SQLException {
@@ -126,8 +130,13 @@ public class ConnectionFactory {
         if (connection == null) {
             synchronized (this) {
                 if (connection == null) {
-                    return connection = DriverManager
-                        .getConnection(getConnectionUrl()); 
+                    try {
+                        Class.forName("com.mysql.jdbc.Driver");
+                        return connection = DriverManager
+                            .getConnection(getConnectionUrl()); 
+                    } catch (ClassNotFoundException ex) {
+                        throw new SQLException("driver not found: "+ex);
+                    }
                 }
             }
         }
@@ -156,4 +165,10 @@ public class ConnectionFactory {
         connectionUrl = string;
     }
 
+    public synchronized void close() throws SQLException {
+        if (connection != null) {
+            connection.close();
+            connection = null;
+        }
+    }
 }

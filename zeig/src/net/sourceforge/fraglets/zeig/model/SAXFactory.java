@@ -35,7 +35,7 @@ import org.xml.sax.helpers.XMLReaderFactory;
 
 /**
  * @author unknown
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class SAXFactory implements ContentHandler {
     private NodeFactory nf;
@@ -270,7 +270,7 @@ public class SAXFactory implements ContentHandler {
 
     public static void main(String args[]) {
         try {
-            ConnectionFactory cf = ConnectionFactory.getInstance();
+            ConnectionFactory cf = new ConnectionFactory();
             NodeFactory nf = new NodeFactory(cf);
             SAXFactory sf = new SAXFactory(nf);
             XMLReader reader = createReader();

@@ -18,7 +18,7 @@ import org.xml.sax.SAXException;
 
 /**
  * @author unknown
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class SAXSerializer {
     private NodeFactory nf;
@@ -84,7 +84,7 @@ public class SAXSerializer {
     public static void main(String args[]) {
         try {
             SAXSerializer s = new SAXSerializer
-                (new NodeFactory(ConnectionFactory.getInstance()));
+                (new NodeFactory(new ConnectionFactory()));
             OutputFormat of = new OutputFormat();
             of.setIndent(1);
             XMLSerializer handler = new XMLSerializer(System.out, of);
