@@ -5,7 +5,7 @@
  * Created on 12. Juli 2002, 07:56
  */
 
-package net.sourceforge.fraglets.yaelp;
+package net.sourceforge.fraglets.yaelp.model;
 
 import junit.framework.*;
 import java.beans.PropertyChangeEvent;
