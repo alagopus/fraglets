@@ -29,9 +29,9 @@ import java.util.NoSuchElementException;
 
 import net.sourceforge.fraglets.codec.OTPHash;
 import net.sourceforge.fraglets.zeig.cache.CacheEntry;
-import net.sourceforge.fraglets.zeig.cache.SensorCache;
 import net.sourceforge.fraglets.zeig.cache.SimpleCache;
 import net.sourceforge.fraglets.zeig.dom.NodeImpl;
+import net.sourceforge.fraglets.zeig.eclipse.CorePlugin;
 import net.sourceforge.fraglets.zeig.jdbc.ConnectionFactory;
 
 import org.w3c.dom.Attr;
@@ -46,7 +46,7 @@ import org.xml.sax.SAXException;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class NodeFactory implements NodeTags {
     protected ConnectionFactory cf;
@@ -73,8 +73,8 @@ public class NodeFactory implements NodeTags {
     }
     
     private NodeFactory() {
-        this.nameCache = new SensorCache("node.name");
-        this.qnameCache = new SensorCache("node.qname");
+        this.nameCache = CorePlugin.newCache("node.name");
+        this.qnameCache = CorePlugin.newCache("node.qname");
     }
     
     public int getNamespace(String uri) throws SQLException {

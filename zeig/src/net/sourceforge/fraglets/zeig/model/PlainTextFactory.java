@@ -31,13 +31,13 @@ import java.util.NoSuchElementException;
 
 import net.sourceforge.fraglets.codec.OTPHash;
 import net.sourceforge.fraglets.zeig.cache.CacheEntry;
-import net.sourceforge.fraglets.zeig.cache.SensorCache;
 import net.sourceforge.fraglets.zeig.cache.SimpleCache;
+import net.sourceforge.fraglets.zeig.eclipse.CorePlugin;
 import net.sourceforge.fraglets.zeig.jdbc.ConnectionFactory;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class PlainTextFactory {
     private ConnectionFactory cf;
@@ -47,8 +47,8 @@ public class PlainTextFactory {
     
     public PlainTextFactory(ConnectionFactory cf) {
         this.cf = cf;
-        this.plainCache = new SensorCache("plain.text");
-        this.valueCache = new SensorCache("plain.value");
+        this.plainCache = CorePlugin.newCache("plain.text");
+        this.valueCache = CorePlugin.newCache("plain.value");
     }
     
     public int getPlainText(String text) throws SQLException {
