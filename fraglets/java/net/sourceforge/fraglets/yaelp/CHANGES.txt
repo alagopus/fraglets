@@ -1,3 +1,18 @@
+Changes for version 1.12 and 1.11:
+    - Tightened guild tracking.
+    - More filter settings.
+    - Fix getProperty for name.
+    - Use fireNewProperty.
+    - Fix getProperties for empty properties.
+    - Fix hashCode for null name.
+    - Add normalizeName.
+    - Fix canonicalName for names including spaces.
+    - Allow adding new properties.
+    - Added property editor.
+    - Added extra avatar properties.
+    - Added skill advance parsing.
+    - Normalize avatar names.
+
 Changes for version 1.10:
     - Make EqlogParser ignore empty lines. These seem to occur recently.
 
