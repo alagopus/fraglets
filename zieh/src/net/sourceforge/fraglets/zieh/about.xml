@@ -2,7 +2,7 @@
 <dialog name="dialog" icon="/icons/information.gif"
 		text="About Zieh" modal="true"
 		columns="1" gap="4" top="4" left="4" bottom="4" right="4" >
-	<label text="Zieh sftp frontent" alignment="center" weightx="1" />
+	<label text="Zieh sftp frontend" alignment="center" weightx="1" />
 	<separator />
 	<label text=" Copyright © 2003 Klaus Rennecke.  "/>
 	<label text=" &lt;marion@users.sourceforge.net&gt; " alignment="center" />
