@@ -1,3 +1,6 @@
+Changes for version 1.17:
+    - Fixed predefined guilds not appearing in cell editor.
+
 Changes for version 1.16:
     - Made an applet version. Has to be signed though.
     - Update timestamp when editing roster.

@@ -68,7 +68,7 @@ import javax.swing.RepaintManager;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.20 $
+ * @version $Revision: 1.21 $
  */
 public class RosterFrame extends javax.swing.JFrame {
     /** The file chooser map used to select files to parse and export.
@@ -173,6 +173,14 @@ public class RosterFrame extends javax.swing.JFrame {
         rosterTable.setDefaultRenderer(Object.class, new AvatarCellRenderer());
         TransferableTableSelection.createTableGestureListener(rosterTable);
         
+        // set editors
+        Avatar.CHANGE.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+            public void propertyChange(java.beans.PropertyChangeEvent ev) {
+                updateEditor(ev.getNewValue());
+            }
+        });
+        initEditors();
+        
         // make this filter item bold to match element rendering
         mainFilterItem.setFont(mainFilterItem.getFont().deriveFont(Font.BOLD));
 
@@ -218,14 +226,6 @@ public class RosterFrame extends javax.swing.JFrame {
         ssStyleItem.addActionListener(styleSelection);
         styleButtonGroup.add(vlStyleItem);
         vlStyleItem.addActionListener(styleSelection);
-        
-        // set editors
-        Avatar.CHANGE.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
-            public void propertyChange(java.beans.PropertyChangeEvent ev) {
-                updateEditor(ev.getNewValue());
-            }
-        });
-        initEditors();
     }
 
     /** This method is called from within the constructor to
@@ -1878,7 +1878,7 @@ public class RosterFrame extends javax.swing.JFrame {
                 }
             }
             aboutText =
-            "YAELP log file parser, version 1.16.\n"+
+            "YAELP log file parser, version 1.17.\n"+
             "Copyright © 2001, 2002 Klaus Rennecke.\n"+
             "XML parser Copyright © 1997, 1998 James Clark.\n"+
             "XSL transformation Copyright © 1998, 1999 James Clark.\n"+
