@@ -29,7 +29,7 @@ import org.w3c.dom.Element;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  */
 public class DOMObjectFactory implements ObjectFactory {
 
@@ -88,14 +88,14 @@ public class DOMObjectFactory implements ObjectFactory {
     }
     
     public Object transform(final DOMContext ctx, Object obj, final Name name) {
-        if (obj instanceof Document
+        String media = ctx.getProperty(DOMContext.PRESENTATION_MEDIA);
+        if (obj instanceof Document && !media.equals("verbatim")
             && System.getProperty("javax.xml.transform.TransformerFactory")
                 != null) {
             try {
                 // 1. Instantiate the TransformerFactory.
                 TransformerFactory tFactory = TransformerFactory.newInstance();
                 // 2a. Get the stylesheet from the XML source.
-                String media = ctx.getProperty(DOMContext.PRESENTATION_MEDIA);
                 String title = null;
                 String charset = ctx.getProperty(DOMContext.PRESENTATION_CHARSET);
                 Source input = new DOMSource((Document)obj);
