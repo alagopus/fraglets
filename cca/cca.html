@@ -1,0 +1,126 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <style type="text/css">
+      .body { background:#FFFFFF; font-family:arial,helvetica,sans-serif; color:#000000; }
+      .header { font-size:12pt; font-weight:bold; }
+      pre { font-family:courier,serif; background-color:#CCCCCC; border:1; }
+      code { font-family:courier,serif; }
+      .small { font-size:8pt; font-weight:bold; }
+      .tabledata { font-size:8pt; }
+      .hostedby { font-size:8pt; font-weight:bold; color:#FFFFFF; }
+      .tableheader { font-size:8pt; font-weight:bold; color:#FFFFFF; background-color:#000033; }
+      .table { border-width:thin; border-color:#000033; }
+   </style>
+</head>
+<body class="body" leftmargin="0" topmargin="0">
+<p><a name="cvshistory"><span class="small">CVSHistory</span><br>
+The CVSHistory element is a ModificationSet emulating the standard CVS
+ModificationSet but working over HTTP exclusively if required. This may
+speed up
+the modification detection considerably, and may help with firewall
+traversal and / or access permissions as well. In contrast to the
+standard CVS ModificationSet, It requires no local CVS client
+installation.<br>
+Prerequisites for using CVSHistory:<br>
+</a></p>
+<ol>
+  <li>History logging must be enabled on the repository to monitor.
+Create an empty history file in CVSROOT if it does not exist. Note that
+this has a minor performance impact on CVS modifications. See the CVS
+documentation for details. If the history file gows too large, you can
+remove older entries regularly once they are not needed any longer.<br>
+  </li>
+  <li>The history file must be mapped into URL space, making it
+available via HTTP. This can be done by creating a soft link to the
+history file from somewhere in the document space of the web server
+running on the repository machine. Alternatively, you can access the
+history as a plain file, directly from the repository or downloaded
+using other means.<br>
+  </li>
+  <li>The history file does include neither information about branches
+nor log messages. If you need branch-level sensitivity or log message
+support, the repository must be enabled for viewcvs browsing. See
+http://viewcvs.sourceforge.net/ for installation details. This has been
+tested with viewcvs version 0.9.2.</li>
+</ol>
+Note that if you want to pull the sources from CVS using viewcvs as
+well, you will probably want to apply <a
+ href="http://sourceforge.net/tracker/download.php?group_id=18760&amp;atid=118760&amp;file_id=78272&amp;aid=906038">the
+GNUTAR patch to viewcvs</a>. Otherwise, at least for Java sources, it
+will be very likely that some file names will be truncated.<br>
+<br>
+<a name="cvs"> </a>
+<table cellpadding="3" cellspacing="1" border="0">
+  <tbody>
+    <tr>
+      <td class="tableheader">Attribute</td>
+      <td class="tableheader">Required</td>
+      <td class="tableheader">Description</td>
+    </tr>
+    <tr>
+      <td class="tabledata">historyurl</td>
+      <td colspan="1" rowspan="2" class="tabledata">One of</td>
+      <td class="tabledata">The URL where to fetch the history file.
+Required if historyfilename is not specified.<i></i></td>
+    </tr>
+    <tr>
+      <td class="tabledata">historyfilename</td>
+      <td class="tabledata">The file name where to access the history
+file. This is an alternative method to access the history. Required if
+historyurl is not specified.</td>
+    </tr>
+    <tr>
+      <td class="tabledata">viewcvsurl</td>
+      <td class="tabledata">No</td>
+      <td class="tabledata">The base URL of the viewcvs gateway to the
+repository. Required for branch and log message support.<br>
+      </td>
+    </tr>
+    <tr>
+      <td class="tabledata">property</td>
+      <td class="tabledata">No</td>
+      <td class="tabledata"> Set this property if a modification has
+occurred. For use in conditionally controlling the build later. </td>
+    </tr>
+    <tr>
+      <td class="tabledata">propertyondelete</td>
+      <td class="tabledata">No</td>
+      <td class="tabledata"> Set this property if a file has been
+deleted. For use in conditionally controlling the build later.</td>
+    </tr>
+  </tbody>
+</table>
+<ul>
+  <p><a name="cvshistory.module"><span class="small">Module</span><br>
+Nested element of CVSHistory, defining a module to look for in the
+repository. Module names are relative to the repository root. </a></p>
+  <a name="property"> </a>
+  <table cellpadding="3" cellspacing="1" border="0">
+    <tbody>
+      <tr>
+        <td class="tableheader">ttribute</td>
+        <td class="tableheader">Required</td>
+        <td class="tableheader">Description</td>
+      </tr>
+      <tr>
+        <td class="tabledata">name</td>
+        <td class="tabledata">Yes</td>
+        <td class="tabledata" rowspan="1">Relative path name of the
+module in the repository. Always use the canonical name, not aliases
+from CVSROOT/modules.<br>
+        </td>
+      </tr>
+      <tr>
+        <td class="tabledata">branch</td>
+        <td class="tabledata">No</td>
+        <td class="tabledata" rowspan="1">Branch tag for this module.
+If not specified, all branches are included in the modification set.
+You must provide a viewcvs URL if you need branch support.<br>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</ul>
+</body>
+</html>
