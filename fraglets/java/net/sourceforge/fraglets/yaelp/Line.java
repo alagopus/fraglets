@@ -27,63 +27,59 @@ import java.util.Locale;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class Line {
+    public static final String PREFIX = "[Sun Apr 01 16:38:57 2001] ";
+    
+    public static final int TIMESTAMP_START = 1;
+    public static final int TIMESTAMP_END = PREFIX.length()-2;
+    public static final int LINE_START = PREFIX.length();
+    
     /** Temporary time stamp specification until first parse. */
     private String timespec;
 
     /** Holds value of property timestamp. */
     private long timestamp;
     
+    private boolean timestampValid;
+    
     /** Timestamp format for lazy parsing. */
     public static final SimpleDateFormat timestampFormat =
         new SimpleDateFormat("EEE MMM dd HH:mm:ss yyyy", Locale.US);
 
-    /** Holds value of property chars. */
-    private char[] chars;    
+    private char[] buffer;
+    
+    /** Holds value of property part. */
+    private char[] part;
+    
+    private int off;
+    
+    private int len;
     
     /** Creates new Line
-     * @param timestamp timestamp for the new line
-     * @param words words on the new line
      */
-    public Line(long timestamp, char chars[]) {
-        this.timestamp = timestamp;
-        this.chars = chars;
-    }
-    
-    /** Creates new Line
-     * @param timestamp timestamp for the new line
-     * @param words words on the new line
-     */
-    public Line(Date timestamp, char chars[]) {
-        this.timestamp = timestamp.getTime();
-        this.chars = chars;
-    }
-
-    /** Creates new Line
-     * @param timespec timestamp specification, parsed when needed
-     * @param chars words on the new line
-     */
-    public Line(String timespec, char chars[]) {
-        recycle(timespec, chars);
+    public Line() {
     }
     
     /** Recycle this instance, initializing it with new values.
      * @param timespec timestamp specification, parsed when needed
-     * @param chars words on the new line */    
-    public void recycle(String timespec, char chars[]) {
-        this.timespec = timespec;
-        this.chars = chars;
+     * @param buffer words on the new line */    
+    public void recycle(char buffer[], int off, int len) {
+        this.timestampValid = false;
+        this.buffer = buffer;
+        this.part = null;
+        this.off = off + LINE_START;
+        this.len = len - LINE_START;
     }
     
     /** Getter for property timestamp.
      * @return Value of property timestamp.
      */
     public long getTimestamp() {
-        String spec = timespec;
-        if (spec != null) try {
-            timespec = null;
+        if (!timestampValid) try {
+            timestampValid = true;
+            String spec = new String(buffer, off - LINE_START + TIMESTAMP_START, TIMESTAMP_END - TIMESTAMP_START);
             timestamp = timestampFormat.parse(spec).getTime();
         } catch (ParseException ex) {
             // doh, leave timestamp alone....
@@ -112,7 +108,7 @@ public class Line {
         StringBuffer buf = new StringBuffer();
         buf.append(timestamp);
         buf.append("@");
-        buf.append(chars);
+        buf.append(buffer, off, len);
         return buf.toString();
     }
     
@@ -120,11 +116,15 @@ public class Line {
      * @return Value of property chars.
      */
     public char[] getChars() {
-        return chars;
+        if (part == null) {
+            part = new char[len];
+            System.arraycopy(buffer, off, part, 0, len);
+        }
+        return part;
     }
     
     public int getLength() {
-        return chars.length;
+        return len;
     }
     
     /** Indexed getter for property char.
@@ -132,7 +132,7 @@ public class Line {
      * @return Value of the property at <CODE>index</CODE>.
      */
     public char getChar(int index) {
-        return chars[index];
+        return buffer[off + index];
     }
     
     /** Check whether this line starts with the characters
@@ -140,7 +140,7 @@ public class Line {
      * @param other the characters to compare to
      * @return true if <var>other</var> characters compare equal */    
     public boolean startsWith(char[] other) {
-        if (chars.length >= other.length) {
+        if (len >= other.length) {
             return compareTo(0, other, 0, other.length);
         } else {
             return false;
@@ -152,7 +152,7 @@ public class Line {
      * @param other the characters to compare to
      * @return true if <var>other</var> characters compare equal */    
     public boolean endsWith(char[] other) {
-        int lineOff = chars.length - other.length;
+        int lineOff = len - other.length;
         if (lineOff >= 0) {
             return compareTo(lineOff, other, 0, other.length);
         } else {
@@ -170,9 +170,11 @@ public class Line {
      * @param len length of consecutive characters to compare
      * @return true if all characters in <var>len</var> compare equal */
     public boolean compareTo(int lineOff, char other[], int otherOff, int len) {
-        char chars[] = this.chars;
-        if (lineOff + len > chars.length) {
+        char chars[] = this.buffer;
+        if (lineOff + len > this.len) {
             return false;
+        } else {
+            lineOff += this.off;
         }
         while (--len >= 0) {
             if (chars[lineOff++] != other[otherOff++]) {
@@ -183,11 +185,12 @@ public class Line {
     }
     
     public int indexOf(int start, char ch) {
-        char chars[] = this.chars;
-        int end = chars.length;
+        char chars[] = this.buffer;
+        int end = off + len;
+        start += off;
         while (start < end) {
             if (chars[start] == ch) {
-                return start;
+                return start - off;
             } else {
                 start += 1;
             }
@@ -199,14 +202,14 @@ public class Line {
      * @param off starting offset for the desired string
      * @param len length of the desired string
      * @return the created String */
-    public String substring(int off, int len) {
-        return new String(chars, off, len - off);
+    public String substring(int off, int end) {
+        return new String(buffer, this.off + off, end - off);
     }
     
     /** Create a String as a substring of this line.
      * @param off starting offset for the desired string
      * @return the created String */
     public String substring(int off) {
-        return new String(chars, off, chars.length - off);
+        return substring(off, this.len - off);
     }
 }

@@ -33,15 +33,9 @@ import java.util.zip.GZIPInputStream;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public class EqlogParser {
-    public static final String PREFIX = "[Sun Apr 01 16:38:57 2001] ";
-    
-    public static final int TIMESTAMP_START = 1;
-    public static final int TIMESTAMP_END = PREFIX.length()-2;
-    public static final int LINE_START = PREFIX.length();
-    
     protected Reader in;
     
     protected char buffer[];
@@ -100,13 +94,16 @@ public class EqlogParser {
         search: for(;;) {
             if (scan >= end) {
                 scan = scan - off;
+                last = last - off;
                 if (!fill()) {
                     if (scan == 0) {
                         return false; // end of file
                     }
+                    last = last + off;
                     break search;
                 }
-                scan = off + scan;
+                last = last + off;
+                scan = scan + off;
                 end = off + len;
             }
             switch (buffer[scan++]) {
@@ -135,11 +132,8 @@ public class EqlogParser {
         off += scan;
         scan = last - start;
         
-        if (last - start >= LINE_START) {
-            String timestamp = new String(buffer, start + TIMESTAMP_START, TIMESTAMP_END - TIMESTAMP_START);
-            char rest[] = new char[scan - LINE_START];
-            System.arraycopy(buffer, start + LINE_START, rest, 0, scan - LINE_START);
-            line.recycle(timestamp, rest);
+        if (scan >= Line.LINE_START) {
+            line.recycle(buffer, start, scan);
             return true;
         } else {
             throw new IOException("invalid log file format :'"+new String(buffer, start, scan)+"'");
@@ -165,7 +159,7 @@ public class EqlogParser {
             in = new FileReader(file);
         }
         EqlogParser parser = new EqlogParser(in);
-        Line line = new Line(0L, (char[])null);
+        Line line = new Line();
         int n = 0;
         try {
             for (;;) {
