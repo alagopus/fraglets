@@ -1,9 +1,9 @@
 #
-# $Id: javadepend,v 1.1 2000-04-29 10:16:42 marion Exp $
+# $Id: javadepend,v 1.2 2000-04-29 11:21:46 marion Exp $
 # 
 # javadepend.sh - Simplistic dependencies generator for java.
 # Jul 24 1997 by marion
-# (C) Copyright 1997,1998 Klaus Rennecke (marion@sourceforge.net)
+# (C) Copyright 1997,1998 Klaus Rennecke (marion@users.sourceforge.net)
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
