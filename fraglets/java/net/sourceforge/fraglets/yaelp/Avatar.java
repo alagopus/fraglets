@@ -24,7 +24,7 @@ package de.rennecke.yaelp;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author Klaus Rennecke
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class Avatar {
 
@@ -32,16 +32,16 @@ public class Avatar {
     private int level;
     
     /** Holds value of property name. */
-    private Word name;
+    private String name;
     
     /** Holds value of property clazz. */
-    private Word clazz;
+    private Clazz clazz;
     
     /** Holds value of property guild. */
     private Guild guild;
     
     /** Holds value of property zone. */
-    private Word zone;
+    private Zone zone;
     
     /** Holds value of property culture. */
     private Culture culture;
@@ -73,28 +73,28 @@ public class Avatar {
     /** Getter for property name.
      * @return Value of property name.
      */
-    public Word getName() {
+    public String getName() {
         return name;
     }
     
     /** Setter for property name.
      * @param name New value of property name.
      */
-    public void setName(Word name) {
+    public void setName(String name) {
         this.name = name;
     }
     
     /** Getter for property clazz.
      * @return Value of property clazz.
      */
-    public Word getClazz() {
+    public Clazz getClazz() {
         return clazz;
     }
     
     /** Setter for property clazz.
      * @param clazz New value of property clazz.
      */
-    public void setClazz(Word clazz) {
+    public void setClazz(Clazz clazz) {
         this.clazz = clazz;
     }
     
@@ -115,14 +115,14 @@ public class Avatar {
     /** Getter for property zone.
      * @return Value of property zone.
      */
-    public Word getZone() {
+    public Zone getZone() {
         return zone;
     }
     
     /** Setter for property zone.
      * @param zone New value of property zone.
      */
-    public void setZone(Word zone) {
+    public void setZone(Zone zone) {
         this.zone = zone;
     }
     
@@ -169,5 +169,4 @@ public class Avatar {
     public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
     }
-    
 }

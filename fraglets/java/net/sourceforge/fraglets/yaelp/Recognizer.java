@@ -27,60 +27,20 @@ import java.util.Iterator;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author  Klaus Rennecke
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class Recognizer implements Vocabulary {
     /** Known avatars. */
     protected HashMap avatars = new HashMap();
     /** The number of lines recognized. */
     protected int lines;
+    /** THe who line parser. */
+    protected WhoLine whoLine = new WhoLine();
     
     /** Creates new Recognizer */
     public Recognizer() {
     }
 
-    /** Determine whether the word(s) on the <var>line</var>
-     * beginning at position <var>start</var> are a known
-     * culture name.
-     * @param line line to look at
-     * @param start start position in line to look at
-     * @return true iff the words at start are a valid culture name
-     */    
-    public static boolean isRace(Line line, int start)
-    {
-        Word word = line.getWord(start);
-        if (word == W_Barbarian || word == W_Dwarf || word == W_Erudite ||
-            word == W_Gnome || word == W_Halfling || word == W_Human ||
-            word == W_Iksar || word == W_Ogre || word == W_Troll) {
-            return true;
-        } else if (start+1 >= line.getLength()) {
-            return false;
-        } else if (word == W_Dark || word == W_Half ||
-                   word == W_High || word == W_Wood) {
-            return line.getWord(start+1) == W_Elf;
-        } else {
-            return false;
-        }
-    }
-    
-    /** Determine whether the word in <var>line</var> at position
-     * <var>index</var> is a numeric expression.
-     * @param line the line to look at
-     * @param index index to the word in line to examine
-     * @return true iff the word at index is a numeric expression
-     */    
-    public static boolean isNumeric(Line line, int index)
-    {
-        String text = line.getWord(index).toString();
-        int scan = text.length();
-        while (--scan >= 0) {
-            if (!Character.isDigit(text.charAt(scan))) {
-                return false;
-            }
-        }
-        return true;
-    }
-    
     /** Determine whether the specified <var>line</var> is a result
      * from a <code>/who</code> invocation.
      * @param line the line to examine
@@ -89,13 +49,20 @@ public class Recognizer implements Vocabulary {
     public static boolean isWhoLine(Line line)
     {
         try {
-            if (line.getWord(line.getLength()-2) == W_ZONE) {
-                return isNumeric(line, 0);
-            } else if (line.getWord(0) == W_ANONYMOUS) {
-                return line.getLength() > 1;
-            } else {
-                return false;
+            if (line.getChar(0) == '[') switch(line.getChar(1)) {
+                case '1': case '2': case '3': case '4': case '5':
+                case '6': case '7': case '8': case '9': case 'A':
+                    return true;
             }
+            return false;
+            // does not work....            
+//            if (line.getWord(line.getLength()-2) == W_ZONE) {
+//                return isNumeric(line, 0);
+//            } else if (line.getWord(0) == W_ANONYMOUS) {
+//                return line.getLength() > 1;
+//            } else {
+//                return false;
+//            }
         } catch (ArrayIndexOutOfBoundsException ex) {
             return false;
         }
@@ -111,9 +78,9 @@ public class Recognizer implements Vocabulary {
      * @param zone zone the avatar was last seen in
      * @return the updated or created avatar
      */    
-    protected Avatar updateAvatar(long timestamp, Word name,
-                                  int level, Word clazz, Word culture[],
-                                  Word guild[], Word zone) {
+    protected Avatar updateAvatar(long timestamp, String name,
+                                  int level, Clazz clazz, Culture culture,
+                                  Guild guild, Zone zone) {
         Avatar result = (Avatar)avatars.get(name.toString());
         if (result == null) {
             result = new Avatar(timestamp);
@@ -126,10 +93,10 @@ public class Recognizer implements Vocabulary {
             result.setClazz(clazz);
         }
         if (culture != null) {
-            result.setCulture(Culture.create(culture));
+            result.setCulture(culture);
         }
         if (guild != null) {
-            result.setGuild(Guild.create(guild));
+            result.setGuild(guild);
         }
         if (level > 0) {
             result.setLevel(level);
@@ -149,50 +116,184 @@ public class Recognizer implements Vocabulary {
      */    
     public Avatar parseWhoLine(Line line) {
         lines += 1;
-        
         try {
-            int index = 0;
-            int level = Integer.parseInt(line.getWord(index++).toString());
-            Word clazz = line.getWord(index++);
-            Word name = line.getWord(index++);
-            Word word = line.getWord(index++);
-            Word culture[];
-            if (word == W_Dark || word == W_Half ||
-                word == W_High || word == W_Wood) {
-                culture = new Word[] {word, line.getWord(index++)};
+            return whoLine.parse(line);
+        } catch (SyntaxError err) {
+            System.err.println("syntax error in line: "+line);
+            err.printStackTrace();
+            return null;
+        }
+    }
+    public static class SyntaxError extends Error {
+        public SyntaxError(String message) {
+            super(message);
+        }
+    }
+    protected class WhoLine {
+        char input[];
+        int position;
+        public WhoLine() {
+        }
+        public Avatar parse(Line line) {
+            this.input = line.getChars();
+            this.position = 0;
+            parseCharacter('[');
+            int level;
+            Clazz clazz;
+            if (input[position] == 'A') {
+                parseAnonymous();
+                level = 0;
+                clazz = null;
             } else {
-                culture = new Word[] {word};
+                level = parseLevel();
+                parseSpace();
+                clazz = parseClazz();
             }
-            int end = line.getLength() - 2;
-            Word guild[] = new Word[end - index];
-            for (int i = 0; index < end; i++) {
-                guild[i] = line.getWord(index++);
-            }
-            Word zone = line.getWord(end+1);
-            return updateAvatar(line.getTimestamp(), name, level,
-                                clazz, culture, guild, zone);
-        } catch (NumberFormatException ex) {
-            // anonymous line
-            if (line.getWord(0) == W_ANONYMOUS) {
-                int end = line.getLength();
-                int index = 1;
-                Word name = line.getWord(index++);
-                if (end > index) {
-                    Word guild[] = new Word[end - index];
-                    for (int i = 0; index < end; i++) {
-                        guild[i] = line.getWord(index++);
-                    }
-                    return updateAvatar(line.getTimestamp(), name, -1,
-                                        null, null, guild, null);
-                } else {
-                    return updateAvatar(line.getTimestamp(), name, -1,
-                                        null, null, null, null);
-                }
-            } else {
+            parseCharacter(']');
+            parseSpace();
+            String name = parseName();
+            if (name == null) {
+                // bug in who, empty name and zone...
                 return null;
             }
-        } catch (ArrayIndexOutOfBoundsException ex) {
+            skipSpace();
+            Culture culture = null;
+            if (position < input.length) {
+                if (input[position] == '(') {
+                    culture = parseCulture();
+                    skipSpace();
+                }
+            }
+            Guild guild = null;
+            if (position < input.length) {
+                if (input[position] == '<') {
+                    guild = parseGuild();
+                    skipSpace();
+                }
+            }
+            Zone zone = null;
+            if (position < input.length) {
+                if (input[position] == 'Z') {
+                    zone = parseZone();
+                    skipSpace();
+                }
+            }
+            if (position < input.length) {
+                if (input[position] == 'L') {
+                    parseLFG();
+                }
+            }
+            if (position < input.length) {
+                System.err.println("extra input at end: \""+
+                    new String(input, position, input.length-position)+"\"");
+            }
+            return updateAvatar(line.getTimestamp(), name, level, clazz, culture, guild, zone);
+        }
+        public void skipSpace() {
+            try {
+                while (input[position] == ' ')
+                    position++;
+            } catch (ArrayIndexOutOfBoundsException ex) {
+                // end
+            }
+        }
+        public void parseSpace() {
+            if (input[position++] != ' ') {
+                throw new SyntaxError("space expected at "+position);
+            }
+        }
+        public void parseCharacter(char c) {
+            if (input[position++] != c) {
+                throw new SyntaxError("character '"+c+"' expected at "+position);
+            }
+        }
+        public int parseLevel() {
+            int start = position;
+            while (Character.isDigit(input[position]))
+                position++;
+            if (start == position) {
+                throw new NumberFormatException("no number at "+start);
+            } else {
+                return Integer.parseInt(new String(input, start, position-start));
+            }
+        }
+        public Clazz parseClazz() {
+            if (Character.isUpperCase(input[position])) {
+                int start = position;
+                while (Character.isLetter(input[position]) || input[position] == ' ')
+                    position++;
+                if (start < position) {
+                    return Clazz.create(new String(input, start, position-start));
+                }
+            }
             return null;
+        }
+        public void parseAnonymous() {
+            parseCharacter('A');
+            parseCharacter('N');
+            parseCharacter('O');
+            parseCharacter('N');
+            parseCharacter('Y');
+            parseCharacter('M');
+            parseCharacter('O');
+            parseCharacter('U');
+            parseCharacter('S');
+        }
+        public void parseLFG() {
+            parseCharacter('L');
+            parseCharacter('F');
+            parseCharacter('G');
+        }
+        public String parseName() {
+            if (Character.isUpperCase(input[position])) {
+                int start = position;
+                try {
+                    while (Character.isLetter(input[position]))
+                        position++;
+                } catch (ArrayIndexOutOfBoundsException ex) {
+                    // end
+                }
+                if (start < position) {
+                    return new String(input, start, position-start);
+                }
+            }
+            return null;
+        }
+        public Zone parseZone() {
+            parseCharacter('Z');
+            parseCharacter('O');
+            parseCharacter('N');
+            parseCharacter('E');
+            parseCharacter(':');
+            parseSpace();
+            int start = position;
+            try {
+                while (Character.isLetterOrDigit(input[position]))
+                    position++;
+            } catch (ArrayIndexOutOfBoundsException ex) {
+                // end
+            }
+            if (start == position) {
+                return null;
+            } else {
+                return Zone.create(new String(input, start, position-start));
+            }
+        }
+        public Culture parseCulture() {
+            parseCharacter('(');
+            int start = position;
+            while (Character.isLetter(input[position]) || input[position] == ' ')
+                position++;
+            parseCharacter(')');
+            return Culture.create(new String(input, start, position-start-1));
+        }
+        public Guild parseGuild() {
+            parseCharacter('<');
+            int start = position;
+            while (Character.isLetter(input[position]) || input[position] == ' ')
+                position++;
+            parseCharacter('>');
+            return Guild.create(new String(input, start, position-start-1));
         }
     }
     

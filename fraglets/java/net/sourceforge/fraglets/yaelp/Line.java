@@ -28,7 +28,7 @@ import java.util.Locale;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author  kre
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class Line {
     /** Temporary time stamp specification until first parse. */
@@ -37,39 +37,38 @@ public class Line {
     /** Holds value of property timestamp. */
     private long timestamp;
     
-    /** Holds value of property words. */
-    private Word[] words;
-    
     /** Timestamp format for lazy parsing. */
     public static final SimpleDateFormat timestampFormat =
         new SimpleDateFormat("EEE MMM dd HH:mm:ss yyyy", Locale.US);
 
+    /** Holds value of property chars. */
+    private char[] chars;    
     
     /** Creates new Line
      * @param timestamp timestamp for the new line
      * @param words words on the new line
      */
-    public Line(long timestamp, Word[] words) {
+    public Line(long timestamp, char chars[]) {
         this.timestamp = timestamp;
-        this.words = words;
+        this.chars = chars;
     }
     
     /** Creates new Line
      * @param timestamp timestamp for the new line
      * @param words words on the new line
      */
-    public Line(Date timestamp, Word[] words) {
+    public Line(Date timestamp, char chars[]) {
         this.timestamp = timestamp.getTime();
-        this.words = words;
+        this.chars = chars;
     }
 
     /** Creates new Line
      * @param timespec timestamp specification, parsed when needed
      * @param words words on the new line
      */
-    public Line(String timespec, Word[] words) {
+    public Line(String timespec, char chars[]) {
         this.timespec = timespec;
-        this.words = words;
+        this.chars = chars;
     }
     
     /** Getter for property timestamp.
@@ -100,20 +99,6 @@ public class Line {
         this.timestamp = timestamp.getTime();
     }
     
-    /** Getter for property words.
-     * @return Value of property words.
-     */
-    public Word[] getWords() {
-        return words;
-    }
-    
-    /** Setter for property words.
-     * @param words New value of property words.
-     */
-    public void setWords(Word[] words) {
-        this.words = words;
-    }
-    
     /** Create an external string representation of this line.
      * @return the string representation
      */    
@@ -121,33 +106,22 @@ public class Line {
         StringBuffer buf = new StringBuffer();
         buf.append(timestamp);
         buf.append("@");
-        for (int i = 0; i < words.length; i++) {
-            buf.append(i > 0 ? ",'" : "'").append(words[i]).append('\'');
-        }
+        buf.append(chars);
         return buf.toString();
     }
     
-    /** Indexed getter for property word.
+    /** Getter for property chars.
+     * @return Value of property chars.
+     */
+    public char[] getChars() {
+        return chars;
+    }
+    
+    /** Indexed getter for property char.
      * @param index Index of the property.
      * @return Value of the property at <CODE>index</CODE>.
      */
-    public Word getWord(int index) {
-        return words[index];
+    public char getChar(int index) {
+        return chars[index];
     }
-    
-    /** Indexed setter for property word.
-     * @param index Index of the property.
-     * @param word New value of the property at <CODE>index</CODE>.
-     */
-    public void setWord(int index, Word word) {
-        words[index] = word;
-    }
-    
-    /** Getter for property length.
-     * @return Value of property length.
-     */
-    public int getLength() {
-        return words.length;
-    }
-    
 }

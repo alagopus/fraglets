@@ -25,22 +25,19 @@ import java.util.HashMap;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author  Klaus Rennecke
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class Guild {
-
     /** Holds value of property name. */
     private String name;
     /** The map to register shared guilds. */
     protected static HashMap shared = new HashMap();
-    
     /** Creates new Guild
      * @param name name of the new guild
      */
     protected Guild(String name) {
         this.name = name;
     }
-    
     /** Create or reference a guild.
      * @param name name of the guild to create or reference
      * @return the created or already existing guild
@@ -53,29 +50,18 @@ public class Guild {
         }
         return result;
     }
-
-    /** Create or reference a guild.
-     * @param words name of the guild to create or reference
-     * @return the created or already existing guild
-     */    
-    public static Guild create(Word words[]) {
-        return create(Word.toString(words));
-    }
-
     /** Getter for property name.
      * @return Value of property name.
      */
     public String getName() {
         return name;
     }
-    
     /** Create an external string representation of this guild.
      * @return the string representation
      */    
     public String toString() {
         return name;
     }
-    
     /** Compare to another guild
      * @param other the other guild to compare to
      * @return true iff the other guild is identical to this
@@ -83,12 +69,10 @@ public class Guild {
     public boolean equals(Object other) {
         return other == this;
     }
-    
     /** Compute a hash code for this guild.
      * @return the computed hash code
      */    
     public int hashCode() {
         return name.hashCode();
     }
-    
 }
