@@ -15,6 +15,7 @@ import java.util.Hashtable;
 import java.util.NoSuchElementException;
 import java.util.Properties;
 
+import javax.naming.AuthenticationException;
 import javax.naming.Binding;
 import javax.naming.CompositeName;
 import javax.naming.CompoundName;
@@ -27,6 +28,7 @@ import javax.naming.NameNotFoundException;
 import javax.naming.NameParser;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
+import javax.naming.NoPermissionException;
 import javax.naming.NotContextException;
 import javax.naming.spi.NamingManager;
 
@@ -41,10 +43,11 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.14 $
+ * @version $Revision: 1.15 $
  */
 public class DOMContext implements Context {
     /** Context option. */
@@ -221,10 +224,16 @@ public class DOMContext implements Context {
         Element in = lookupElement(atom);
 
         if (nm.size() == 1) {
-            binding.getDocumentElement().removeChild(in);
-            // just in case it's a context
-            if (context != null) {
-                context.remove(atom);
+            try {
+                binding.getDocumentElement().removeChild(in);
+                connectionContext.getVersionFactory()
+                    .addVersion(ve, ((DocumentImpl)binding).getId(), 0);
+                // just in case it's a context
+                if (context != null) {
+                    context.remove(atom);
+                }
+            } catch (Exception ex) {
+                throw namingException(atom, ex);
             }
         } else {
             getSubContext(atom).unbind(nm.getSuffix(1));
@@ -571,15 +580,43 @@ public class DOMContext implements Context {
     }
     
     public static NamingException namingException(String message, Throwable t) {
-        NamingException result = new NamingException(message);
+        NamingException result;
+        switch (getErrorCode(t)) {
+            case 1045 :
+                result =
+                    message == null
+                        ? new AuthenticationException()
+                        : new AuthenticationException(message);
+                break;
+            case 1044 :
+                result =
+                    message == null
+                        ? new NoPermissionException()
+                        : new NoPermissionException(message);
+                break;
+            default :
+                result =
+                    message == null
+                        ? new NamingException()
+                        : new NamingException(message);
+                break;
+        }
         result.setRootCause(t);
         return result;
     }
     
     public static NamingException namingException(Throwable t) {
-        NamingException result = new NamingException();
-        result.setRootCause(t);
-        return result;
+        return namingException(null, t);
+    }
+    
+    protected static int getErrorCode(Throwable t) {
+        if (t instanceof SQLException) {
+            return ((SQLException)t).getErrorCode();
+        } else if (t instanceof SAXException){
+            return getErrorCode(((SAXException)t).getException());
+        } else {
+            return 0;
+        }
     }
     
     public static class DOMNames implements NamingEnumeration {
