@@ -43,6 +43,7 @@ public class EqXMLParser implements DocumentHandler {
     
     protected String avatarName;
     protected long avatarTimestamp;
+    protected long guildTimestamp;
     protected String avatarCulture;
     protected String avatarClass;
     protected int avatarLevel;
@@ -84,7 +85,10 @@ public class EqXMLParser implements DocumentHandler {
             Avatar.Zone zone = avatarZone == null ? null :
                 Avatar.Zone.create(avatarZone);
             Avatar avatar = recognizer.updateAvatar
-                (avatarTimestamp, avatarName, avatarLevel, clazz, culture, guild, zone);
+                (avatarTimestamp, avatarName, avatarLevel, clazz, culture, null, zone);
+            if (guild != null) {
+                avatar.setGuild(guild, guildTimestamp);
+            }
 //            if (avatarHistory != null) {
 //                avatar.setHistory(avatarHistory);
 //            }
@@ -146,6 +150,9 @@ public class EqXMLParser implements DocumentHandler {
                         (0L, avatarName, 0, null, null, null, null);
                     avatar.setProperty(propertyName, value, timestamp);
                 }
+            } else if (name.equals("guild")) {
+                String time = attrs.getValue("time");
+                guildTimestamp = time == null ? 0L : Long.parseLong(time);
             }
         } catch (NumberFormatException ex) {
             throw new SAXException(getLocationInfo("invalid timestamp"), ex);
@@ -156,6 +163,7 @@ public class EqXMLParser implements DocumentHandler {
     protected void clearAvatar() {
         avatarLevel = 0;
         avatarTimestamp = 0L;
+        guildTimestamp = 0L;
         avatarClass = null;
         avatarCulture = null;
         avatarGuild = null;
