@@ -47,7 +47,7 @@ import net.sourceforge.fraglets.zeig.model.VersionFactory;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public class DOMContext implements Context {
     /** Context option. */
@@ -72,19 +72,16 @@ public class DOMContext implements Context {
     
     public DOMContext(Hashtable defaults) throws NamingException {
         init(defaults);
-        this.nameParser = new SimpleNameParser(environment);
-        this.ve = getRoot();
         try {
             this.binding = new DocumentImpl(sharedContext.getVersionFactory().getValue(ve), sharedContext.getNodeFactory());
         } catch (SQLException ex) {
             throw namingException("root not found", ex);
         }
-        this.atom = "";
     }
     
     protected DOMContext(DOMContext blueprint) {
         this.environment = new Properties(blueprint.environment);
-        this.sharedContext = blueprint.sharedContext;
+        this.sharedContext = blueprint.sharedContext.open(this);
         this.nameParser = blueprint.nameParser;
         this.binding = blueprint.binding;
         this.parent = blueprint.parent;
@@ -94,7 +91,7 @@ public class DOMContext implements Context {
     
     protected DOMContext(DOMContext parent, String atom, Document binding, int ve) {
         this.environment = new Properties(parent.environment);
-        this.sharedContext = parent.sharedContext;
+        this.sharedContext = parent.sharedContext.open(this);
         this.nameParser = parent.nameParser;
         this.binding = binding;
         this.parent = parent;
@@ -102,10 +99,13 @@ public class DOMContext implements Context {
         this.ve = ve;
     }
     
-    protected void init(Hashtable defaults) {
+    protected void init(Hashtable defaults) throws NamingException {
         environment = new Properties();
         environment.putAll(defaults);
-        sharedContext = new SharedContext(environment);
+        sharedContext = new SharedContext(this, environment);
+        nameParser = new SimpleNameParser(environment);
+        ve = getRoot();
+        this.atom = "";
     }
     
     /**
@@ -435,7 +435,11 @@ public class DOMContext implements Context {
      * @see javax.naming.Context#close()
      */
     public void close() throws NamingException {
-        // easy
+        SharedContext sc = sharedContext;
+        sharedContext = null;
+        if (sc != null) {
+            sc.close(this);
+        }
     }
 
     /**
@@ -713,15 +717,33 @@ public class DOMContext implements Context {
         }
     }
     
-    public class SharedContext {
+    public static class SharedContext {
         private ConnectionFactory connectionFactory;
         private VersionFactory versionFactory;
         private NodeFactory nodeFactory;
+        private int shares;
         
-        public SharedContext(Properties environment) {
-            if (environment.containsKey(ConnectionFactory.RESOURCE_CONNECTION_URL)) {
-                connectionFactory = new ConnectionFactory(environment
-                    .getProperty(ConnectionFactory.RESOURCE_CONNECTION_URL));
+        public SharedContext(DOMContext ctx, Properties environment) throws NamingException {
+            open(ctx);
+            connectionFactory = new ConnectionFactory(environment);
+        }
+        
+        public SharedContext open(DOMContext ctx) {
+            shares++;
+            return this;
+        }
+        
+        public void close(DOMContext ctx) throws NamingException {
+            if (--shares <= 0) {
+                try {
+                    ConnectionFactory cf = this.connectionFactory;
+                    this.connectionFactory = null;
+                    if (cf != null) {
+                        connectionFactory.close();
+                    }
+                } catch (SQLException ex) {
+                    throw DOMContext.namingException(ex);
+                }
             }
         }
         
@@ -729,13 +751,6 @@ public class DOMContext implements Context {
          * @return
          */
         public ConnectionFactory getConnectionFactory() throws SQLException {
-            if (connectionFactory == null) {
-                synchronized(this) {
-                    if (connectionFactory == null) {
-                        connectionFactory = ConnectionFactory.getInstance();
-                    }
-                }
-            }
             return connectionFactory;
         }
         
