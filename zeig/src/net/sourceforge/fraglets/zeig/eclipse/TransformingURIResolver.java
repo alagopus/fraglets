@@ -45,7 +45,7 @@ import org.w3c.dom.Document;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class TransformingURIResolver implements URIResolver, TraceListener {
     private URI root;
@@ -67,6 +67,7 @@ public class TransformingURIResolver implements URIResolver, TraceListener {
     
     public Object lookup(Context ctx, String name) throws TransformerException, NamingException {
         try {
+            trace("lookup "+name);
             return transform(ctx.lookup(name), new URI(root, ctx.getNameInNamespace()+'/'+name));
         } catch (URI.MalformedURIException e) {
             NamingException ex = new NamingException("lookup URL");
@@ -80,6 +81,7 @@ public class TransformingURIResolver implements URIResolver, TraceListener {
      */
     public Source resolve(String href, String base) throws TransformerException {
         try {
+            trace("resolve "+href+" from "+base);
             URI uri = base == null ? null : new URI(base);
             uri = new URI(uri, href);
             Object doc = ctx.lookup(uri.toString());
@@ -94,6 +96,7 @@ public class TransformingURIResolver implements URIResolver, TraceListener {
     public Object transform(Object obj, URI base) throws NamingException {
         if (obj instanceof Document) {
             try {
+                trace("transform "+obj);
                 TransformerFactory factory = TransformerFactory.newInstance();
                 String title = null;
                 Source input = new DOMSource((Document)obj);
@@ -107,7 +110,8 @@ public class TransformingURIResolver implements URIResolver, TraceListener {
                         charset);
 
                 if (stylesheet != null) {
-                    CorePlugin.info("transforming "+input+" with "+stylesheet, null);
+                    CorePlugin.info("transforming "+((DOMSource)input).getNode()
+                        +" with "+((DOMSource)stylesheet).getNode(), null);
                     Transformer transformer = factory.newTransformer(stylesheet);
                     try {
                         ((TransformerImpl)transformer).getTraceManager()
@@ -158,14 +162,15 @@ public class TransformingURIResolver implements URIResolver, TraceListener {
      * @see org.apache.xalan.trace.TraceListener#trace(org.apache.xalan.trace.TracerEvent)
      */
     public void trace(TracerEvent e) {
-        CorePlugin.info(e.toString(), null);
+        trace("trace "+TracerEvent.printNode(e.m_sourceNode)
+            +" -("+TracerEvent.printNode(e.m_styleNode)+")-> ...");
     }
 
     /* (non-Javadoc)
      * @see org.apache.xalan.trace.TraceListener#selected(org.apache.xalan.trace.SelectionEvent)
      */
     public void selected(SelectionEvent e) throws TransformerException {
-        CorePlugin.info(e.toString(), null);
+        trace("selected "+e.m_xpath.getPatternString()+"("+TracerEvent.printNode(e.m_sourceNode)+")  -> "+e.m_selection);
     }
 
     /* (non-Javadoc)
@@ -175,42 +180,50 @@ public class TransformingURIResolver implements URIResolver, TraceListener {
         switch (e.m_eventtype)
         {
         case SerializerTrace.EVENTTYPE_STARTDOCUMENT :
-          trace("STARTDOCUMENT");
+          trace("generated STARTDOCUMENT");
           break;
         case SerializerTrace.EVENTTYPE_ENDDOCUMENT :
-          trace("ENDDOCUMENT");
+          trace("generated ENDDOCUMENT");
           break;
         case SerializerTrace.EVENTTYPE_STARTELEMENT :
-          trace("STARTELEMENT: " + e.m_name);
+          trace("generated STARTELEMENT: " + e.m_name);
+          if (e.m_atts != null) {
+              int end = e.m_atts.getLength();
+              for (int i = 0; i < end; i++) {
+                  trace ("generated ATTRIBUTE: "
+                      +e.m_atts.getQName(i)
+                      +"="+e.m_atts.getValue(i));
+              }
+          }
           break;
         case SerializerTrace.EVENTTYPE_ENDELEMENT :
-          trace("ENDELEMENT: " + e.m_name);
+          trace("generated ENDELEMENT: " + e.m_name);
           break;
         case SerializerTrace.EVENTTYPE_CHARACTERS :
         {
           String chars = new String(e.m_characters, e.m_start, e.m_length);
 
-          trace("CHARACTERS: " + chars);
+          trace("generated CHARACTERS: " + chars);
         }
         break;
         case SerializerTrace.EVENTTYPE_CDATA :
         {
           String chars = new String(e.m_characters, e.m_start, e.m_length);
 
-          trace("CDATA: " + chars);
+          trace("generated CDATA: " + chars);
         }
         break;
         case SerializerTrace.EVENTTYPE_COMMENT :
-          trace("COMMENT: " + e.m_data);
+          trace("generated COMMENT: " + e.m_data);
           break;
         case SerializerTrace.EVENTTYPE_PI :
-          trace("PI: " + e.m_name + ", " + e.m_data);
+          trace("generated PI: " + e.m_name + ", " + e.m_data);
           break;
         case SerializerTrace.EVENTTYPE_ENTITYREF :
-          trace("ENTITYREF: " + e.m_name);
+          trace("generated ENTITYREF: " + e.m_name);
           break;
         case SerializerTrace.EVENTTYPE_IGNORABLEWHITESPACE :
-          trace("IGNORABLEWHITESPACE");
+          trace("generated IGNORABLEWHITESPACE");
           break;
         }
     }
