@@ -45,6 +45,7 @@ import java.awt.Insets;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author  marion@users.sourceforge.net
+ * @version $Revision: 1.2 $
  */
 public class SelectionButton extends JButton implements ActionListener, ClipboardOwner {
     
