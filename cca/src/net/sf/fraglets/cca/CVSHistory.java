@@ -1,5 +1,5 @@
 /*
- * $Id: CVSHistory.java,v 1.10 2004-07-30 12:41:10 marion Exp $
+ * $Id: CVSHistory.java,v 1.11 2004-07-30 12:43:13 marion Exp $
  * Copyright (C) 2004 Klaus Rennecke, all rights reserved.
  * 
  * Permission is hereby granted, free of charge, to any person
@@ -53,7 +53,7 @@ import org.apache.log4j.Logger;
  * Perform modification check based on a plain history file.
  * 
  * @author  Klaus Rennecke
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public class CVSHistory implements SourceControl {
     /** The properties set for ANT. */
@@ -409,7 +409,7 @@ public class CVSHistory implements SourceControl {
     }
 
     /**
-     * Quote the give string for use in a URL.
+     * Quote the given string for use in a URL.
      * @param string a string.
      * @return the quoted string.
      */
@@ -600,7 +600,7 @@ public class CVSHistory implements SourceControl {
      * Bean implementation for the module sub-element.
      * @since 01.03.2004
      * @author Klaus Rennecke
-     * @version $Revision: 1.10 $
+     * @version $Revision: 1.11 $
      */
     public static class Module {
         
