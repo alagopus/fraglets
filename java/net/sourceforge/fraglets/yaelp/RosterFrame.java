@@ -93,7 +93,7 @@ import net.sourceforge.fraglets.yaelp.model.Recognizer;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.30 $
+ * @version $Revision: 1.31 $
  */
 public class RosterFrame extends javax.swing.JFrame implements ActionContext {
     /** The file chooser map used to select files to parse and export.
@@ -1674,6 +1674,9 @@ public class RosterFrame extends javax.swing.JFrame implements ActionContext {
                     pw.println("\"/>");
                 }
             }
+            pw.print("  <history>");
+            pw.print(quote(avatar.getHistory(), "&<>"));
+            pw.println("</history>");
             pw.println(" </avatar>");
         }
         pw.println("</roster>");
@@ -2032,8 +2035,8 @@ public class RosterFrame extends javax.swing.JFrame implements ActionContext {
     private javax.swing.JMenu styleMenu;
     private net.sourceforge.fraglets.yaelp.bean.SelectionButton selectionButton;
     private javax.swing.JSeparator separator6;
-    private javax.swing.JPopupMenu contextMenu;
     private javax.swing.JRadioButtonMenuItem mwStyleItem;
+    private javax.swing.JPopupMenu contextMenu;
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JTable rosterTable;
     private javax.swing.JMenuItem hideMenuItem;
@@ -2050,8 +2053,8 @@ public class RosterFrame extends javax.swing.JFrame implements ActionContext {
     private javax.swing.JCheckBoxMenuItem defaultFilterItem;
     private javax.swing.JCheckBoxMenuItem mainFilterItem;
     private javax.swing.JCheckBoxMenuItem memberFilterItem;
-    private net.sourceforge.fraglets.yaelp.action.HistoryAction historyAction;
     private javax.swing.JMenuItem styleWizardItem;
+    private net.sourceforge.fraglets.yaelp.action.HistoryAction historyAction;
     private javax.swing.JSeparator separator5;
     private javax.swing.JScrollPane tableScroll;
     private javax.swing.JRadioButtonMenuItem ssStyleItem;
@@ -2060,8 +2063,8 @@ public class RosterFrame extends javax.swing.JFrame implements ActionContext {
     private javax.swing.JCheckBoxMenuItem displayHTMLItem;
     private javax.swing.JMenuItem exportHTMLItem;
     private javax.swing.JMenuItem importFileItem;
-    private javax.swing.JMenuItem historyMenuItem;
     private javax.swing.JTextField status;
+    private javax.swing.JMenuItem historyMenuItem;
     private javax.swing.JMenuItem saveFileItem;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JRadioButtonMenuItem defaultStyleItem;
