@@ -27,7 +27,7 @@ import java.util.Observable;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class Recognizer extends Observable {
     /** Known avatars. */
@@ -511,6 +511,11 @@ public class Recognizer extends Observable {
     /** Get the number of known avatars. */
     public int getAvatarCount() {
         return avatars.size();
+    }
+    
+    /** Get the avatar with the given name, or null. */
+    public Avatar getAvatar(String name) {
+        return (Avatar)avatars.get(name);
     }
     
     /** Get the number of who lines recognized until now.
