@@ -6,7 +6,6 @@ Changes for version 1.22:
     - Fix raid joins recognized as guild
     - Fix culture occasionally reset to Unknown
     - Added some level 65 class titles
-    - Added history persistence
 
 Changes for version 1.21:
     - Fix 610864 ArrayIndexOutOfBounds on huge line
