@@ -15,46 +15,52 @@
 
   <separator />
 	<splitpane orientation="vertical" divider="320" weightx="1" weighty="1">
-		<splitpane orientation="horizontal" divider="310" weightx="1" weighty="1">
-			<panel columns="1" weightx="1" weighty="1">
-				<combobox name="localPath" action="actionLcd" weightx="1"
-					tooltip="Local directory selection."/>
-				<table selection="multiple" name="localList" action="localSelect" height="500" weighty="1" weightx="1">
-					<column text="Name" width="175" />
-					<column text="Size" width="75" />
-					<column text="Date" width="40" />
-				</table>
-				<panel top="4" left="4" bottom="4" right="4" gap="4" weightx="1">
-					<button text="Remove" name="localRemove" action="actionLocalRemove" halign="left" weightx="1"
-						tooltip="Immediately and permanently remove all selected local entries, recursively."/>
-					<button text="Put" name="localPut" action="actionPut"
-						tooltip="Upload all selected local entries to the remote directory."/>
+		<panel columns="1" weightx="1" weighty="0">
+			<splitpane orientation="horizontal" divider="310" weightx="1" weighty="1">
+				<panel columns="1" weightx="1" weighty="1">
+					<combobox name="localPath" action="actionLcd" weightx="1"
+						tooltip="Local directory selection."/>
+					<table selection="multiple" name="localList" action="localSelect" height="500" weighty="1" weightx="1">
+						<column text="Name" width="175" />
+						<column text="Size" width="75" />
+						<column text="Date" width="40" />
+					</table>
+					<panel top="4" left="4" bottom="4" right="4" gap="4" weightx="1">
+						<button text="Remove" name="localRemove" action="actionLocalRemove" halign="left" weightx="1"
+							tooltip="Immediately and permanently remove all selected local entries, recursively."/>
+						<button text="Put" name="localPut" action="actionPut"
+							tooltip="Upload all selected local entries to the remote directory."/>
+					</panel>
 				</panel>
-			</panel>
-			<panel columns="1" weightx="1" weighty="1">
-				<combobox name="remotePath" action="actionCd" weightx="1"
-					tooltip="Remote directory selection."/>
-				<table selection="multiple" name="remoteList" action="remoteSelect" enabled="false" height="500" weighty="1" weightx="1">
-					<column text="Name" width="175" />
-					<column text="Size" width="75" />
-					<column text="Date" width="40" />
-				</table>
-				<panel top="4" left="4" bottom="4" right="4" gap="4" weightx="1">
-					<button text="Get" name="remoteGet" action="actionGet" enabled="false"
-						tooltip="Download all selected remote entries to the local diretory."/>
-					<button text="Remove" name="remoteRemove" action="actionRemoteRemove"
-						enabled="false" halign="right" weightx="1"
-						tooltip="Immediately and permanently remove all selected remote entries, recursively."/>
+				<panel columns="1" weightx="1" weighty="1">
+					<combobox name="remotePath" action="actionCd" weightx="1"
+						tooltip="Remote directory selection."/>
+					<table selection="multiple" name="remoteList" action="remoteSelect" enabled="false" height="500" weighty="1" weightx="1">
+						<column text="Name" width="175" />
+						<column text="Size" width="75" />
+						<column text="Date" width="40" />
+					</table>
+					<panel top="4" left="4" bottom="4" right="4" gap="4" weightx="1">
+						<button text="Get" name="remoteGet" action="actionGet" enabled="false"
+							tooltip="Download all selected remote entries to the local diretory."/>
+						<button text="Remove" name="remoteRemove" action="actionRemoteRemove"
+							enabled="false" halign="right" weightx="1"
+							tooltip="Immediately and permanently remove all selected remote entries, recursively."/>
+					</panel>
 				</panel>
-			</panel>
-		</splitpane>
-		<tabbedpane weightx="1" weighty="0">
-			<tab text="Chat"/>
-		 	<textarea name="sessionChat" action="sessionInsert" editable="true" columns="60" rows="6" weightx="1" weighty="0"
-		 		tooltip="SFTP chat window, use the help command to get a list."/>
-			<tab text="History"/>
-		 	<textarea name="sessionHistory" action="sessionInsert" editable="false" columns="60" rows="6" weightx="1" weighty="0"/>
-		</tabbedpane>
+			</splitpane>
+			<separator />
+		</panel>
+		<panel columns="1" gap="4" weightx="1" weighty="1">
+			<separator />
+			<tabbedpane weightx="1" weighty="1">
+				<tab text="Chat"/>
+			 	<textarea name="sessionChat" action="sessionInsert" editable="true" columns="60" rows="6" weightx="1" weighty="0"
+			 		tooltip="SFTP chat window, use the help command to get a list."/>
+				<tab text="History"/>
+			 	<textarea name="sessionHistory" action="sessionInsert" editable="false" columns="60" rows="6" weightx="1" weighty="0"/>
+			</tabbedpane>
+		</panel>
 	</splitpane>
  	
   <separator />
