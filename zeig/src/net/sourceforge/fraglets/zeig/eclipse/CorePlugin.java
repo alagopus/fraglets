@@ -5,11 +5,8 @@ package net.sourceforge.fraglets.zeig.eclipse;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
@@ -35,7 +32,6 @@ public class CorePlugin extends AbstractUIPlugin {
     //Resource bundle.
     private ResourceBundle resourceBundle;
     
-    private URL classPath[];
     private zeigURLStreamHandler.URLStreamObjectFactory streamObjectFactory;
 
     /**
@@ -52,22 +48,6 @@ public class CorePlugin extends AbstractUIPlugin {
             resourceBundle = null;
         }
         
-        ClassLoader pcl = getClass().getClassLoader();
-        ArrayList cp = new ArrayList();
-        URL urls[];
-        while (pcl instanceof URLClassLoader) {
-            urls = ((URLClassLoader)pcl).getURLs();
-            for (int i = 0; i < urls.length; i++) {
-                cp.add(urls[i]);
-            }
-            pcl = pcl.getParent();
-        }
-        classPath = (URL[])cp.toArray(new URL[cp.size()]);
-        
-//      for (int i = 0; i < classPath; i++) {
-//          System.out.println("ClassLoader URL: "+classPath[i]);
-//      }
-
         streamObjectFactory = new zeigURLStreamHandler.URLStreamObjectFactory();
     }
 
@@ -162,7 +142,7 @@ public class CorePlugin extends AbstractUIPlugin {
     
     
     
-    public Object doNamingAction(NamingAction action) throws NamingException {
+    Object doNamingAction(NamingAction action) throws NamingException {
         Object result = AccessController.doPrivileged(action);
         if (result instanceof NamingException) {
             throw (NamingException)result;
@@ -171,17 +151,20 @@ public class CorePlugin extends AbstractUIPlugin {
         }
     }
     
-    public abstract class NamingAction implements PrivilegedAction {
+    abstract class NamingAction implements PrivilegedAction {
         protected abstract Object runNamingAction() throws NamingException;
         
         public final Object run() {
             ClassLoader cl = Thread.currentThread().getContextClassLoader();
             try {
-                Thread.currentThread().setContextClassLoader
-                    (new URLClassLoader(classPath, cl));
+              Thread.currentThread().setContextClassLoader
+                  (CorePlugin.class.getClassLoader());
                 return runNamingAction();
             } catch (NamingException ex) {
                 return ex;
+            } catch (Error ex) {
+                ex.printStackTrace(System.err);
+                throw ex;
             } finally {
                 Thread.currentThread().setContextClassLoader(cl);
             }
