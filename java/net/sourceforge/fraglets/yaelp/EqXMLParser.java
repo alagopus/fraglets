@@ -137,7 +137,7 @@ public class EqXMLParser implements DocumentHandler {
                 if (time != null && value != null && time != null) {
                     long timestamp = Long.parseLong(time);
                     Avatar avatar = recognizer.updateAvatar
-                        (timestamp, avatarName, 0, null, null, null, null);
+                        (0L, avatarName, 0, null, null, null, null);
                     avatar.setProperty(propertyName, value, timestamp);
                 }
             }
