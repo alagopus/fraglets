@@ -22,7 +22,7 @@ import org.xml.sax.InputSource;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class DOMStateFactory implements StateFactory {
     /**
@@ -34,7 +34,7 @@ public class DOMStateFactory implements StateFactory {
             DOMContext dctx = (DOMContext)ctx;
             try {
                 int id;
-                NodeFactory nf = dctx.sharedContext.getNodeFactory();
+                NodeFactory nf = dctx.connectionContext.getNodeFactory();
                 if (obj instanceof Document) {
                     id = nf.getId((Document)obj);
                 } else if (obj instanceof DOMContext) {
@@ -57,12 +57,12 @@ public class DOMStateFactory implements StateFactory {
                 if (comment == null) {
                     comment = "";
                 }
-                int co = dctx.sharedContext.getPlainTextFactory().getPlainText(comment);
+                int co = dctx.connectionContext.getPlainTextFactory().getPlainText(comment);
                 
                 String atom = name.get(0);
                 Element binding = dctx.lookupElement(atom);
                 if (binding == null) {
-                    int ve = dctx.sharedContext.getVersionFactory()
+                    int ve = dctx.connectionContext.getVersionFactory()
                         .createVersion(id, co);
                     String localName = DOMObjectFactory.isDOMContext(id, dctx)
                         ? DOMContext.CONTEXT_TAGNAME
@@ -73,7 +73,7 @@ public class DOMStateFactory implements StateFactory {
                     binding.setAttributeNS(DOMContext.CONTEXT_NAMESPACE, "ve", String.valueOf(ve));
                 } else {
                     int ve = dctx.getVe(binding);
-                    dctx.sharedContext.getVersionFactory().addVersion(ve, id, co);
+                    dctx.connectionContext.getVersionFactory().addVersion(ve, id, co);
                 }
                 
                 return binding;

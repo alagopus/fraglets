@@ -10,9 +10,10 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.sql.SQLException;
 
+import net.sourceforge.fraglets.zeig.model.ConnectionContext;
 import net.sourceforge.fraglets.zeig.model.NodeBuffer;
-import net.sourceforge.fraglets.zeig.model.NodeFactory;
 
+import org.apache.log4j.Category;
 import org.apache.xml.serialize.OutputFormat;
 import org.apache.xml.serialize.XMLSerializer;
 import org.w3c.dom.Attr;
@@ -32,18 +33,18 @@ import org.w3c.dom.Text;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class DocumentImpl extends NodeImpl implements Document {
-    protected NodeFactory nf;
+    protected ConnectionContext cc;
     
-    public DocumentImpl(int id, int v, NodeFactory nf) {
+    public DocumentImpl(int id, int v, ConnectionContext cc) {
         super(null, id, v);
-        this.nf = nf;
+        this.cc = cc.open();
     }
 
-    public DocumentImpl(int id, NodeFactory nf) throws SQLException {
-        this(id, nf.getRoot(), nf);
+    public DocumentImpl(int id, ConnectionContext cc) throws SQLException {
+        this(id, cc.getNodeFactory().getRoot(), cc);
     }
 
     /**
@@ -85,8 +86,8 @@ public class DocumentImpl extends NodeImpl implements Document {
      */
     public Element createElement(String tagName) throws DOMException {
         try {
-            int nm = nf.getName(tagName);
-            int id = nf.getNode(nm, NodeBuffer.MT);
+            int nm = getNodeFactory().getName(tagName);
+            int id = getNodeFactory().getNode(nm, NodeBuffer.MT);
             return new ElementImpl(null, id, nm);
         } catch (SQLException ex) {
             throw domException(ex);
@@ -98,8 +99,8 @@ public class DocumentImpl extends NodeImpl implements Document {
      */
     public Element createElementNS(String namespaceURI, String qualifiedName) throws DOMException {
         try {
-            int nm = nf.getName(namespaceURI, qualifiedName);
-            int id = nf.getNode(nm, NodeBuffer.MT);
+            int nm = getNodeFactory().getName(namespaceURI, qualifiedName);
+            int id = getNodeFactory().getNode(nm, NodeBuffer.MT);
             return new ElementImpl(null, id, nm);
         } catch (SQLException ex) {
             throw domException(ex);
@@ -146,8 +147,8 @@ public class DocumentImpl extends NodeImpl implements Document {
      */
     public Element getElementById(String elementId) {
         try {
-            int nm = nf.getName("", "id");
-            int v = nf.getPlainTextFactory().getPlainText(elementId);
+            int nm = getNodeFactory().getName("", "id");
+            int v = getNodeFactory().getPlainTextFactory().getPlainText(elementId);
             return getElementById(this, nm, v);
         } catch (SQLException ex) {
             throw domException(ex);
@@ -224,10 +225,28 @@ public class DocumentImpl extends NodeImpl implements Document {
      * @see org.w3c.dom.Node#cloneNode(boolean)
      */
     public Node cloneNode(boolean deep) {
-        return new DocumentImpl(getId(), getV(), nf);
+        return new DocumentImpl(getId(), getV(), getConnectionContext());
     }
 
-    protected NodeFactory getNodeFactory() {
-        return nf;
+    protected ConnectionContext getConnectionContext() {
+        return cc;
     }
+    
+    /**
+     * Close the connection context upon finalization.
+     * @see java.lang.Object#finalize()
+     */
+    protected void finalize() {
+        ConnectionContext cc = this.cc;
+        this.cc = null;
+        if (cc != null) {
+            try {
+                cc.close();
+            } catch (Exception ex) {
+                Category.getInstance(getClass())
+                    .error("closing connection context", ex);
+            }
+        }
+    }
+
 }

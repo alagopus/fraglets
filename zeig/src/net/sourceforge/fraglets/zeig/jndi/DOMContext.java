@@ -44,7 +44,7 @@ import org.w3c.dom.NodeList;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.13 $
+ * @version $Revision: 1.14 $
  */
 public class DOMContext implements Context {
     /** Context option. */
@@ -58,7 +58,7 @@ public class DOMContext implements Context {
     
     public static final String BINDING_TAGNAME = "binding";
     
-    protected ConnectionContext sharedContext;
+    protected ConnectionContext connectionContext;
     private Properties environment;
     private NameParser nameParser;
     private DOMContext parent;
@@ -70,7 +70,7 @@ public class DOMContext implements Context {
     public DOMContext(Hashtable defaults) throws NamingException {
         init(defaults);
         try {
-            this.binding = new DocumentImpl(sharedContext.getVersionFactory().getValue(ve), sharedContext.getNodeFactory());
+            this.binding = new DocumentImpl(connectionContext.getVersionFactory().getValue(ve), connectionContext);
         } catch (SQLException ex) {
             throw namingException("root not found", ex);
         }
@@ -78,7 +78,7 @@ public class DOMContext implements Context {
     
     protected DOMContext(DOMContext blueprint) {
         this.environment = new Properties(blueprint.environment);
-        this.sharedContext = blueprint.sharedContext.open();
+        this.connectionContext = blueprint.connectionContext.open();
         this.nameParser = blueprint.nameParser;
         this.binding = blueprint.binding;
         this.parent = blueprint.parent;
@@ -88,7 +88,7 @@ public class DOMContext implements Context {
     
     protected DOMContext(DOMContext parent, String atom, Document binding, int ve) {
         this.environment = new Properties(parent.environment);
-        this.sharedContext = parent.sharedContext.open();
+        this.connectionContext = parent.connectionContext.open();
         this.nameParser = parent.nameParser;
         this.binding = binding;
         this.parent = parent;
@@ -99,7 +99,7 @@ public class DOMContext implements Context {
     protected void init(Hashtable defaults) throws NamingException {
         environment = new Properties();
         environment.putAll(defaults);
-        sharedContext = new ConnectionContext(environment);
+        connectionContext = new ConnectionContext(environment);
         nameParser = new SimpleNameParser(environment);
         ve = getRoot();
         this.atom = "";
@@ -347,7 +347,7 @@ public class DOMContext implements Context {
 
         if (nm.size() == 1) {
             try {
-                rebind(new DocumentImpl(getEmpty(), sharedContext.getNodeFactory()), in, atom);
+                rebind(new DocumentImpl(getEmpty(), connectionContext), in, atom);
             } catch (SQLException ex) {
                 namingException("create subcontext "+atom, ex);
             }
@@ -432,8 +432,8 @@ public class DOMContext implements Context {
      * @see javax.naming.Context#close()
      */
     public void close() throws NamingException {
-        ConnectionContext sc = sharedContext;
-        sharedContext = null;
+        ConnectionContext sc = connectionContext;
+        connectionContext = null;
         if (sc != null) {
             try {
                 sc.close();
@@ -467,7 +467,7 @@ public class DOMContext implements Context {
         if (obj != old) {
             try {
                 binding.getDocumentElement().replaceChild((Node)obj, old);
-                sharedContext.getVersionFactory()
+                connectionContext.getVersionFactory()
                     .addVersion(ve, ((DocumentImpl)binding).getId(), 0);
             } catch (SQLException ex) {
                 throw namingException(ex);
@@ -509,13 +509,13 @@ public class DOMContext implements Context {
         try {
             try {
                 // lookup root
-                return sharedContext.getVersionFactory()
+                return connectionContext.getVersionFactory()
                     .getVersions(getEmpty())[0];
             } catch (ArrayIndexOutOfBoundsException ex) {
                 int root = getEmpty();
-                int comment = sharedContext.getPlainTextFactory()
+                int comment = connectionContext.getPlainTextFactory()
                     .getPlainText("naming root");
-                return sharedContext.getVersionFactory()
+                return connectionContext.getVersionFactory()
                     .createVersion(root, comment);
             }
         } catch (NamingException ex) {
@@ -533,7 +533,7 @@ public class DOMContext implements Context {
         }
         
         try  {
-            SAXFactory sf = new SAXFactory(sharedContext.getNodeFactory());
+            SAXFactory sf = new SAXFactory(connectionContext.getNodeFactory());
             return emptyId = sf.parse("<ctx:"+CONTEXT_TAGNAME+" xmlns:ctx=\""+CONTEXT_NAMESPACE+"\"/>");
         } catch (Exception ex) {
             throw namingException(ex);
@@ -545,7 +545,7 @@ public class DOMContext implements Context {
     public int getVe(Element el) throws NamingException {
         if (veTag == 0) {
             try {
-                veTag = sharedContext.getNodeFactory()
+                veTag = connectionContext.getNodeFactory()
                     .getName(CONTEXT_NAMESPACE, "ve");
             } catch (SQLException ex) {
                 throw namingException(ex);
@@ -562,7 +562,7 @@ public class DOMContext implements Context {
     public int getId() throws NamingException {
         if (idTag == 0) {
             try {
-                idTag = sharedContext.getNodeFactory().getName("", "id");
+                idTag = connectionContext.getNodeFactory().getName("", "id");
             } catch (SQLException ex) {
                 throw namingException(ex);
             }

@@ -1,5 +1,5 @@
 /*
- * SharedContext.java -
+ * ConnectionContext.java -
  * Copyright (C) 2003 Klaus Rennecke, all rights reserved.
  *
  * Created on May 18, 2003 by marion@users.sourceforge.net
@@ -13,7 +13,7 @@ import net.sourceforge.fraglets.zeig.jdbc.ConnectionFactory;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class ConnectionContext {
     private ConnectionFactory connectionFactory;
@@ -44,14 +44,14 @@ public class ConnectionContext {
     /**
      * @return
      */
-    public ConnectionFactory getConnectionFactory() throws SQLException {
+    public ConnectionFactory getConnectionFactory() {
         return connectionFactory;
     }
     
     /**
      * @return
      */
-    public NodeFactory getNodeFactory() throws SQLException {
+    public NodeFactory getNodeFactory() {
         if (nodeFactory == null) {
             synchronized(this) {
                 if (nodeFactory == null) {
@@ -65,7 +65,7 @@ public class ConnectionContext {
     /**
      * @return
      */
-    public VersionFactory getVersionFactory() throws SQLException {
+    public VersionFactory getVersionFactory() {
         if (versionFactory == null) {
             synchronized(this) {
                 if (versionFactory == null) {
@@ -76,7 +76,19 @@ public class ConnectionContext {
         return versionFactory;
     }
 
-    public PlainTextFactory getPlainTextFactory() throws SQLException {
+    public NameFactory getNameFactory() {
+        return getNodeFactory().getNameFactory();
+    }
+    
+    public NamespaceFactory getNamespaceFactory() {
+        return getNodeFactory().getNamespaceFactory();
+    }
+    
+    public PlainTextFactory getPlainTextFactory() {
         return getNodeFactory().getPlainTextFactory();
+    }
+    
+    public XMLTextFactory getXMLTextFactory() {
+        return getNodeFactory().getXMLTextFactory();
     }
 }

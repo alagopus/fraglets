@@ -24,7 +24,7 @@ import org.xml.sax.SAXException;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class NodeImpl implements Node {
     private int id;
@@ -416,7 +416,8 @@ public class NodeImpl implements Node {
     }
 
     protected NodeFactory getNodeFactory() {
-        return ((DocumentImpl)getOwnerDocument()).getNodeFactory();
+        return ((DocumentImpl)getOwnerDocument())
+            .getConnectionContext().getNodeFactory();
     }
     
     protected NameFactory getNameFactory() {
@@ -431,7 +432,7 @@ public class NodeImpl implements Node {
         return getNodeFactory().getPlainTextFactory();
     }
     
-    public XMLTextFactory getXMLTextFactory() {
+    protected XMLTextFactory getXMLTextFactory() {
         return getNodeFactory().getXMLTextFactory();
     }
 }
