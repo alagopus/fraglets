@@ -35,7 +35,7 @@ import java.util.zip.GZIPInputStream;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author  kre
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class EqlogParser {
     public static final String PREFIX = "[Sun Apr 01 16:38:57 2001] ";
@@ -64,7 +64,8 @@ public class EqlogParser {
             return new Line(timestamp, rest);
         } catch (StringIndexOutOfBoundsException ex) {
             // FIXME quickhack
-            if (line.startsWith(" got ") && line.endsWith(".")) {
+            if (line.length() == 0 ||
+                line.startsWith(" got ") && line.endsWith(".")) {
                 return readLine();
             }
             throw new IOException("invalid log file format");
