@@ -4,7 +4,7 @@
  * Created on 28. April 2001, 05:36
  */
 
-package de.rennecke.yaelp;
+package net.sourceforge.fraglets.yaelp;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -35,7 +35,7 @@ import java.util.zip.GZIPInputStream;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author  kre
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class EqlogParser {
     public static final String PREFIX = "[Sun Apr 01 16:38:57 2001] ";

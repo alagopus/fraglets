@@ -4,7 +4,7 @@
  * Created on 30. April 2001, 10:07
  */
 
-package de.rennecke.yaelp;
+package net.sourceforge.fraglets.yaelp;
 
 /** This is the object model for the avatar of a player in
  * the game, a "character" in RPG speak.
@@ -24,7 +24,7 @@ package de.rennecke.yaelp;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author Klaus Rennecke
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class Avatar {
 
