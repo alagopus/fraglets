@@ -36,7 +36,7 @@ import java.util.Collections;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class Avatar {
     public static final String GUILD_UNGUILDED = "-";
@@ -535,10 +535,14 @@ public class Avatar {
                             Iterator i = loader.entrySet().iterator();
                             while (i.hasNext()) {
                                 Map.Entry entry = (Map.Entry)i.next();
+                                if ("0".equals(entry.getKey())) {
+                                    continue; // skip level entry
+                                }
                                 StringTokenizer tok = new StringTokenizer
                                     ((String)entry.getValue(), ",");
                                 String canonical = tok.nextToken().trim();
                                 equivalenceMap.put(canonical, canonical);
+                                Avatar.Class.create(canonical); // create
                                 while(tok.hasMoreTokens()) {
                                     equivalenceMap.put(tok.nextToken().trim(), canonical);
                                 }
