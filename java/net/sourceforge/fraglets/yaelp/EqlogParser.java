@@ -35,7 +35,7 @@ import java.util.zip.GZIPInputStream;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author  kre
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class EqlogParser {
     public static final String PREFIX = "[Sun Apr 01 16:38:57 2001] ";
@@ -63,6 +63,10 @@ public class EqlogParser {
             char rest[] = line.substring(LINE_START).toCharArray();
             return new Line(timestamp, rest);
         } catch (StringIndexOutOfBoundsException ex) {
+            // FIXME quickhack
+            if (line.startsWith(" got ") && line.endsWith(".")) {
+                return readLine();
+            }
             throw new IOException("invalid log file format");
         }
     }
@@ -88,17 +92,21 @@ public class EqlogParser {
         EqlogParser parser = new EqlogParser(in);
         Line line;
         int n = 0;
-        do {
-            line = parser.readLine();
-            if (line == null) {
-                // end
-            } else if (recognizer.isWhoLine(line)) {
-                recognizer.parseWhoLine(line);
-                n++;
-            } else {
-                n++;
-            }
-        } while (line != null);
+        try {
+            do {
+                line = parser.readLine();
+                if (line == null) {
+                    // end
+                } else if (recognizer.isWhoLine(line)) {
+                    recognizer.parseWhoLine(line);
+                    n++;
+                } else {
+                    n++;
+                }
+            } while (line != null);
+        } catch (IOException ex) {
+            throw new IOException(file + ":" + n + ": " + ex.getMessage());
+        }
         return n;
     }
     
