@@ -237,7 +237,7 @@ public class CardDetective {
             char c = name.charAt(i);
             if (Character.isLetter(c)) {
                 buffer.append(Character.toLowerCase(c));
-            } else if (c == ' ' || c == '_') {
+            } else if (c == ' ' || c == '-' || c == '_') {
                 buffer.append('_');
             } else if (c == '(' && name.indexOf(')', i) > 0) {
                 i = name.indexOf(')', i);
