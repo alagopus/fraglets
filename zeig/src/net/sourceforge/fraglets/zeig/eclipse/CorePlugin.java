@@ -39,6 +39,9 @@ import javax.naming.NamingException;
 
 import net.sourceforge.fraglets.zeig.zeigURLContext;
 import net.sourceforge.fraglets.zeig.zeigURLStreamHandler;
+import net.sourceforge.fraglets.zeig.cache.LazyCache;
+import net.sourceforge.fraglets.zeig.cache.SensorCache;
+import net.sourceforge.fraglets.zeig.cache.SimpleCache;
 
 import org.apache.xml.serialize.OutputFormat;
 import org.apache.xml.serialize.XMLSerializer;
@@ -55,7 +58,7 @@ import org.w3c.dom.Document;
 /**
  * The core plugin class to be used by the interface plugins.
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class CorePlugin extends AbstractUIPlugin {
     /** The plugin id. */
@@ -140,6 +143,14 @@ public class CorePlugin extends AbstractUIPlugin {
     {
         getDefault().getLog().log
             (new Status(IStatus.ERROR, ID, IStatus.OK, message, ex));
+    }
+    
+    public static SimpleCache newCache(String id) {
+        if (OPTION_INFO) {
+            return new SensorCache(id);
+        } else {
+            return new LazyCache();
+        }
     }
     
     public Context newContext(final Hashtable env) throws NamingException {
