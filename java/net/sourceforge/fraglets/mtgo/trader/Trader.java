@@ -310,6 +310,10 @@ public class Trader extends JFrame {
                 public void valueChanged(ListSelectionEvent e) {
                     if (!e.getValueIsAdjusting()) {
                         int index = table.getTable().getSelectedRow();
+                        if (index < 0) {
+                            ((CardPanel)cardPanel).setImage(null);
+                            return;
+                        }
                         String value = model
                             .getValueAt(index, 0).toString();
                         URL imageURL = detective.getImageURL(value);
@@ -350,8 +354,8 @@ public class Trader extends JFrame {
                 Dimension size = this.getSize();
                 tracker.addImage(image, 0, size.width, size.height);
                 tracker.statusAll(true);
-                this.repaint();
             }
+            this.repaint();
         }
         
         protected void paintComponent(Graphics g) {

@@ -125,8 +125,10 @@ public class CardDetective {
                     .getAttribute(HTML.Attribute.HREF);
                 if (value != null) {
                     try {
+                        String file = value.toString();
                         String text = getIteratorText(document, i);
-                        if (text == null || !text.equals("Spoiler List")) {
+                        if (text == null || !text.equals("Spoiler List") ||
+                            file.endsWith("/.txt")/*invalid entry*/) {
                             i.next();
                             continue;
                         }
