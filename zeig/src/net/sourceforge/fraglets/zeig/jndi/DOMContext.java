@@ -67,7 +67,7 @@ import org.xml.sax.SAXException;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.25 $
+ * @version $Revision: 1.26 $
  */
 public class DOMContext implements Context {
     /** Context option. */
@@ -75,11 +75,6 @@ public class DOMContext implements Context {
         "net.sourceforge.fraglets.zeig.jndi.versionComment";
     public static final String URL_CONTEXT_PARENT =
         "net.sourceforge.fraglets.zeig.jndi.urlContextParent";
-    public static final String PRESENTATION_MEDIA =
-        "net.sourceforge.fraglets.zeig.presentation.media";
-    public static final String PRESENTATION_CHARSET =
-        "net.sourceforge.fraglets.zeig.presentation.charset";
-    
     public static final String CONTEXT_NAMESPACE =
         "http://fraglets.sourceforge.net/zeig/DOMContext";
         

@@ -23,7 +23,8 @@
  */
 package net.sourceforge.fraglets.zeig.eclipse;
 
-import java.io.IOException;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
@@ -36,23 +37,33 @@ import javax.naming.InitialContext;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 
+import net.sourceforge.fraglets.zeig.zeigURLContext;
 import net.sourceforge.fraglets.zeig.zeigURLStreamHandler;
 
+import org.apache.xml.serialize.OutputFormat;
+import org.apache.xml.serialize.XMLSerializer;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPluginDescriptor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.w3c.dom.Document;
 
 /**
  * The core plugin class to be used by the interface plugins.
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class CorePlugin extends AbstractUIPlugin {
     /** The plugin id. */
     public static final String ID = "net.sourceforge.fraglets.zeig.core";
+    
+    public static boolean OPTION_WARN;
+    public static boolean OPTION_INFO;
+    
     //The shared instance.
     private static CorePlugin plugin;
     //Resource bundle.
@@ -111,9 +122,18 @@ public class CorePlugin extends AbstractUIPlugin {
         return resourceBundle;
     }
     
+    public static void info(String message, Throwable ex) {
+        if (OPTION_INFO) {
+            getDefault().getLog().log
+                (new Status(IStatus.INFO, ID, IStatus.OK, message, ex));
+        }
+    }
+    
     public static void warn(String message, Throwable ex) {
-        getDefault().getLog().log
-            (new Status(IStatus.WARNING, ID, IStatus.OK, message, ex));
+        if (OPTION_WARN) {
+            getDefault().getLog().log
+                (new Status(IStatus.WARNING, ID, IStatus.OK, message, ex));
+        }
     }
     
     public static void error(String message, Throwable ex)
@@ -168,9 +188,19 @@ public class CorePlugin extends AbstractUIPlugin {
         return (InputStream)doNamingAction(new NamingAction() {
             public Object runNamingAction() throws NamingException {
                 try {
-                    Object o = ctx.lookup(name);
-                    return new zeigURLStreamHandler.URLStreamObjectFactory().toStream(o);
-                } catch (IOException ex) {
+                    TransformingURIResolver resolver = new TransformingURIResolver(zeigURLContext.getInstance(ctx));
+                    Object result = resolver.lookup(ctx, name);
+                    XMLSerializer serializer = new XMLSerializer();
+                    OutputFormat of = new OutputFormat();
+                    of.setMediaType("text/xml");
+                    of.setEncoding("UTF-8");
+                    of.setIndenting(true);
+                    serializer.setOutputFormat(of);
+                    ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+                    serializer.setOutputByteStream(buffer);
+                    serializer.asDOMSerializer().serialize((Document)result);
+                    return new ByteArrayInputStream(buffer.toByteArray());
+                } catch (Exception ex) {
                     return ex;
                 }
             }
@@ -206,5 +236,15 @@ public class CorePlugin extends AbstractUIPlugin {
                 Thread.currentThread().setContextClassLoader(cl);
             }
         }
+    }
+    
+    /**
+     * @see org.eclipse.core.runtime.Plugin#startup()
+     */
+    public void startup() throws CoreException {
+        super.startup();
+        String t = Boolean.TRUE.toString(); 
+        OPTION_WARN = t.equalsIgnoreCase(Platform.getDebugOption(ID+"/warn"));
+        OPTION_INFO = t.equalsIgnoreCase(Platform.getDebugOption(ID+"/info"));
     }
 }

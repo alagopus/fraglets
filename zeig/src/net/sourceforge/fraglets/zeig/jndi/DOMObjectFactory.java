@@ -31,23 +31,15 @@ import javax.naming.Context;
 import javax.naming.Name;
 import javax.naming.NamingException;
 import javax.naming.spi.ObjectFactory;
-import javax.xml.transform.Source;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMResult;
-import javax.xml.transform.dom.DOMSource;
 
-import net.sourceforge.fraglets.zeig.zeigURLContext;
 import net.sourceforge.fraglets.zeig.dom.DocumentImpl;
-import net.sourceforge.fraglets.zeig.eclipse.CorePlugin;
 
-import org.apache.xml.utils.URI;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.16 $
+ * @version $Revision: 1.17 $
  */
 public class DOMObjectFactory implements ObjectFactory {
 
@@ -70,7 +62,7 @@ public class DOMObjectFactory implements ObjectFactory {
                 if (isDOMContext(doc)) {
                     return new DOMContext(dctx, name.get(0), doc, ve);
                 } else {
-                    return transform(dctx, doc, name);
+                    return doc;
                 }
             } catch (SQLException ex) {
                 throw DOMContext.namingException(ex);
@@ -110,44 +102,4 @@ public class DOMObjectFactory implements ObjectFactory {
         }
     }
     
-    public Object transform(final DOMContext ctx, Object obj, final Name name) {
-        String media = ctx.getProperty(DOMContext.PRESENTATION_MEDIA);
-        if (obj instanceof Document
-            && (media == null || !media.equals("verbatim"))) {
-            try {
-                // 1. Instantiate the TransformerFactory.
-                TransformerFactory tFactory = TransformerFactory.newInstance();
-                // 2a. Get the stylesheet from the XML source.
-                String title = null;
-                String charset = ctx.getProperty(DOMContext.PRESENTATION_CHARSET);
-                Source input = new DOMSource((Document)obj);
-                URI base = new URI(ctx.getProperty(Context.PROVIDER_URL));
-                base = new URI(base, ctx.getNameInNamespace()+"/"+name.get(0));
-                input.setSystemId(base.toString());
-                zeigURLContext urlCtx = zeigURLContext.getInstance(ctx);
-                tFactory.setURIResolver(urlCtx);
-                Source stylesheet =
-                    tFactory.getAssociatedStylesheet(
-                        input,
-                        media,
-                        title,
-                        charset);
-
-                if (stylesheet != null) {
-                    // 2b. Process the stylesheet and generate a Transformer.
-                    Transformer transformer = tFactory.newTransformer(stylesheet);
-
-                    // 3. Use the Transformer to perform the transformation and send the
-                    //    the output to a Result object.
-                    DOMResult output = new DOMResult();
-                    transformer.transform(input, output);
-                    obj = output.getNode();
-                }
-            } catch (Exception e) {
-                CorePlugin.error("transform", e);
-            }
-        }
-        return obj;
-    }
-
 }
