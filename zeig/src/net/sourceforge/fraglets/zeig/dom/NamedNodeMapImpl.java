@@ -19,14 +19,19 @@ import org.w3c.dom.NodeList;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class NamedNodeMapImpl implements NamedNodeMap, NodeList {
     private NodeFactory nf;
     private NodeImpl nodes[];
     
     public static final NamedNodeMapImpl MT = new NamedNodeMapImpl() {
+        /** Prevent exception without context. */
         public Node item(int index) { return null; }
+        /** Prevent exception without context. */
+        public Node getNamedItem(String name) { return null; }
+        /** Prevent exception without context. */
+        public Node getNamedItemNS(String name) { return null; }
     };
     
     private NamedNodeMapImpl() {
