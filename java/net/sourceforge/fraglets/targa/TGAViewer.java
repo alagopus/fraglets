@@ -54,6 +54,7 @@ public class TGAViewer extends javax.swing.JFrame {
      */
     private void initComponents() {//GEN-BEGIN:initComponents
         jLabel1 = new javax.swing.JLabel();
+        jTextField1 = new javax.swing.JTextField();
         menuBar = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
         openMenuItem = new javax.swing.JMenuItem();
@@ -71,6 +72,10 @@ public class TGAViewer extends javax.swing.JFrame {
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setBorder(new javax.swing.border.EtchedBorder());
         getContentPane().add(jLabel1, java.awt.BorderLayout.CENTER);
+
+        jTextField1.setEditable(false);
+        jTextField1.setBorder(new javax.swing.border.BevelBorder(javax.swing.border.BevelBorder.LOWERED));
+        getContentPane().add(jTextField1, java.awt.BorderLayout.SOUTH);
 
         fileMenu.setText("File");
         openMenuItem.setText("Open");
@@ -109,8 +114,8 @@ public class TGAViewer extends javax.swing.JFrame {
 
         pack();
         java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
-        setSize(new java.awt.Dimension(320, 320));
-        setLocation((screenSize.width-320)/2,(screenSize.height-320)/2);
+        setSize(new java.awt.Dimension(320, 360));
+        setLocation((screenSize.width-320)/2,(screenSize.height-360)/2);
     }//GEN-END:initComponents
 
     private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutMenuItemActionPerformed
@@ -140,6 +145,7 @@ public class TGAViewer extends javax.swing.JFrame {
                 File file = chooser.getSelectedFile();
                 if (file != null && file.exists() && file.isFile()) {
                     InputStream in = new FileInputStream(file);
+                    long read;
                     Image image;
                     try {
                         ImageProducer producer = TGADecoder.decode(in);
@@ -148,6 +154,7 @@ public class TGAViewer extends javax.swing.JFrame {
                         in.close();
                     }
                     jLabel1.setIcon(new ImageIcon(image));
+                    jTextField1.setText(file.toString());
                 }
             } catch (Exception ex) {
                 showException(ex);
@@ -186,6 +193,7 @@ public class TGAViewer extends javax.swing.JFrame {
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JMenuItem aboutMenuItem;
     private javax.swing.JMenu helpMenu;
+    private javax.swing.JTextField jTextField1;
     // End of variables declaration//GEN-END:variables
     
 }
