@@ -16,13 +16,14 @@
     
     <target name="init">
         <property name="package" value="net/sourceforge/fraglets/yaelp"/>
-        <property name="version" value="1.12"/>
+        <property name="version" value="1.13"/>
     </target>
     
     <target depends="jars" name="release">
         <zip basedir="../jars" includes="yaelp-${version}.jar,sax.jar,xp.jar,xt.jar" zipfile="../jars/yaelp-${version}.zip">
             <fileset dir="${package}" includes="*.txt"/>
         </zip>
+        <zip basedir="../html/yaelp" includes="*.html,*.png" zipfile="../jars/yaelp-${version}-manual.zip"/>
         <zip basedir="." excludes="**/*.class" includes="${package}/**" zipfile="../jars/yaelp-${version}-source.zip"/>
     </target>
 </project>

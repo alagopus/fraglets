@@ -1,3 +1,9 @@
+Changes for version 1.13:
+    - Fixed a severe bug where property entries would override
+      the avatar timestamp.
+    - Load/import files on the command line on startup.
+    - Started a user manual.
+
 Changes for version 1.12 and 1.11:
     - Added gzipped XML save file format.
     - Added loading and saving the current roster.
