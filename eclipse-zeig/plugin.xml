@@ -28,7 +28,7 @@
       </category>
       <view
             name="Editing"
-            icon="icons/sample.gif"
+            icon="icons/browser.png"
             category="net.sourceforge.fraglets.zeig"
             class="net.sourceforge.fraglets.zeig.eclipse.views.ZeigView"
             id="net.sourceforge.fraglets.zeig.eclipse.views.ZeigView">
