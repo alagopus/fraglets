@@ -34,7 +34,7 @@ demonstrated by the X Windows software.
 <P>Due to the fragmentary character of most software contained in this
 project there will be few file releases. The easiest way to access the
 software will in most cases be the <a
-href="http://cvs.sourceforge.net/cgi-bin/cvsweb.cgi/fraglets/?cvsroot=fraglets"
+href="http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/fraglets/fraglets/"
 >CVSWeb interface</a>.</P>
 
 <P>Automatically generated daily snapshots are provided as
@@ -47,19 +47,19 @@ on a modern system.
 
 <h3><a href="http://cvs.sourceforge.net/cgi-bin/cvsweb.cgi/fraglets/cish/dgrep/?cvsroot=fraglets">dgrep</a></h3>
 <p>Somewhat redundantly, there is a fast literal string search program <a
-href="http://cvs.sourceforge.net/cgi-bin/cvsweb.cgi/fraglets/cish/dgrep/?cvsroot=fraglets"
+href="http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/fraglets/fraglets/cish/dgrep/"
 >dgrep</a> from my C development times. That software is comparatively old,
 but since it is small and fast, I still use it as a starting point if fast
 string match in large data is needed. It is in dire need of documentation
 though.</p>
 
-<h3><a href="http://cvs.sourceforge.net/cgi-bin/cvsweb.cgi/fraglets/cish/relay/?cvsroot=fraglets">relay</a></h3>
-<p><a href="http://cvs.sourceforge.net/cgi-bin/cvsweb.cgi/fraglets/cish/relay/?cvsroot=fraglets"
+<h3><a href="http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/fraglets/fraglets/cish/relay/">relay</a></h3>
+<p><a href="http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/fraglets/fraglets/cish/relay/"
 >Relay</a> contains a set of network relay/forwarding programs
 which were created to migrate an active multiuser game.</p>
 
-<h3><a href="http://cvs.sourceforge.net/cgi-bin/cvsweb.cgi/fraglets/cish/tryst/?cvsroot=fraglets">tryst</a></h3>
-<p>The <a href="http://cvs.sourceforge.net/cgi-bin/cvsweb.cgi/fraglets/cish/tryst/?cvsroot=fraglets"
+<h3><a href="http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/fraglets/fraglets/cish/tryst/">tryst</a></h3>
+<p>The <a href="http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/fraglets/fraglets/cish/tryst/"
 >tryst</a> package is an example of black *NIX art which will probably
 never become very portable. It implements a fast inter-process communication
 mechanism. Since it uses unix domain datagram sockets, memory mapping and
@@ -77,19 +77,52 @@ You will need a java-able browser or, even better now, the
 <a href="http://java.sun.com/products/plugin/">java plugin from
 Sun Microsystems</a>.</p>
 
+<h2>Java Classes</h2>
+
+<p><a href="http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/*checkout*/fraglets/fraglets/java/net/sourceforge/fraglets/swing/JMenuAction.java?rev=HEAD&content-type=text/plain"
+>JMenuAction.java</a> is mostly obsolete now, only the effort spent on
+avoiding memory leaks might make it useful in current Java releases. However,
+users who are still stuck with version 1.2 might find the behaviour
+provided by menu item of the later releases valuable.</p>
+
+<p><a href="http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/*checkout*/fraglets/fraglets/java/net/sourceforge/fraglets/swing/SortedTableModel.java?rev=HEAD&content-type=text/plain"
+>SortedTableModel.java</a> and <a href="http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/*checkout*/fraglets/fraglets/java/net/sourceforge/fraglets/swing/SortedTableProxy.java?rev=HEAD&content-type=text/plain"
+>SortedTableProxy.java</a> provide a generic way to make table sortable
+by column, as seen in many popular user interfaces. Its use can be seen in
+action in the <a href="#MTGOTrader">MTGO Trader utility</a>.</p>
+
+<h2>Java Utilities</h2>
+
+<p><a href="http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/fraglets/fraglets/java/net/sourceforge/fraglets/yaelp/"
+>YAELP</a> stands for Yet Another EverQuest Logfile Parser, and it is
+just that. Other than the usual log file parser with damage output
+calculation and whatnot, this one is only able to create user lists
+from observed /who output. However, it is extremely fast at doing that
+and it can parse gzipped files directly. I can parse my complete log
+files from the past half year in under one minute. You can use the
+<a href="http://sourceforge.net/project/showfiles.php?group_id=5068"
+>pre-compiled jars</p> from the files section to give it a try.</p>
+
+<p><a name="MTGOTrader" href="http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/fraglets/fraglets/java/net/sourceforge/fraglets/mtgo/trader/"
+>MTGO Trader</a> is an unfinished attempt at creating a tool to organize
+trading cards, geared toward the late online version. You can use the
+<a href="http://sourceforge.net/project/showfiles.php?group_id=5068"
+>pre-compiled jars</p> from the files section to have a look at what
+it does so far.</p>
+
 <h2>Shell scripts</h2>
 Shell scripts contained here may often expect an installation of
 <a href="http://www.gnu.org/">GNU</a> tools.
 
-<h3><a href="http://cvs.sourceforge.net/cgi-bin/cvsweb.cgi/fraglets/bash/javadepend?cvsroot=fraglets">javadepend</a></h3>
+<h3><a href="http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/fraglets/fraglets/bash/javadepend">javadepend</a></h3>
 <p>As with many temporary solutions, my <a
-href="http://cvs.sourceforge.net/cgi-bin/cvsweb.cgi/fraglets/bash/javadepend?cvsroot=fraglets"
+href="http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/*checkout*/fraglets/fraglets/bash/javadepend?rev=HEAD&content-type=text/plain"
 >javadepend</a> shell script now lives in most of my java projects. Since
 conception it serves to generate Java dependencies for a set of java source
 files. It is sort of obscure in its implementation, does depend on standard
 *NIX tools and a ready installation of the GNU C++ preprocessor, but is
 really fast compared to all other solutions I have seen so far.
 
-<hr noshade><p align="right">$Id: index.php,v 1.6 2000-05-01 15:59:04 marion Exp $</p>
+<hr noshade><p align="right">$Id: index.php,v 1.7 2002-06-09 14:11:11 marion Exp $</p>
 </BODY>
 </HTML>
