@@ -1,0 +1,31 @@
+# This is a jmk Java Makefile
+#
+# Note: This file assumes that you have a soft link to the group htdocs
+# directory.
+#
+# For jmk see http://www.ccs.neu.edu/home/ramsdell/make/edu/neu/ccs/jmk/
+# For MindTerm see http://www.mindbright.se/mindterm/
+
+# USER		= (getprop "user.name");
+USER		= "marion";
+SERVER		= "shelf.sourceforge.net";
+
+JAVA_HOME	= (getprop "java.home");
+JAR		= (cat JAVA_HOME "/bin/jar");
+JAVA		= (cat JAVA_HOME "/bin/java");
+JAVAC		= (cat JAVA_HOME "/bin/javac");
+SCP		= JAVA "mindbright.application.MindTerm" "--s" "toremote";
+SSH_MODE	= "-authtyp" "rsa" "-server" SERVER "-usrname" USER;
+
+files=(glob "*.php");
+
+"all":;
+{
+  note "Valid targets: deploy";
+}
+
+"deploy": jars;
+{
+  note "installing with home directory" (getprop "user.home");
+  exec SCP SSH_MODE files "htdocs";
+}
