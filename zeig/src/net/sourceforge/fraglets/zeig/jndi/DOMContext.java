@@ -48,7 +48,7 @@ import org.xml.sax.SAXException;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.22 $
+ * @version $Revision: 1.23 $
  */
 public class DOMContext implements Context {
     /** Context option. */
@@ -121,10 +121,16 @@ public class DOMContext implements Context {
         String auth = environment.getProperty(Context.SECURITY_AUTHENTICATION);
         if (auth != null) {
             if ("simple".equals(auth)) {
-                environment.setProperty("user",
-                    environment.getProperty(Context.SECURITY_PRINCIPAL));
-                environment.setProperty("password",
-                    environment.getProperty(Context.SECURITY_CREDENTIALS));
+                String value;
+                
+                value = environment.getProperty(Context.SECURITY_PRINCIPAL);
+                if (value != null) {
+                    environment.setProperty("user", value);
+                }
+                value = environment.getProperty(Context.SECURITY_CREDENTIALS);
+                if (value != null) {
+                    environment.setProperty("password", value);
+                }
             } else {
                 throw new AuthenticationNotSupportedException(auth.toString());
             }
@@ -156,9 +162,7 @@ public class DOMContext implements Context {
             }
 
             try {
-//                return NamingManager.getObjectInstance
-//                    (in, new CompositeName().add(atom), this, environment);
-                return new DOMObjectFactory().getObjectInstance
+                return NamingManager.getObjectInstance
                     (in, new CompositeName().add(atom), this, environment);
             } catch (Exception ex) {
                 Category.getInstance(getClass()).error("lookup", ex);
