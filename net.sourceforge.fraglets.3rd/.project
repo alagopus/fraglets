@@ -3,6 +3,7 @@
 	<name>net.sourceforge.fraglets.3rd</name>
 	<comment></comment>
 	<projects>
+		<project>net.sourceforge.fraglets.zeig.core</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

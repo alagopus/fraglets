@@ -19,13 +19,20 @@
       </library>
       <library name="3rd/xalan-j_2_5_0/bin/xalan.jar">
          <export name="*"/>
-         <packages prefixes="org.apache.xpath,org.apache.xml,org.apache.xalan"/>
-         <packages prefixes="org.apache.regexp,org.apache.bcel,org.w3c.dom.xpath"/>
-         <packages prefixes="java_cup,JLex"/>
+         <packages prefixes="org.apache,java_cup,JLex"/>
       </library>
       <library name="3rd/xalan-j_2_5_0/bin/bsf.jar">
          <export name="*"/>
          <packages prefixes="com.ibm.bsf"/>
+      </library>
+      <library name="3rd/xalan-j_2_5_0/bin/xercesImpl.jar">
+         <export name="*"/>
+         <packages prefixes="org.apache,org.w3c"/>
+      </library>
+      <library name="3rd/xalan-j_2_5_0/bin/xml-apis.jar">
+         <export name="*"/>
+         <packages prefixes="org.w3c,org.apache"/>
+         <packages prefixes="javax.xml"/>
       </library>
    </runtime>
 
