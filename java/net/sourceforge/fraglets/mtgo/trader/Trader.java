@@ -42,6 +42,7 @@ import javax.swing.table.TableModel;
 import javax.swing.JList;
 import java.util.Iterator;
 import java.net.URLConnection;
+import java.beans.PropertyVetoException;
 
 /**
  *
@@ -304,6 +305,11 @@ public class Trader extends JFrame {
         frame.show();
         desktopPane.add(frame);
         frame.toFront();
+        try {
+            frame.setMaximum(true);
+        } catch (PropertyVetoException ex) {
+            // failed to maximize, ignore
+        }
         table.setModel(model);
         table.getTable().getSelectionModel()
             .addListSelectionListener(new ListSelectionListener() {
