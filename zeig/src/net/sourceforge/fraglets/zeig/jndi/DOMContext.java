@@ -30,6 +30,10 @@ import javax.naming.NamingException;
 import javax.naming.NotContextException;
 import javax.naming.spi.NamingManager;
 
+import net.sourceforge.fraglets.zeig.dom.DocumentImpl;
+import net.sourceforge.fraglets.zeig.dom.NamedNodeMapImpl;
+import net.sourceforge.fraglets.zeig.model.SAXFactory;
+
 import org.apache.log4j.Category;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
@@ -37,17 +41,9 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import net.sourceforge.fraglets.zeig.dom.DocumentImpl;
-import net.sourceforge.fraglets.zeig.dom.NamedNodeMapImpl;
-import net.sourceforge.fraglets.zeig.jdbc.ConnectionFactory;
-import net.sourceforge.fraglets.zeig.model.NodeFactory;
-import net.sourceforge.fraglets.zeig.model.PlainTextFactory;
-import net.sourceforge.fraglets.zeig.model.SAXFactory;
-import net.sourceforge.fraglets.zeig.model.VersionFactory;
-
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  */
 public class DOMContext implements Context {
     /** Context option. */
@@ -61,7 +57,7 @@ public class DOMContext implements Context {
     
     public static final String BINDING_TAGNAME = "binding";
     
-    protected SharedContext sharedContext;
+    protected ConnectionContext sharedContext;
     private Properties environment;
     private NameParser nameParser;
     private DOMContext parent;
@@ -81,7 +77,7 @@ public class DOMContext implements Context {
     
     protected DOMContext(DOMContext blueprint) {
         this.environment = new Properties(blueprint.environment);
-        this.sharedContext = blueprint.sharedContext.open(this);
+        this.sharedContext = blueprint.sharedContext.open();
         this.nameParser = blueprint.nameParser;
         this.binding = blueprint.binding;
         this.parent = blueprint.parent;
@@ -91,7 +87,7 @@ public class DOMContext implements Context {
     
     protected DOMContext(DOMContext parent, String atom, Document binding, int ve) {
         this.environment = new Properties(parent.environment);
-        this.sharedContext = parent.sharedContext.open(this);
+        this.sharedContext = parent.sharedContext.open();
         this.nameParser = parent.nameParser;
         this.binding = binding;
         this.parent = parent;
@@ -102,7 +98,7 @@ public class DOMContext implements Context {
     protected void init(Hashtable defaults) throws NamingException {
         environment = new Properties();
         environment.putAll(defaults);
-        sharedContext = new SharedContext(this, environment);
+        sharedContext = new ConnectionContext(environment);
         nameParser = new SimpleNameParser(environment);
         ve = getRoot();
         this.atom = "";
@@ -435,10 +431,14 @@ public class DOMContext implements Context {
      * @see javax.naming.Context#close()
      */
     public void close() throws NamingException {
-        SharedContext sc = sharedContext;
+        ConnectionContext sc = sharedContext;
         sharedContext = null;
         if (sc != null) {
-            sc.close(this);
+            try {
+                sc.close();
+            } catch (SQLException ex) {
+                throw namingException(ex);
+            }
         }
     }
 
@@ -717,73 +717,4 @@ public class DOMContext implements Context {
         }
     }
     
-    public static class SharedContext {
-        private ConnectionFactory connectionFactory;
-        private VersionFactory versionFactory;
-        private NodeFactory nodeFactory;
-        private int shares;
-        
-        public SharedContext(DOMContext ctx, Properties environment) throws NamingException {
-            open(ctx);
-            connectionFactory = new ConnectionFactory(environment);
-        }
-        
-        public SharedContext open(DOMContext ctx) {
-            shares++;
-            return this;
-        }
-        
-        public void close(DOMContext ctx) throws NamingException {
-            if (--shares <= 0) {
-                try {
-                    ConnectionFactory cf = this.connectionFactory;
-                    this.connectionFactory = null;
-                    if (cf != null) {
-                        connectionFactory.close();
-                    }
-                } catch (SQLException ex) {
-                    throw DOMContext.namingException(ex);
-                }
-            }
-        }
-        
-        /**
-         * @return
-         */
-        public ConnectionFactory getConnectionFactory() throws SQLException {
-            return connectionFactory;
-        }
-        
-        /**
-         * @return
-         */
-        public NodeFactory getNodeFactory() throws SQLException {
-            if (nodeFactory == null) {
-                synchronized(this) {
-                    if (nodeFactory == null) {
-                        nodeFactory = new NodeFactory(getConnectionFactory());
-                    }
-                }
-            }
-            return nodeFactory;
-        }
-
-        /**
-         * @return
-         */
-        public VersionFactory getVersionFactory() throws SQLException {
-            if (versionFactory == null) {
-                synchronized(this) {
-                    if (versionFactory == null) {
-                        versionFactory = new VersionFactory(getConnectionFactory());
-                    }
-                }
-            }
-            return versionFactory;
-        }
-
-        public PlainTextFactory getPlainTextFactory() throws SQLException {
-            return getNodeFactory().getPlainTextFactory();
-        }
-    }
 }
