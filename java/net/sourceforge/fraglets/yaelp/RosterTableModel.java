@@ -24,7 +24,7 @@ import java.util.Comparator;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class RosterTableModel extends javax.swing.table.AbstractTableModel {
     /** Headers for the roster table. */    
@@ -195,13 +195,15 @@ public class RosterTableModel extends javax.swing.table.AbstractTableModel {
                     avatar.setLevel(0);
                 }
                 break;
-            case 4:
+            case 4: {
+                long timestamp = System.currentTimeMillis();
                 if (obj instanceof Avatar.Guild || obj == null) {
-                    avatar.setGuild((Avatar.Guild)obj);
+                    avatar.setGuild((Avatar.Guild)obj, timestamp);
                 } else {
-                    avatar.setGuild(Avatar.Guild.create(obj.toString()));
+                    avatar.setGuild(Avatar.Guild.create(obj.toString()), timestamp);
                 }
                 break;
+            }
             case 5:
                 if (obj instanceof Avatar.Zone || obj == null) {
                     avatar.setZone((Avatar.Zone)obj);

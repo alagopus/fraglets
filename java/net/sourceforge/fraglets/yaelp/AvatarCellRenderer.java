@@ -16,6 +16,7 @@ import java.awt.Component;
  * @author  marion@users.sourceforge.net
  */
 public class AvatarCellRenderer extends DefaultTableCellRenderer {
+    AvatarFilter mainFilter = new AvatarFilter.Main();
     
     /** Creates a new instance of AvatarCellRenderer */
     public AvatarCellRenderer() {
@@ -25,13 +26,13 @@ public class AvatarCellRenderer extends DefaultTableCellRenderer {
         boolean selected, boolean focus, int row, int col) {
         Component result = super.getTableCellRendererComponent(table, value,
             selected, focus, row, col);
-        setBold(result, col == 0 && hasProperties(table, row));
+        setBold(result, col == 0 && isLogin(table, row));
         return result;
     }
     
-    protected boolean hasProperties(JTable table, int row) {
+    protected boolean isLogin(JTable table, int row) {
         RosterTableModel model = (RosterTableModel)table.getModel();
-        return model.getAvatar(row).getPropertyCount() > 0;
+        return mainFilter.accept(model.getAvatar(row));
     }
     
     protected Font fontPlain;

@@ -36,7 +36,7 @@ package net.sourceforge.fraglets.yaelp;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public abstract class AvatarFilter {
     /** Determine whether the given avatar is accepted by this filter.
@@ -156,21 +156,33 @@ public abstract class AvatarFilter {
     
     /** Avatar filter based on level. */    
     public static class Level extends AvatarFilter {
-        /** The minimum level for an avatar to be accepted.
-         */        
+        /** The minimum level for an avatar to be accepted. */        
         protected int minLevel;
+        
+        /** The maximum level for an avatar to be accepted. */        
+        protected int maxLevel;
+        
         /** Create a new avatar filter based on the given level.
-         * @param minLevel the minimum level for an avatar to be accepted
-         */        
+         * @param minLevel the minimum level for an avatar to be accepted */        
         public Level(int minLevel) {
-            this.minLevel = minLevel;
+            this(minLevel, Integer.MAX_VALUE);
         }
+        
+        /** Create a new avatar filter based on the given level bounds.
+         * @param minLevel the minimum level for an avatar to be accepted
+         * @param maxLevel the maximum level for an avatar to be accepted */        
+        public Level(int minLevel, int maxLevel) {
+            this.minLevel = minLevel;
+            this.maxLevel = maxLevel;
+        }
+        
         /** Determine whether the given avatar is at least minLevel.
          * @param avatar the avatar to examine
          * @return true iff the given avatar is at least minLevel
          */        
         public boolean accept(Avatar avatar) {
-            return avatar.getLevel() >= minLevel;
+            int level = avatar.getLevel();
+            return level >= minLevel && level <= maxLevel;
         }
     }
     
@@ -258,18 +270,85 @@ public abstract class AvatarFilter {
         }
     }
     
-    /** Avatar filter requiring avatar properties, i.e. avatars with skills. */    
+    /** Avatar filter for main characters, i.e. avatars
+     * which were reported saved. */    
     public static class Main extends AvatarFilter {
         /** Create a new avatar filter based properties
          */        
         public Main() {
         }
-        /** Determine whether the given avatar belongs to culture.
+        /** Determine whether the given avatar is a main character.
          * @param avatar the avatar to examine
-         * @return true iff the given avatar is in culture
+         * @return true iff the given avatar is a main character
          */        
         public boolean accept(Avatar avatar) {
-            return avatar.getPropertyCount() > 0;
+            String value = avatar.getProperty("Login");
+            return value != null && value.equalsIgnoreCase("true");
+        }
+    }
+    
+    /** Avatar filter requiring avatar properties,. */    
+    public static class Property extends AvatarFilter {
+        
+        /** Holds value of property name. */
+        private String name;
+        
+        /** Holds value of property value. */
+        private String value;
+        
+        /** Create a new avatar filter based on property setting */        
+        public Property(String name, String value) {
+            setName(name);
+            setValue(value);
+        }
+        
+        /** Determine whether the given avatar has property set.
+         * @param avatar the avatar to examine
+         * @return true iff the given avatar has property set
+         */        
+        public boolean accept(Avatar avatar) {
+            String current = avatar.getProperty(name);
+            if (current != null) {
+                return value == null ? true : value.equals(current);
+            } else {
+                return false;
+            }
+        }
+        
+        /** Getter for property name.
+         * @return Value of property name.
+         */
+        public String getName() {
+            return this.name;
+        }
+        
+        /** Setter for property name.
+         * @param name New value of property name.
+         */
+        public void setName(String name) {
+            this.name = name;
+        }
+        
+        /** Getter for property value.
+         * @return Value of property value.
+         */
+        public String getValue() {
+            return this.value;
+        }
+        
+        /** Setter for property value.
+         * @param value New value of property value.
+         */
+        public void setValue(String value) {
+            this.value = value;
+        }
+        
+        public String toString() {
+            if (value == null) {
+                return name+" is set";
+            } else {
+                return name+" = "+value;
+            }
         }
     }
 }
