@@ -6,7 +6,6 @@
  */
 package net.sourceforge.fraglets.zeig.model;
 
-import java.io.StringWriter;
 import java.sql.SQLException;
 
 import net.sourceforge.fraglets.zeig.jdbc.ConnectionFactory;
@@ -19,7 +18,7 @@ import org.xml.sax.SAXException;
 
 /**
  * @author unknown
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class SAXSerializer {
     private NodeFactory nf;
@@ -80,17 +79,6 @@ public class SAXSerializer {
         } catch (SQLException ex) {
             throw new SAXException(ex);
         }
-    }
-    
-    public static String toString(int id) throws SAXException, SQLException {
-        SAXSerializer s = new SAXSerializer
-            (new NodeFactory(ConnectionFactory.getInstance()));
-        OutputFormat of = new OutputFormat();
-        of.setIndent(1);
-        StringWriter buffer = new StringWriter();
-        XMLSerializer handler = new XMLSerializer(buffer, of);
-        s.serialize(handler, id);
-        return buffer.toString();
     }
     
     public static void main(String args[]) {

@@ -19,7 +19,7 @@ import net.sourceforge.fraglets.zeig.jdbc.ConnectionFactory;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class PlainTextFactory {
     private ConnectionFactory cf;
@@ -34,18 +34,6 @@ public class PlainTextFactory {
     }
     
     private static PlainTextFactory instance;
-    
-    public static PlainTextFactory getInstance() throws SQLException {
-        if (instance == null) {
-            synchronized(PlainTextFactory.class) {
-                if (instance == null) {
-                    instance = new PlainTextFactory
-                        (ConnectionFactory.getInstance());
-                }
-            }
-        }
-        return instance;
-    }
     
     public int getPlainText(String text) throws SQLException {
         int hc = OTPHash.hash(text);

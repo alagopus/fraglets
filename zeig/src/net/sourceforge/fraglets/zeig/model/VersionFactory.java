@@ -16,7 +16,7 @@ import net.sourceforge.fraglets.zeig.jdbc.ConnectionFactory;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class VersionFactory {
     private ConnectionFactory cf;
@@ -26,18 +26,6 @@ public class VersionFactory {
     }
     
     private static VersionFactory instance;
-    
-    public static VersionFactory getInstance() throws SQLException {
-        if (instance == null) {
-            synchronized(VersionFactory.class) {
-                if (instance == null) {
-                    instance = new VersionFactory
-                        (ConnectionFactory.getInstance());
-                }
-            }
-        }
-        return instance;
-    }
     
     public int createVersion(int value, int comment) throws SQLException {
         PreparedStatement ps = cf

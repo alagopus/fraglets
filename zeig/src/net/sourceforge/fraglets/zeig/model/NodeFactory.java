@@ -28,9 +28,10 @@ import org.xml.sax.SAXException;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class NodeFactory implements NodeTags {
+    protected ConnectionFactory cf;
     protected NameFactory nm;
     protected NamespaceFactory ns;
     protected PlainTextFactory pt;
@@ -45,6 +46,7 @@ public class NodeFactory implements NodeTags {
     
     public NodeFactory(ConnectionFactory cf) {
         this();
+        this.cf = cf;
         this.nm = new NameFactory(cf);
         this.ns = new NamespaceFactory(cf);
         this.pt = new PlainTextFactory(cf);
@@ -56,23 +58,6 @@ public class NodeFactory implements NodeTags {
     }
     
     private static NodeFactory instance;
-    
-    public static NodeFactory getInstance() throws SQLException {
-        if (instance != null) {
-            return instance;
-        }
-        synchronized (NodeFactory.class) {
-            if (instance != null) {
-                return instance;
-            }
-            instance = new NodeFactory();
-            instance.nm = NameFactory.getInstance();
-            instance.ns = NamespaceFactory.getInstance();
-            instance.pt = PlainTextFactory.getInstance();
-            instance.xt = XMLTextFactory.getInstance();
-        }
-        return instance;
-    }
     
     public int getNamespace(String uri) throws SQLException {
         int id = pt.getPlainText(uri);
@@ -140,7 +125,7 @@ public class NodeFactory implements NodeTags {
             }
         }
         
-        SAXFactory sf = new SAXFactory(ConnectionFactory.getInstance());
+        SAXFactory sf = new SAXFactory(this);
         if (node.getNodeType() != Node.DOCUMENT_NODE) {
             sf.startFragment();
         }
@@ -239,6 +224,22 @@ public class NodeFactory implements NodeTags {
             pi = getName("", NODE_PROCESSING_INSTRUCTION);
         }
         return pi;
+    }
+    
+    public PlainTextFactory getPlainTextFactory() {
+        return pt;
+    }
+
+    public NameFactory getNameFactory() {
+        return nm;
+    }
+    
+    public NamespaceFactory getNamespaceFactory() {
+        return ns;
+    }
+    
+    public XMLTextFactory getXMLTextFactory() {
+        return xt;
     }
 
     public static class NameCacheEntry extends CacheEntry {
