@@ -16,6 +16,7 @@ import java.util.NoSuchElementException;
 import java.util.Properties;
 
 import javax.naming.AuthenticationException;
+import javax.naming.AuthenticationNotSupportedException;
 import javax.naming.Binding;
 import javax.naming.CompositeName;
 import javax.naming.CompoundName;
@@ -47,7 +48,7 @@ import org.xml.sax.SAXException;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.15 $
+ * @version $Revision: 1.16 $
  */
 public class DOMContext implements Context {
     /** Context option. */
@@ -102,6 +103,17 @@ public class DOMContext implements Context {
     protected void init(Hashtable defaults) throws NamingException {
         environment = new Properties();
         environment.putAll(defaults);
+        String auth = environment.getProperty(Context.SECURITY_AUTHENTICATION);
+        if (auth != null) {
+            if ("simple".equals(auth)) {
+                environment.setProperty("user",
+                    environment.getProperty(Context.SECURITY_PRINCIPAL));
+                environment.setProperty("password",
+                    environment.getProperty(Context.SECURITY_CREDENTIALS));
+            } else {
+                throw new AuthenticationNotSupportedException(auth.toString());
+            }
+        }
         connectionContext = new ConnectionContext(environment);
         nameParser = new SimpleNameParser(environment);
         ve = getRoot();
@@ -112,12 +124,12 @@ public class DOMContext implements Context {
      * @see javax.naming.Context#lookup(javax.naming.Name)
      */
     public Object lookup(Name name) throws NamingException {
-        if (name.isEmpty()) {
+        Name nm = getComponents(name);
+        if (nm.isEmpty()) {
             // request for copy
             return new DOMContext(this);
         }
 
-        Name nm = getComponents(name);
         String atom = nm.get(0);
         Element in = lookupElement(atom);
         
@@ -498,8 +510,11 @@ public class DOMContext implements Context {
 
     protected Name getComponents(Name name) throws NamingException {
         if (name instanceof CompositeName) {
-            // All components are eligible, we're terminal for the moment
-            return nameParser.parse(name.toString());
+            if (name.size() > 1) {
+                throw new InvalidNameException(name.toString() +
+                " has more components than namespace can handle");
+            }            // All components are eligible, we're terminal for the moment
+            return nameParser.parse(name.get(0));
         } else {
             // Already parsed
             return name;
