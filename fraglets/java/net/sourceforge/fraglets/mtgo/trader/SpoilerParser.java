@@ -41,21 +41,37 @@ public class SpoilerParser {
     public SpoilerParser(DefaultTableModel model) {
         this.model = model;
         model.setColumnCount(2);
-        model.setColumnIdentifiers(new Object[] { "Name", "Price" });
+        model.setColumnIdentifiers(new Object[] { "Name", "Color", "Rarity", "Mana", "Type", "P/T" });
     }
     
     public void parse(Reader in) throws IOException {
         BufferedReader reader = new BufferedReader(in);
         
         String line[];
+        Object[] row = null;
         while ((line = parseField(reader)) != null) {
             String key = line[0];
             if (key.equals("Card Title") || key.equals("Card Name")) {
-                model.addRow(new Object[] {
-                    line[1],
-                    ZERO,
-                });
+                if (row != null) {
+                    model.addRow(row);
+                }
+                row = new Object[] { line[1], null, null, null, null, null };
+            } else if (row == null) {
+                // ignore
+            } else if (key.endsWith("Color")) {
+                row[1] = line[1];
+            } else if (key.equals("Rarity")) {
+                row[2] = line[1];
+            } else if (key.endsWith("Cost")) {
+                row[3] = line[1];
+            } else if (key.endsWith("Type") || key.startsWith("Type")) {
+                row[4] = line[1];
+            } else if (key.startsWith("Pow/T") || key.startsWith("Pwr/T")) {
+                row[5] = line[1];
             }
+        }
+        if (row != null) {
+            model.addRow(row);
         }
     }
     
