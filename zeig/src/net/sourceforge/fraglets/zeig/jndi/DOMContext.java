@@ -48,7 +48,7 @@ import org.xml.sax.SAXException;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.19 $
+ * @version $Revision: 1.20 $
  */
 public class DOMContext implements Context {
     /** Context option. */
@@ -589,7 +589,7 @@ public class DOMContext implements Context {
         }
     }
     
-    private static int emptyId;
+    private int emptyId;
     
     protected int getEmpty() throws NamingException {
         if (emptyId != 0) {
@@ -604,16 +604,13 @@ public class DOMContext implements Context {
         }
     }
     
-    private static int veTag;
-    
     public int getVe(Element el) throws NamingException {
-        if (veTag == 0) {
-            try {
-                veTag = connectionContext.getNodeFactory()
-                    .getName(CONTEXT_NAMESPACE, "ve");
-            } catch (SQLException ex) {
-                throw namingException(ex);
-            }
+        int veTag;
+        try {
+            veTag = connectionContext.getNodeFactory()
+                .getName(CONTEXT_NAMESPACE, "ve");
+        } catch (SQLException ex) {
+            throw namingException(ex);
         }
         
         return Integer.parseInt
@@ -621,17 +618,12 @@ public class DOMContext implements Context {
                 .getNamedItem(veTag).getNodeValue());
     }
     
-    private static int idTag;
-    
     public int getId() throws NamingException {
-        if (idTag == 0) {
-            try {
-                idTag = connectionContext.getNodeFactory().getName("", "id");
-            } catch (SQLException ex) {
-                throw namingException(ex);
-            }
+        try {
+            return connectionContext.getNodeFactory().getName("", "id");
+        } catch (SQLException ex) {
+            throw namingException(ex);
         }
-        return idTag;
     }
     
     public static NamingException namingException(String message, Throwable t) {
