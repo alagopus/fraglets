@@ -44,6 +44,11 @@ import java.io.FileInputStream;
 import java.io.Writer;
 import java.io.IOException;
 import java.io.BufferedInputStream;
+import javax.swing.Box;
+import java.io.OutputStream;
+import javax.swing.JEditorPane;
+import java.io.StringWriter;
+import javax.swing.RepaintManager;
 
 /** This class implements a simple GUI to invoke the log recognizer and
  * display the results.
@@ -63,7 +68,7 @@ import java.io.BufferedInputStream;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.16 $
+ * @version $Revision: 1.17 $
  */
 public class RosterFrame extends javax.swing.JFrame {
     /** The file chooser map used to select files to parse and export.
@@ -112,6 +117,28 @@ public class RosterFrame extends javax.swing.JFrame {
                     selectedStyle = (java.net.URL)value;
                 }
             }
+        }
+    }
+    
+    public class StringDestination extends StringWriter implements Destination {
+        public String getEncoding() {
+            return "UCS-2";
+        }
+        
+        public OutputStream getOutputStream(String str, String str1) {
+            return null;
+        }
+        
+        public Writer getWriter(String str, String str1) {
+            return this;
+        }
+        
+        public boolean keepOpen() {
+            return false;
+        }
+        
+        public Destination resolve(String str) {
+            return null;
         }
     }
     
@@ -209,7 +236,9 @@ public class RosterFrame extends javax.swing.JFrame {
         propertyEditor = new net.sourceforge.fraglets.yaelp.PropertyEditor();
         tableScroll = new javax.swing.JScrollPane();
         rosterTable = new javax.swing.JTable();
+        statusPanel = new javax.swing.JPanel();
         status = new javax.swing.JTextField();
+        selectionButton = new net.sourceforge.fraglets.yaelp.SelectionButton();
         menuBar = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
         parseFileItem = new javax.swing.JMenuItem();
@@ -255,6 +284,7 @@ public class RosterFrame extends javax.swing.JFrame {
         styleFileItem = new javax.swing.JMenuItem();
         optionsMenu = new javax.swing.JMenu();
         displayHTMLItem = new javax.swing.JCheckBoxMenuItem();
+        exportToClipboardItem = new javax.swing.JCheckBoxMenuItem();
         helpMenu = new javax.swing.JMenu();
         aboutItem = new javax.swing.JMenuItem();
         licenseItem = new javax.swing.JMenuItem();
@@ -331,11 +361,21 @@ public class RosterFrame extends javax.swing.JFrame {
 
         getContentPane().add(tableScroll, java.awt.BorderLayout.CENTER);
 
+        statusPanel.setLayout(new javax.swing.BoxLayout(statusPanel, javax.swing.BoxLayout.X_AXIS));
+
         status.setBackground(java.awt.Color.lightGray);
         status.setEditable(false);
         status.setText("Parse some files to add entries.");
         status.setToolTipText("");
-        getContentPane().add(status, java.awt.BorderLayout.SOUTH);
+        statusPanel.add(status);
+
+        selectionButton.setBackground(new java.awt.Color(204, 204, 204));
+        selectionButton.setBorder(new javax.swing.border.EmptyBorder(new java.awt.Insets(1, 5, 1, 5)));
+        selectionButton.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("selectionButton.text"));
+        selectionButton.setToolTipText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("selectionButton.tooltip"));
+        statusPanel.add(selectionButton);
+
+        getContentPane().add(statusPanel, java.awt.BorderLayout.SOUTH);
 
         fileMenu.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("fileMenu.text"));
         parseFileItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("parseFileItem.text"));
@@ -583,6 +623,9 @@ public class RosterFrame extends javax.swing.JFrame {
         displayHTMLItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("displayHTMLItem.text"));
         displayHTMLItem.setToolTipText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("displayHTMLItem.tooltip"));
         optionsMenu.add(displayHTMLItem);
+        exportToClipboardItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("exportToClipboardItem.text"));
+        exportToClipboardItem.setToolTipText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("exportToClipboardItem.tooltip"));
+        optionsMenu.add(exportToClipboardItem);
         menuBar.add(optionsMenu);
         helpMenu.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("helpMenu.text"));
         aboutItem.setText(java.util.ResourceBundle.getBundle("net/sourceforge/fraglets/yaelp/YaelpResources").getString("aboutItem.text"));
@@ -981,6 +1024,12 @@ public class RosterFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_filterItemActionPerformed
 
     private void exportHTMLItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportHTMLItemActionPerformed
+        if (exportToClipboardItem.isSelected()) {
+            selectionButton.setOwner(false);
+            RepaintManager.currentManager(this).paintDirtyRegions();
+            doExportHTML(null);
+            return;
+        }
         JFileChooser chooser = getChooser("xml");
         chooser.setApproveButtonText("Export");
         chooser.setDialogTitle("Export HTML");
@@ -1450,19 +1499,25 @@ public class RosterFrame extends javax.swing.JFrame {
     
     protected void doShowDocument(String title, java.net.URL text) {
         try {
-            javax.swing.JEditorPane editorPane =
-                new javax.swing.JEditorPane(text);
-            editorPane.setEditable(false);
-            javax.swing.JScrollPane scrollPane =
-                new javax.swing.JScrollPane(editorPane);
-            scrollPane.setPreferredSize(new java.awt.Dimension(550, 250));
-            javax.swing.JOptionPane.showMessageDialog
-                (this, scrollPane, title, javax.swing.JOptionPane.INFORMATION_MESSAGE);
-            fixBackingStore();
+            doShowDocument(title, new JEditorPane(text));
         } catch (java.io.IOException ex) {
             ex.printStackTrace();
             doException(ex);
         }
+    }
+    
+    protected void doShowDocument(String title, String type, String text) {
+        doShowDocument(title, new JEditorPane(type, text));
+    }
+    
+    protected void doShowDocument(String title, JEditorPane editorPane) {
+        editorPane.setEditable(false);
+        javax.swing.JScrollPane scrollPane =
+            new javax.swing.JScrollPane(editorPane);
+        scrollPane.setPreferredSize(new java.awt.Dimension(550, 250));
+        javax.swing.JOptionPane.showMessageDialog
+            (this, scrollPane, title, javax.swing.JOptionPane.INFORMATION_MESSAGE);
+        fixBackingStore();
     }
 
     /** Export the current roster to a file.
@@ -1586,7 +1641,8 @@ public class RosterFrame extends javax.swing.JFrame {
      * @param file file to write the exported roster into
      */    
     protected void doExportHTML(java.io.File file) {
-        if (!doWriteConfirmation(file)) {
+        if (!exportToClipboardItem.isSelected() &&
+            !doWriteConfirmation(file)) {
             return; // nothing selected, canceled.
         }
         try {
@@ -1614,7 +1670,12 @@ public class RosterFrame extends javax.swing.JFrame {
                 xsl.close();
                 loadedStyle = style;
             }
-            Destination out = new FileDestination(file);
+            Destination out;
+            if (exportToClipboardItem.isSelected()) {
+                out = new StringDestination();
+            } else {
+                out = new FileDestination(file);
+            }
             handler.setDestination(out);
             final java.io.PipedWriter pw = new java.io.PipedWriter();
             new Thread() {
@@ -1629,9 +1690,17 @@ public class RosterFrame extends javax.swing.JFrame {
             }.start();
             processor.parse(new InputSource(new java.io.PipedReader(pw)));
             
+            if (exportToClipboardItem.isSelected()) {
+                selectionButton.setSelection(out.toString());
+            }
+            
             if (displayHTMLItem.isSelected()) {
-                doShowDocument("HTML Export Result",
-                    new java.net.URL("file:///"+file.getAbsolutePath()));
+                if (exportToClipboardItem.isSelected()) {
+                    doShowDocument("HTML Export Result", "text/html", out.toString());
+                } else {
+                    doShowDocument("HTML Export Result",
+                        new java.net.URL("file:///"+file.getAbsolutePath()));
+                }
             }
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -1790,7 +1859,7 @@ public class RosterFrame extends javax.swing.JFrame {
                 }
             }
             aboutText =
-            "YAELP log file parser, version 1.13.\n"+
+            "YAELP log file parser, version 1.14.\n"+
             "Copyright © 2001, 2002 Klaus Rennecke.\n"+
             "XML parser Copyright © 1997, 1998 James Clark.\n"+
             "XSL transformation Copyright © 1998, 1999 James Clark.\n"+
@@ -1933,13 +2002,13 @@ public class RosterFrame extends javax.swing.JFrame {
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JMenuItem exportXMLItem;
     private net.sourceforge.fraglets.yaelp.PropertyInput propertyInput;
-    private javax.swing.JMenuItem importFileItem;
     private javax.swing.JMenuItem licenseItem;
     private javax.swing.JMenuItem hideMenuItem;
+    private javax.swing.JMenuItem importFileItem;
     private javax.swing.JTextField status;
     private javax.swing.JSeparator separator6;
-    private javax.swing.JSeparator separator5;
     private javax.swing.JMenu newStyleMenu;
+    private javax.swing.JSeparator separator5;
     private javax.swing.JMenuItem dohMenuItem;
     private javax.swing.JSeparator separator4;
     private javax.swing.JSeparator separator3;
@@ -1950,6 +2019,7 @@ public class RosterFrame extends javax.swing.JFrame {
     private javax.swing.JCheckBoxMenuItem memberFilterItem;
     private javax.swing.JRadioButtonMenuItem ssStyleItem;
     private javax.swing.JMenuItem propertyFilterItem;
+    private net.sourceforge.fraglets.yaelp.SelectionButton selectionButton;
     private javax.swing.JMenuItem xpLicenseItem;
     private javax.swing.JRadioButtonMenuItem mwStyleItem;
     private javax.swing.JMenuItem xtLicenseItem;
@@ -1964,10 +2034,12 @@ public class RosterFrame extends javax.swing.JFrame {
     private javax.swing.JMenu helpMenu;
     private javax.swing.JMenuItem newGuildFilterItem;
     private javax.swing.JScrollPane tableScroll;
+    private javax.swing.JCheckBoxMenuItem exportToClipboardItem;
     private javax.swing.JCheckBoxMenuItem level1FilterItem;
     private javax.swing.JMenu newFilterMenu;
     private javax.swing.JMenuItem loadFileItem;
     private javax.swing.JMenuBar menuBar;
+    private javax.swing.JPanel statusPanel;
     private javax.swing.JMenuItem dingMenuItem;
     private javax.swing.JMenu styleMenu;
     private javax.swing.JMenuItem styleWizardItem;
