@@ -1,3 +1,6 @@
+Changes for version 1.23:
+    - Completed level 65 class titles
+
 Changes for version 1.22:
     - Fixed link color in NEoP style.
     - Big refactoring effort, including repackaging
