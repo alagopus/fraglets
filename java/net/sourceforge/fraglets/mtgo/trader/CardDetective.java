@@ -226,24 +226,16 @@ public class CardDetective {
     }
     
     public static String simpleName(String name) {
-        String postfixes[] = new String[] {
-            " (foil)",
-            " (foil promo)",
-            " (promo)",
-            " (MM)",
-        };
-        for (int i = 0; i < postfixes.length; i++) {
-            String pf = postfixes[i];
-            if (name.endsWith(pf)) {
-                name = name.substring(0, name.length() - pf.length());
-            }
-        }
         int end = name.length();
         StringBuffer buffer = new StringBuffer();
         for (int i = 0; i < end; i++) {
             char c = name.charAt(i);
             if (Character.isLetter(c)) {
-                buffer.append(Character.toLowerCase(c));
+                if (c == 'Æ') {
+                    buffer.append("ae");
+                } else {
+                    buffer.append(Character.toLowerCase(c));
+                }
             } else if (c == ' ' || c == '-' || c == '_') {
                 buffer.append('_');
             } else if (c == '(' && name.indexOf(')', i) > 0) {
