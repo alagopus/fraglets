@@ -1,10 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<panel columns="2" gap="4">
-  <menubar colspan="2" weightx="1">
+<panel columns="3" gap="4">
+  <menubar colspan="3" weightx="1">
     <menu text="i18n.clb.File">
       <menuitem text="i18n.clb.Open" action="open()"/>
       <separator/>
       <menuitem text="i18n.clb.Exit" action="exit()"/>
+    </menu>
+    <menu text="i18n.clb.Edit">
+      <menuitem text="i18n.clb.Copy" action="copy()"/>
+      <separator/>
+      <menu text="i18n.clb.Learn" name="learn"/>
+      <menu text="i18n.clb.Forget" name="forget"/>
+      <separator/>
+      <menuitem text="i18n.clb.New.Category" action="newCategory()"/>
     </menu>
   </menubar>
   <splitpane orientation="vertical" weightx="1" weighty="1">
@@ -13,5 +21,9 @@
       <popupmenu name="context"/>
     </textarea>
   </splitpane>
-  <slider action="seek(this)" orientation="vertical" maximum="1000000" weighty="1"/>
+  <slider name="slider"
+    action="seek(this)" orientation="vertical" maximum="1000000" weighty="1"/>
+  <slider name="portion" enabled="false"
+    orientation="vertical" maximum="1000000" weighty="1"/>
+  <label colspan="3" name="status" weightx="1"/>
 </panel>

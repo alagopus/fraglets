@@ -1,5 +1,5 @@
 /*
- * $Id: CategoryLogMessages.java,v 1.1 2004-04-03 23:36:47 marion Exp $
+ * $Id: Resources.java,v 1.1 2004-04-04 19:10:35 marion Exp $
  * Copyright (C) 2004 Klaus Rennecke, all rights reserved.
  */
 package net.sf.fraglets.crm114j;
@@ -8,9 +8,9 @@ import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 /**
- * @version $Id: CategoryLogMessages.java,v 1.1 2004-04-03 23:36:47 marion Exp $
+ * @version $Id: Resources.java,v 1.1 2004-04-04 19:10:35 marion Exp $
  */
-public class CategoryLogMessages {
+public class Resources {
 
     private static final String BUNDLE_NAME = "net.sf.fraglets.crm114j.clb"; //$NON-NLS-1$
 
@@ -20,7 +20,7 @@ public class CategoryLogMessages {
     /**
      * 
      */
-    private CategoryLogMessages() {
+    private Resources() {
         // TODO Auto-generated constructor stub
     }
     

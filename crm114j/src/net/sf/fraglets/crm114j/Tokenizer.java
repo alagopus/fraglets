@@ -1,5 +1,5 @@
 /*
- * $Id: Tokenizer.java,v 1.2 2004-04-03 23:36:47 marion Exp $
+ * $Id: Tokenizer.java,v 1.3 2004-04-04 19:10:35 marion Exp $
  * Copyright (C) 2004 Klaus Rennecke, all rights reserved.
  * Algorithm from CRM114 Copyright 2001-2004  William S. Yerazunis.
  *
@@ -19,15 +19,16 @@
 package net.sf.fraglets.crm114j;
 
 /**
- * @version $Id: Tokenizer.java,v 1.2 2004-04-03 23:36:47 marion Exp $
+ * @version $Id: Tokenizer.java,v 1.3 2004-04-04 19:10:35 marion Exp $
  */
 public class Tokenizer {
     private char[] buffer;
     private int off;
     private int len;
+    private int max;
     
     public Tokenizer(char[] buffer) {
-        reset(buffer);
+        reset(buffer, 0, 0, buffer.length);
     }
     
     protected Tokenizer() {
@@ -41,7 +42,7 @@ public class Tokenizer {
         off += len;
         len = 0;
         char[] b = buffer;
-        int i = off, l = b.length;
+        int i = off, l = max;
         while (i < l && !isGraph(b[i])) {
             i++;
         } 
@@ -53,10 +54,11 @@ public class Tokenizer {
         return len > 0;
     }
     
-    public void reset(char[] buffer) {
+    public final void reset(char[] buffer, int off, int len, int max) {
         this.buffer = buffer;
-        this.off = 0;
-        this.len = 0;
+        this.off = off;
+        this.len = len;
+        this.max = max;
     }
     
     public static boolean isGraph(char c) {
@@ -82,6 +84,13 @@ public class Tokenizer {
      */
     public final int getOff() {
         return off;
+    }
+
+    /**
+     * @return
+     */
+    public final int getMax() {
+        return max;
     }
 
 }
