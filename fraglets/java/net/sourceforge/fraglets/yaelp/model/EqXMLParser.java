@@ -4,7 +4,7 @@
  * Created on 12. Juli 2002, 21:00
  */
 
-package net.sourceforge.fraglets.yaelp;
+package net.sourceforge.fraglets.yaelp.model;
 
 import org.xml.sax.DocumentHandler;
 import java.io.File;

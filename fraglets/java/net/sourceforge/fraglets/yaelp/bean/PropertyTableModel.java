@@ -3,13 +3,14 @@
  * Copyright (C) 2002 Klaus Rennecke.
  */
 
-package net.sourceforge.fraglets.yaelp;
+package net.sourceforge.fraglets.yaelp.bean;
 
 import java.util.Iterator;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeEvent;
 import java.util.Arrays;
 import java.util.Map;
+import net.sourceforge.fraglets.yaelp.model.Avatar;
 
 /**
  *
@@ -28,7 +29,7 @@ import java.util.Map;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.1 $
  */
 public class PropertyTableModel extends javax.swing.table.AbstractTableModel implements PropertyChangeListener {
     /** The avatar instance we'return representing. */

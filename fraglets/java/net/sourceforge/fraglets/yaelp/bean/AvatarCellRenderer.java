@@ -4,12 +4,13 @@
  * Created on 30. Juni 2002, 17:49
  */
 
-package net.sourceforge.fraglets.yaelp;
+package net.sourceforge.fraglets.yaelp.bean;
 
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.JTable;
 import java.awt.Font;
 import java.awt.Component;
+import net.sourceforge.fraglets.yaelp.model.AvatarFilter;
 
 /**
  *

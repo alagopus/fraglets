@@ -32,4 +32,5 @@ public interface ActionContext {
     public String getResourceString(String key);
     public String getApplicationName();
     public String getVersion();
+    public Object getCurrentSelection();
 }

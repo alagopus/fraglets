@@ -14,7 +14,6 @@
             <Property name="text" type="java.lang.String" value="Properties ..."/>
             <Property name="toolTipText" type="java.lang.String" value="Show extra avatar properties."/>
           </Properties>
-
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="propertyMenuItemActionPerformed"/>
           </Events>
@@ -26,7 +25,6 @@
             <Property name="text" type="java.lang.String" value="new entry"/>
             <Property name="toolTipText" type="java.lang.String" value="Create a new entry."/>
           </Properties>
-
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="newEntryItemActionPerformed"/>
           </Events>
@@ -35,7 +33,6 @@
           <Properties>
             <Property name="text" type="java.lang.String" value="hide selected"/>
           </Properties>
-
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="hideMenuItemActionPerformed"/>
           </Events>
@@ -47,7 +44,6 @@
             <Property name="text" type="java.lang.String" value="DING!"/>
             <Property name="toolTipText" type="java.lang.String" value="Increase level by one."/>
           </Properties>
-
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="dingMenuItemActionPerformed"/>
           </Events>
@@ -57,16 +53,15 @@
             <Property name="text" type="java.lang.String" value="DOH :("/>
             <Property name="toolTipText" type="java.lang.String" value="Decrease level by one."/>
           </Properties>
-
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="dohMenuItemActionPerformed"/>
           </Events>
         </MenuItem>
       </SubComponents>
     </Menu>
-    <Component class="net.sourceforge.fraglets.yaelp.PropertyInput" name="propertyInput">
+    <Component class="net.sourceforge.fraglets.yaelp.bean.PropertyInput" name="propertyInput">
     </Component>
-    <Component class="net.sourceforge.fraglets.yaelp.PropertyEditor" name="propertyEditor">
+    <Component class="net.sourceforge.fraglets.yaelp.bean.PropertyEditor" name="propertyEditor">
       <Properties>
         <Property name="modal" type="boolean" value="true"/>
       </Properties>
@@ -89,7 +84,6 @@
                   <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="parseFileItem.tooltip" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
-
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="parseFileItemActionPerformed"/>
               </Events>
@@ -105,7 +99,6 @@
                   <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="saveFileItem.tooltip" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
-
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="saveFileItemActionPerformed"/>
               </Events>
@@ -119,7 +112,6 @@
                   <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="importFileItem.tooltip" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
-
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="importFileItemActionPerformed"/>
               </Events>
@@ -133,7 +125,6 @@
                   <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="loadFileItem.tooltip" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
-
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="loadFileItemActionPerformed"/>
               </Events>
@@ -149,7 +140,6 @@
                   <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="exportTableItem.tooltip" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
-
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="exportTableItemActionPerformed"/>
               </Events>
@@ -163,7 +153,6 @@
                   <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="exportXMLItem.tooltip" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
-
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="exportXMLItemActionPerformed"/>
               </Events>
@@ -177,7 +166,6 @@
                   <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="exportHTMLItem.tooltip" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
-
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="exportHTMLItemActionPerformed"/>
               </Events>
@@ -193,7 +181,6 @@
                   <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="quitItem.tooltip" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
-
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="quitItemActionPerformed"/>
               </Events>
@@ -215,7 +202,6 @@
                 <Property name="text" type="java.lang.String" value="no filter"/>
                 <Property name="toolTipText" type="java.lang.String" value="Disable all filters."/>
               </Properties>
-
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="noFilterItemActionPerformed"/>
               </Events>
@@ -225,7 +211,6 @@
                 <Property name="text" type="java.lang.String" value="invert filter"/>
                 <Property name="toolTipText" type="java.lang.String" value="Invert all selected filter items."/>
               </Properties>
-
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="invertFilterItemActionPerformed"/>
               </Events>
@@ -241,7 +226,6 @@
                   <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="mainFilterItem.tooltip" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
-
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="filterItemActionPerformed"/>
               </Events>
@@ -255,7 +239,6 @@
                   <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="level1FilterItem.tooltip" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
-
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="filterItemActionPerformed"/>
               </Events>
@@ -268,7 +251,6 @@
                   <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="defaultFilterItem.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
-
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="filterItemActionPerformed"/>
               </Events>
@@ -279,7 +261,6 @@
                   <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="alliedFilterItem.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
-
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="filterItemActionPerformed"/>
               </Events>
@@ -290,7 +271,6 @@
                   <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="friendFilterItem.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
-
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="filterItemActionPerformed"/>
               </Events>
@@ -306,7 +286,6 @@
                   <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="memberFilterItem.tooltip" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
-
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="filterItemActionPerformed"/>
               </Events>
@@ -320,7 +299,6 @@
                   <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="officerFilterItem.tooltip" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
-
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="filterItemActionPerformed"/>
               </Events>
@@ -343,7 +321,6 @@
                       <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="newGuildFilterItem.tooltip" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
-
                   <Events>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="newGuildFilterItemActionPerformed"/>
                   </Events>
@@ -357,7 +334,6 @@
                       <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="levelFilterItem.tooltip" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
-
                   <Events>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="levelFilterItemActionPerformed"/>
                   </Events>
@@ -371,7 +347,6 @@
                       <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="propertyFilterItem.tooltip" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
-
                   <Events>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="propertyFilterItemActionPerformed"/>
                   </Events>
@@ -385,7 +360,6 @@
                       <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="classFilterItem.tooltip" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
-
                   <Events>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="classFilterItemActionPerformed"/>
                   </Events>
@@ -399,7 +373,6 @@
                       <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="cultureFilterItem.tooltip" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
-
                   <Events>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cultureFilterItemActionPerformed"/>
                   </Events>
@@ -413,7 +386,6 @@
                       <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="afterFilterItem.tooltip" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
-
                   <Events>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="afterFilterItemActionPerformed"/>
                   </Events>
@@ -514,7 +486,6 @@
                       <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="styleFileItem.tooltip" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
-
                   <Events>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="styleFileItemActionPerformed"/>
                   </Events>
@@ -565,7 +536,6 @@
                   <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="aboutItem.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
-
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="aboutItemActionPerformed"/>
               </Events>
@@ -576,7 +546,6 @@
                   <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="licenseItem.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
-
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="licenseItemActionPerformed"/>
               </Events>
@@ -587,7 +556,6 @@
                   <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="xpLicenseItem.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
-
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="xpLicenseItemActionPerformed"/>
               </Events>
@@ -598,7 +566,6 @@
                   <ResourceString bundle="net/sourceforge/fraglets/yaelp/YaelpResources.properties" key="xtLicenseItem.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
-
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="xtLicenseItemActionPerformed"/>
               </Events>
@@ -617,20 +584,13 @@
   </Properties>
   <SyntheticProperties>
     <SyntheticProperty name="menuBar" type="java.lang.String" value="menuBar"/>
-    <SyntheticProperty name="formSize" type="java.awt.Dimension" value="-84,-19,0,5,115,114,0,18,106,97,118,97,46,97,119,116,46,68,105,109,101,110,115,105,111,110,65,-114,-39,-41,-84,95,68,20,2,0,2,73,0,6,104,101,105,103,104,116,73,0,5,119,105,100,116,104,120,112,0,0,0,-56,0,0,1,44"/>
-    <SyntheticProperty name="formPosition" type="java.awt.Point" value="-84,-19,0,5,115,114,0,14,106,97,118,97,46,97,119,116,46,80,111,105,110,116,-74,-60,-118,114,52,126,-56,38,2,0,2,73,0,1,120,73,0,1,121,120,112,0,0,0,0,0,0,0,0"/>
     <SyntheticProperty name="formSizePolicy" type="int" value="1"/>
-    <SyntheticProperty name="generatePosition" type="boolean" value="true"/>
-    <SyntheticProperty name="generateSize" type="boolean" value="true"/>
-    <SyntheticProperty name="generateCenter" type="boolean" value="true"/>
-    <SyntheticProperty name="designerSize" type="java.awt.Dimension" value="-84,-19,0,5,115,114,0,18,106,97,118,97,46,97,119,116,46,68,105,109,101,110,115,105,111,110,65,-114,-39,-41,-84,95,68,20,2,0,2,73,0,6,104,101,105,103,104,116,73,0,5,119,105,100,116,104,120,112,0,0,1,44,0,0,1,-112"/>
   </SyntheticProperties>
-
   <Events>
     <EventHandler event="windowClosing" listener="java.awt.event.WindowListener" parameters="java.awt.event.WindowEvent" handler="exitForm"/>
   </Events>
-
   <AuxValues>
+    <AuxValue name="designerSize" type="java.awt.Dimension" value="-84,-19,0,5,115,114,0,18,106,97,118,97,46,97,119,116,46,68,105,109,101,110,115,105,111,110,65,-114,-39,-41,-84,95,68,20,2,0,2,73,0,6,104,101,105,103,104,116,73,0,5,119,105,100,116,104,120,112,0,0,1,44,0,0,1,-112"/>
     <AuxValue name="RADVisualFormContainer_MenuComponent" type="java.lang.String" value="menuBar"/>
   </AuxValues>
 
@@ -654,7 +614,6 @@
               <Dimension value="[650, 200]"/>
             </Property>
           </Properties>
-
           <Events>
             <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="rosterTableMouseClicked"/>
           </Events>
@@ -680,11 +639,8 @@
             <Property name="toolTipText" type="java.lang.String" value=""/>
           </Properties>
         </Component>
-        <Component class="net.sourceforge.fraglets.yaelp.SelectionButton" name="selectionButton">
+        <Component class="net.sourceforge.fraglets.yaelp.bean.SelectionButton" name="selectionButton">
           <Properties>
-            <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-              <Color blue="cc" green="cc" red="cc" type="rgb"/>
-            </Property>
             <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
               <Border info="org.netbeans.modules.form.compat2.border.EmptyBorderInfo">
                 <EmptyBorder bottom="1" left="5" right="5" top="1"/>

@@ -17,7 +17,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-package net.sourceforge.fraglets.yaelp;
+package net.sourceforge.fraglets.yaelp.model;
 
 /** Abstract class for a filter on the roster. 
  *
@@ -36,7 +36,7 @@ package net.sourceforge.fraglets.yaelp;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.1 $
  */
 public abstract class AvatarFilter {
     /** Determine whether the given avatar is accepted by this filter.

@@ -3,7 +3,7 @@
  * Copyright (C) 2001, 2002 Klaus Rennecke.
  */
 
-package net.sourceforge.fraglets.yaelp;
+package net.sourceforge.fraglets.yaelp.bean;
 
 /**
  *
@@ -22,7 +22,7 @@ package net.sourceforge.fraglets.yaelp;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.1 $
  */
 public class DateInput extends javax.swing.JPanel {
 
