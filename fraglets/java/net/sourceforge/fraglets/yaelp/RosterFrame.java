@@ -63,7 +63,7 @@ import java.io.BufferedInputStream;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.15 $
+ * @version $Revision: 1.16 $
  */
 public class RosterFrame extends javax.swing.JFrame {
     /** The file chooser map used to select files to parse and export.
@@ -1790,7 +1790,7 @@ public class RosterFrame extends javax.swing.JFrame {
                 }
             }
             aboutText =
-            "YAELP log file parser, version 1.12.\n"+
+            "YAELP log file parser, version 1.13.\n"+
             "Copyright © 2001, 2002 Klaus Rennecke.\n"+
             "XML parser Copyright © 1997, 1998 James Clark.\n"+
             "XSL transformation Copyright © 1998, 1999 James Clark.\n"+
@@ -1892,6 +1892,9 @@ public class RosterFrame extends javax.swing.JFrame {
         System.setOut(new java.io.PrintStream
         (new DocumentStream(frame.status)));
         frame.show();
+        for (int i = 0; i < args.length; i++) {
+            frame.doImport(new File(args[i]), i == 0);
+        }
     }
     
     /** Getter for property changed.
