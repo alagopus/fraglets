@@ -27,7 +27,7 @@ import java.util.Locale;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class Line {
     /** Temporary time stamp specification until first parse. */
@@ -63,9 +63,16 @@ public class Line {
 
     /** Creates new Line
      * @param timespec timestamp specification, parsed when needed
-     * @param words words on the new line
+     * @param chars words on the new line
      */
     public Line(String timespec, char chars[]) {
+        recycle(timespec, chars);
+    }
+    
+    /** Recycle this instance, initializing it with new values.
+     * @param timespec timestamp specification, parsed when needed
+     * @param chars words on the new line */    
+    public void recycle(String timespec, char chars[]) {
         this.timespec = timespec;
         this.chars = chars;
     }
