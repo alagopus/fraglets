@@ -49,6 +49,10 @@ but since it is small and fast, I still use it as a starting point if fast
 string match in large data is needed. It is in dire need of documentation
 though.</p>
 
+<p><a href="http://cvs.sourceforge.net/cgi-bin/cvsweb.cgi/fraglets/cish/relay/?cvsroot=fraglets"
+>Relay</a> contains a set of network relay/forwarding programs
+which were created to migrate an active multiuser game.</p>
+
 <h2>Java Beans</h2>
 
 <p>There is a <a href="beans.php">separate page</a> showcasing beans online.
@@ -66,6 +70,6 @@ files. It is sort of obscure in its implementation, does depend on standard
 *NIX tools and a ready installation of the GNU C++ preprocessor, but is
 really fast compared to all other solutions I have seen so far.
 
-<hr noshade><p align="right">$Id: index.php,v 1.4 2000-04-29 14:53:02 marion Exp $</p>
+<hr noshade><p align="right">$Id: index.php,v 1.5 2000-04-30 09:24:29 marion Exp $</p>
 </BODY>
 </HTML>
