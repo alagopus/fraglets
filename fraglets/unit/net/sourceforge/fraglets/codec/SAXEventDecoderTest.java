@@ -7,21 +7,34 @@
 
 package net.sourceforge.fraglets.codec;
 
-import junit.framework.*;
-import org.xml.sax.DocumentHandler;
-import org.xml.sax.SAXException;
-import org.xml.sax.AttributeList;
-import com.jclark.xml.sax.Driver;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.StringBufferInputStream;
+import java.io.StringReader;
+import java.lang.reflect.UndeclaredThrowableException;
+import java.util.Arrays;
+
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
+
+import org.xml.sax.AttributeList;
+import org.xml.sax.DocumentHandler;
+import org.xml.sax.InputSource;
+import org.xml.sax.Locator;
+import org.xml.sax.SAXException;
+import sun.beans.editors.ByteEditor;
+
 import com.jclark.xml.output.UTF8XMLWriter;
+import com.jclark.xml.sax.Driver;
 
 /**
- *
  * @author marion@users.sourceforge.net
+ * @version $Revision: 1.2 $
  */
-public class SAXEventDecoderTest extends TestCase {
+public class SAXEventDecoderTest extends SAXCodecTest {
     
-    public SAXEventDecoderTest(java.lang.String testName) {
+    public SAXEventDecoderTest(String testName) {
         super(testName);
     }
     
@@ -38,78 +51,18 @@ public class SAXEventDecoderTest extends TestCase {
     /** Test of toEvents method, of class net.sourceforge.fraglets.codec.SAXEventDecoder. */
     public void testToEvents() throws SAXException, IOException {
         Driver driver = new Driver();
+        EventOutput output = new EventOutput();
         SAXEventEncoder encoder = new SAXEventEncoder();
-        driver.setDocumentHandler(encoder);
-        driver.parse("file:////C:/TEMP/vl.xml");
+        output.setDelegate(encoder);
+        driver.setDocumentHandler(output);
+        driver.parse(toInputSource(TEST_INPUT));
+        byte sample[] = output.getBytes();
         SAXEventDecoder decoder = new SAXEventDecoder();
         decoder.setBuffer(encoder.getUTF8());
-        System.out.println("result length: "+encoder.getUTF8().length);
-        EventOutput output = new EventOutput();
+        output.reset();
         decoder.toEvents(output);
+        byte result[] = output.getBytes();
+        assertTrue("equal output", Arrays.equals(sample, result));
     }
     
-    // Add test methods here, they have to start with 'test' name.
-    // for example:
-    // public void testHello() {}
-    
-    class EventOutput extends UTF8XMLWriter implements DocumentHandler {
-        public EventOutput() {
-            super(System.err);
-        }
-        
-        public void setDocumentLocator(org.xml.sax.Locator locator) {
-            // ignore
-        }
-        
-        public void startDocument() {
-        }
-        
-        public void endDocument() {
-        }
-        
-        public void startElement(String str, AttributeList attrs) {
-            try {
-                startElement(str);
-                int end = attrs.getLength();
-                for (int i = 0; i < end; i++) {
-                    attribute(attrs.getName(i), attrs.getValue(i));
-                }
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
-        }
-        
-        public void characters(char[] values, int param, int param2) {
-            try {
-                write(values, param, param2);
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
-        }
-        
-        public void ignorableWhitespace(char[] values, int param, int param2) {
-            try {
-                write(values, param, param2);
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
-        }
-        
-        public void processingInstruction(String str, String str1) {
-            try {
-                super.processingInstruction(str, str1);
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
-        }
-        
-        public void endElement(String str) {
-            try {
-                super.endElement(str);
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
-        }
-        
-    }
 }

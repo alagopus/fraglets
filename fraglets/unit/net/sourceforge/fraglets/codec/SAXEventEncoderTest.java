@@ -16,17 +16,13 @@ import java.io.IOException;
 import com.jclark.xml.sax.Driver;
 
 /**
- *
  * @author marion@users.sourceforge.net
+ * @version $Revision: 1.2 $
  */
-public class SAXEventEncoderTest extends TestCase {
+public class SAXEventEncoderTest extends SAXCodecTest {
     
-    public SAXEventEncoderTest(java.lang.String testName) {
+    public SAXEventEncoderTest(String testName) {
         super(testName);
-    }
-    
-    public static void main(java.lang.String[] args) {
-        junit.textui.TestRunner.run(suite());
     }
     
     public static Test suite() {
@@ -39,25 +35,7 @@ public class SAXEventEncoderTest extends TestCase {
         Driver driver = new Driver();
         SAXEventEncoder encoder = new SAXEventEncoder();
         driver.setDocumentHandler(encoder);
-        driver.parse("file:////C:/TEMP/in.xml");
-        System.out.println("result length: "+encoder.getUTF8().length);
-        java.io.FileOutputStream out =
-            new java.io.FileOutputStream("c:/temp/out.txt");
-        out.write(encoder.getUTF8());
-    }
-    // Add test methods here, they have to start with 'test' name.
-    // for example:
-    // public void testHello() {}
-    
-    
-    public static void print(String name, byte[] data, java.io.PrintStream out) {
-        out.print(name);
-        out.print(": [");
-        for (int i = 0; i < data.length; i++) {
-            if (i > 0) out.print(", 0x");
-            else out.print("0x");
-            out.print(Integer.toString((int)data[i], 16));
-        }
-        out.println(']');
+        driver.parse(toInputSource(SAXCodecTest.TEST_INPUT));
+		assertTrue("encoder output", encoder.getUTF8().length > 0);
     }
 }
