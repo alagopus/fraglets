@@ -28,7 +28,7 @@
 package net.sourceforge.fraglets.dfind;
 
 import java.io.IOException;
-import java.io.Reader;
+import java.io.InputStream;
 
 /** Plain word search using the Boyer/Moore algorithm of inverse deltas.
  *
@@ -38,16 +38,10 @@ import java.io.Reader;
 public class Searcher {
     /** Minimum buffer size. */
     public static final int MINSZ = 8192;
-    
     /** Search pattern. */
-    private char pattern[];
-    /** Minimum char value in pattern. */
-    private char minChar;
-    /** Maximum char value in pattern. */
-    private char maxChar;
-    
+    private byte pattern[];
     /** Search buffer. */
-    private char buffer[];
+    private byte buffer[];
     /** Reverse delta for last character. */
     private int endDelta[];
     /** Reverse delta for next substring. */
@@ -55,22 +49,21 @@ public class Searcher {
     
     /** Creates new Searcher */
     public Searcher(String pattern) {
-        this(pattern.toCharArray());
+        this(pattern.getBytes());
     }
     
     /** Creates new Searcher */
-    public Searcher(char[] pattern) {
+    public Searcher(byte pattern[]) {
         setPattern(pattern);
     }
     
     /** Search the given input for the pattern, returning the relative
      * position from start, or -1. */
-    public long search(Reader in) throws IOException {
+    public long search(InputStream in) throws IOException {
         long pos = 0;
         int n = in.read(buffer);
         while (n > 0) {
-            int hit = search(pattern, buffer, 0, n,
-                subDelta, endDelta, minChar, maxChar);
+            int hit = search(pattern, buffer, 0, n, subDelta, endDelta);
             if (hit >= 0) {
                 return pos + hit;
             } else {
@@ -86,20 +79,21 @@ public class Searcher {
     
     /** Search the given input for the pattern, returning the
      * position from start, or -1. */
-    public int search(String in) {
-        if (in.length() <= buffer.length) {
-            int length = in.length();
-            in.getChars(0, length, buffer, 0);
-            return search(pattern, buffer, 0, length,
-                subDelta, endDelta, minChar, maxChar);
+    public int search(String str) {
+        return search(str.getBytes());
+    }
+    /** Search the given input for the pattern, returning the
+     * position from start, or -1. */
+    public int search(byte in[]) {
+        if (in.length <= buffer.length) {
+            return search(pattern, in, 0, in.length, subDelta, endDelta);
         } else {
             int pos = 0;
-            int end = in.length();
+            int end = in.length;
             int fill = buffer.length;
-            in.getChars(0, fill, buffer, 0);
+            System.arraycopy(in, 0, buffer, 0, fill);
             while (pos < end) {
-                int hit = search(pattern, buffer, 0, fill,
-                    subDelta, endDelta, minChar, maxChar);
+                int hit = search(pattern, buffer, 0, fill, subDelta, endDelta);
                 if (hit >= 0) {
                     return pos + hit;
                 } else {
@@ -108,7 +102,7 @@ public class Searcher {
                     System.arraycopy(buffer, buffer.length-chunk,
                         buffer, 0, chunk);
                     fill = Math.min(end-pos, buffer.length-chunk);
-                    in.getChars(0, fill, buffer, 0);
+                    System.arraycopy(in, 0, buffer, chunk, fill);
                     fill += chunk;
                 }
             }
@@ -116,39 +110,22 @@ public class Searcher {
         return -1;
     }
     
-    public void setPattern(char pattern[]) {
-        this.pattern = (char[])pattern.clone();
-        pattern = this.pattern;
+    public void setPattern(byte pattern[]) {
+        this.pattern = pattern;
         int end = pattern.length;
         
         if (end < MINSZ / 16) {
-            buffer = new char[MINSZ];
+            buffer = new byte[MINSZ];
         } else {
-            buffer = new char[end*16];
+            buffer = new byte[end*16];
         }
         
-        char min = Character.MAX_VALUE, max = Character.MIN_VALUE;
-        for (int i = 0; i < end; i++) {
-            char c = pattern[i];
-            if (c < min)
-                min = c;
-            if (c > max)
-                max = c;
-        }
-        // sanity
-        if (max < (char)255) {
-            min = 0;
-            max = (char)255;
-        }
-        minChar = min;
-        maxChar = max;
-        
-        endDelta = new int[max-min+1];
+        endDelta = new int[Byte.MAX_VALUE+1];
         subDelta = new int[end];
         int tmpDelta[] = new int[end];
         
         for (int i = 0; i < end; i++) {
-            int c = pattern[i] - min;
+            int c = pattern[i];
             tmpDelta[i] = i + 1 - endDelta[c];
             endDelta[c] = i + 1;
         }
@@ -157,36 +134,26 @@ public class Searcher {
             endDelta[i] = end;
         }
         for (int i = 0; i < end; i++) {
-            endDelta[pattern[i]-min] = end - i - 1;
+            endDelta[pattern[i]] = end - i - 1;
         }
-        endDelta[pattern[end-1]-min] = buffer.length + end * 2;
+        endDelta[pattern[end-1]] = buffer.length + end * 2;
 
         for (int i = 0; i < end; i++) {
             subDelta[i] = end - rpr(i, pattern, end, tmpDelta);
         }
     }
     
-    public static int search (char w[], char buf[], int start, int size,
-        int subDelta[], int endDelta[], char min, char max)
+    public static int search (byte w[], byte buf[],
+                              int start, int size,
+                              int subDelta[], int endDelta[])
     {
         int length = w.length;
-        int large = endDelta[w[length-1]-min];
+        int large = endDelta[w[length-1]];
         int i = start + length - 1;
 
         for (;;) {
-            try {
-                while (i < size) {
-                    i += endDelta[buf[i]-min];
-                }
-            } catch (ArrayIndexOutOfBoundsException ex) {
-                while (i < size) {
-                    char c = buf[i];
-                    if (c < min || c > max) {
-                        i += length;
-                    } else {
-                        i += endDelta[c-min];
-                    }
-                }
+            while (i < size) {
+                i += endDelta[buf[i]];
             }
 
             if (i < large) {
@@ -210,7 +177,7 @@ public class Searcher {
         }
     }
     
-    public static int rpr (int j, char w[], int length, int delta[])
+    public static int rpr (int j, byte w[], int length, int delta[])
     {
         int i, d;
 
