@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.StringTokenizer;
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.Collections;
 
 /** This is the object model for the avatar of a player in
  * the game, a "character" in RPG speak.
@@ -34,7 +35,7 @@ import java.util.Iterator;
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class Avatar {
     public static final PropertyChangeSupport CHANGE =
@@ -81,7 +82,7 @@ public class Avatar {
         } else if (name.equals("level")) {
             return String.valueOf(level);
         } else if (name.equals("name")) {
-            return name;
+            return this.name;
         } else if (name.equals("timestamp")) {
             return new java.sql.Date(timestamp).toString();
         } else if (name.equals("zone")) {
@@ -133,18 +134,19 @@ public class Avatar {
                 if (entry == null) {
                     entry = new TimestampEntry(value, timestamp);
                     properties.put(name, entry);
-                    CHANGE.firePropertyChange("Avatar.property", this, name);
+                    fireNewProperty(this, name);
                 } else if (timestamp >= entry.timestamp) {
                     entry.value = value;
                     entry.timestamp = timestamp;
-                    CHANGE.firePropertyChange("Avatar.property", this, name);
+                    fireNewProperty(this, name);
                 }
             }
         }
     }
     
     public Iterator getProperties() {
-        return properties == null ? null :
+        return properties == null ?
+            Collections.EMPTY_SET.iterator() :
             properties.entrySet().iterator();
     }
     
@@ -282,7 +284,17 @@ public class Avatar {
     }
     
     public int hashCode() {
-        return name.hashCode();
+        return name == null ? 0 : name.hashCode();
+    }
+    
+    public static String normalizeName(String name) {
+        if (name != null && name.length() > 0) {
+            String end = name.substring(1).toLowerCase();
+            if (!(Character.isUpperCase(name.charAt(0)) && name.endsWith(end))) {
+                name = Character.toUpperCase(name.charAt(0)) + end;
+            }
+        }
+        return name;
     }
 
     /** This class implements the object model of a guild. */
@@ -369,7 +381,7 @@ public class Avatar {
         }
         
         public String toString() {
-            return value.toString();
+            return value == null ? null : value.toString();
         }
     }
 
@@ -461,11 +473,11 @@ public class Avatar {
                             while (i.hasNext()) {
                                 Map.Entry entry = (Map.Entry)i.next();
                                 StringTokenizer tok = new StringTokenizer
-                                    ((String)entry.getValue(), " \t,");
-                                String canonical = tok.nextToken();
+                                    ((String)entry.getValue(), ",");
+                                String canonical = tok.nextToken().trim();
                                 equivalenceMap.put(canonical, canonical);
                                 while(tok.hasMoreTokens()) {
-                                    equivalenceMap.put(tok.nextToken(), canonical);
+                                    equivalenceMap.put(tok.nextToken().trim(), canonical);
                                 }
                             }
                         } catch (IOException ex) {
