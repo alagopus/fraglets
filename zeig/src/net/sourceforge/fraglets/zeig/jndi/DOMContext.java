@@ -32,6 +32,7 @@ import javax.naming.spi.NamingManager;
 
 import net.sourceforge.fraglets.zeig.dom.DocumentImpl;
 import net.sourceforge.fraglets.zeig.dom.NamedNodeMapImpl;
+import net.sourceforge.fraglets.zeig.model.*;
 import net.sourceforge.fraglets.zeig.model.SAXFactory;
 
 import org.apache.log4j.Category;
@@ -43,7 +44,7 @@ import org.w3c.dom.NodeList;
 
 /**
  * @author marion@users.sourceforge.net
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  */
 public class DOMContext implements Context {
     /** Context option. */
