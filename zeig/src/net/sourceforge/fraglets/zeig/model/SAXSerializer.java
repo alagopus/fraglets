@@ -18,7 +18,7 @@ import org.xml.sax.SAXException;
 
 /**
  * @author unknown
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class SAXSerializer {
     private NodeFactory nf;
@@ -26,6 +26,7 @@ public class SAXSerializer {
     private int nodeTag;
     private int rootTag;
     private int textTag;
+    private int depth;
     
     public SAXSerializer(NodeFactory nf) throws SQLException {
         this.nf = nf;
@@ -37,15 +38,17 @@ public class SAXSerializer {
     
     public void serialize(ContentHandler handler, int id) throws SAXException {
         try {
+            boolean root = depth++ == 0;
             int name = nf.xt.getName(id);
             int node[] = nf.xt.getNodes(id);
             
-            if (name == rootTag) {
+            if (root) {
                 handler.startDocument();
+            }
+            if (name == rootTag) {
                 for (int i = 0; i < node.length; i += 2) {
                     serialize(handler, node[i], node[i+1]);
                 }
-                handler.endDocument();
             } else if (name == piTag) {
                 String target = nf.pt.getPlainText(node[0]);
                 String data = nf.pt.getPlainText(node[1]);
@@ -61,8 +64,13 @@ public class SAXSerializer {
                 }
                 handler.endElement(uri, prefix, lName);
             }
+            if (root) {
+                handler.endDocument();
+            }
         } catch (SQLException ex) {
             throw new SAXException(ex);
+        } finally {
+            --depth;
         }
     }
     
@@ -89,7 +97,7 @@ public class SAXSerializer {
             of.setIndent(1);
             XMLSerializer handler = new XMLSerializer(System.out, of);
             for (int i = 0; i < args.length; i++) {
-                int id = Integer.parseInt(args[i]);
+                int id = Integer.parseInt(args[i].replace('\'',' ').trim());
                 s.serialize(handler, id);
             }
         } catch (SAXException ex) {
