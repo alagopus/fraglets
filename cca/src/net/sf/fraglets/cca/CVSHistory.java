@@ -1,5 +1,5 @@
 /*
- * $Id: CVSHistory.java,v 1.12 2004-08-25 16:49:35 marion Exp $
+ * $Id: CVSHistory.java,v 1.13 2004-08-25 19:54:40 marion Exp $
  * Copyright (C) 2004 Klaus Rennecke, all rights reserved.
  * 
  * Permission is hereby granted, free of charge, to any person
@@ -28,7 +28,6 @@ package net.sf.fraglets.cca;
 import java.io.BufferedReader;
 import java.io.EOFException;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -54,7 +53,7 @@ import org.apache.log4j.Logger;
  * Perform modification check based on a plain history file.
  * 
  * @author  Klaus Rennecke
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  */
 public class CVSHistory implements SourceControl {
     /** The properties set for ANT. */
@@ -250,17 +249,22 @@ public class CVSHistory implements SourceControl {
             } else {
                 reader = openUrl(viewcvsUrl + urlquote(fileName, false));
             }
-        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
             // This happens when the file does not exist on the specified branch.
+            //
             // Unfortunately it also happens when the configuration specifies an
             // incorrect base URL. So we might want to log a warning here, although
             // it may become annoying in the fist case. But I don't see any way to
             // tell one 404 Not Found from another.
+            //
+            // Even worse, the FileNotFoundException is wrapped (!) in an IOException,
+            // and we cannot safely unwrap that exception without dropping support
+            // for JDK1.3 and below.
             log.warn(Messages.getString("CVSHistory.logNotFound1") //$NON-NLS-1$
                 + fileName
                 + Messages.getString("CVSHistory.logNotFound2") //$NON-NLS-1$
                 + branch, e);
-            return null; 
+            return null;
         }
         
         reader = new BufferedReader(reader);
@@ -611,7 +615,7 @@ public class CVSHistory implements SourceControl {
      * Bean implementation for the module sub-element.
      * @since 01.03.2004
      * @author Klaus Rennecke
-     * @version $Revision: 1.12 $
+     * @version $Revision: 1.13 $
      */
     public static class Module {
         
