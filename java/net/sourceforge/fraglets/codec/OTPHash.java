@@ -366,7 +366,6 @@ public class OTPHash {
             int bits[] = getOTP(scan + len + 255);
             int end = off + len;
             while (off < end) {
-                System.out.println("byte: 0x" + Integer.toHexString(b[off]));
                 step = roll(step) ^ bits[scan++ + (b[off++] & 0xff)];
             }
         }
