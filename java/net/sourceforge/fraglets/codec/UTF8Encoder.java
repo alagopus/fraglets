@@ -70,7 +70,7 @@ public class UTF8Encoder {
                         ("invalid surrogate low-half: "+datum);
                 }
                 int low = datum & 0x3ff;
-                datum = high | (datum & 0x3ff);
+                datum = (high | (datum & 0x3ff)) + 0x10000;
             }
             encodeUCS4(datum);
         }
