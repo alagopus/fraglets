@@ -37,6 +37,7 @@
 				<include name="LICENSE"/>
 				<include name="README"/>
 				<include name="CHANGES"/>
+				<include name="cca.html"/>
 			</fileset>
 		</zip>
 	</target>
@@ -49,6 +50,7 @@
 				<include name="LICENSE"/>
 				<include name="README"/>
 				<include name="CHANGES"/>
+				<include name="cca.html"/>
 			</fileset>
 		</zip>
 	</target>
