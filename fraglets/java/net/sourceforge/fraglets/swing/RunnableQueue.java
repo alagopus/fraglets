@@ -25,6 +25,7 @@ package net.sourceforge.fraglets.swing;
 
 import java.awt.Toolkit;
 import java.awt.event.InvocationEvent;
+import java.util.Iterator;
 import java.util.PriorityQueue;
 
 /** A queue of runnables, to be run in the swing event loop at a designated time. */
@@ -34,7 +35,7 @@ public class RunnableQueue {
      * run time, ascending.
      */
     private static class QueueEntry extends InvocationEvent implements
-            Comparable {
+            Comparable<QueueEntry> {
         private static final long serialVersionUID = -1406463426385873379L;
 
         private final long timestamp;
@@ -48,19 +49,14 @@ public class RunnableQueue {
             this.timestamp = timestamp;
         }
 
-        public int compareTo(final Object o) {
-            if (o instanceof QueueEntry) {
-                final QueueEntry other = (QueueEntry) o;
-                final long delta = this.timestamp - other.timestamp;
-                if (delta < 0) {
-                    return -1;
-                } else if (delta > 0) {
-                    return 1;
-                } else {
-                    return 0;
-                }
+        public int compareTo(final QueueEntry other) {
+            final long delta = this.timestamp - other.timestamp;
+            if (delta < 0) {
+                return -1;
+            } else if (delta > 0) {
+                return 1;
             } else {
-                throw new IllegalArgumentException("compare: " + o);
+                return 0;
             }
         }
 
@@ -87,6 +83,29 @@ public class RunnableQueue {
      * The dequeue thread when running.
      */
     private static Thread dequeueThread;
+
+    /**
+     * Invoke the given runnable from the swing event queue, delay milliseconds
+     * after the latest current entry in the queue.
+     * 
+     * @param runnable
+     *            Runnable to run.
+     * @param delay
+     *            delay in milliseconds to add to latest entry.
+     */
+    public static void invokeAfter(final Runnable runnable, final int delay) {
+        synchronized (lock) {
+            long last = System.currentTimeMillis();
+            for (final Iterator<QueueEntry> i = eventQueue.iterator(); i
+                    .hasNext();) {
+                final long timestamp = i.next().getTimestamp();
+                if (timestamp > last) {
+                    last = timestamp;
+                }
+            }
+            invokeLater(runnable, last + delay);
+        }
+    }
 
     /**
      * Invoke the given runnable from the swing event queue, after delay
