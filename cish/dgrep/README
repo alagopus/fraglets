@@ -1,3 +1,0 @@
-This bunch od files implements a plain word search (hemce *grep is a
-misnomer) using the Boyer/Moore algorithm of inverse deltas.  It
-desperately needs some documentation
