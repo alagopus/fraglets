@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin
+   id="net.sourceforge.fraglets.zeig.browser"
+   name="Zeig Integration"
+   version="0.0.1"
+   provider-name="fraglets.sourceforge.net"
+   class="net.sourceforge.fraglets.zeig.eclipse.BrowserPlugin">
+
+   <runtime>
+      <library name="zeig-browser.jar"/>
+   </runtime>
+   <requires>
+      <import plugin="org.eclipse.core.resources"/>
+      <import plugin="org.eclipse.ui"/>
+      <import plugin="net.sourceforge.fraglets.zeig.core" export="true"/>
+      <import plugin="org.eclipse.ui.workbench.texteditor"/>
+      <import plugin="org.eclipse.ui.workbench"/>
+      <import plugin="org.eclipse.ui.views"/>
+      <import plugin="org.eclipse.ui.editors"/>
+   </requires>
+
+
+   <extension
+         point="org.eclipse.ui.views">
+      <category
+            name="Zeig"
+            id="net.sourceforge.fraglets.zeig">
+      </category>
+      <view
+            name="Editing"
+            icon="icons/browser.png"
+            category="net.sourceforge.fraglets.zeig"
+            class="net.sourceforge.fraglets.zeig.eclipse.views.ZeigView"
+            id="net.sourceforge.fraglets.zeig.eclipse.views.ZeigView">
+      </view>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension
+            targetID="org.eclipse.ui.resourcePerspective">
+         <view
+               ratio="0.5"
+               relative="org.eclipse.ui.views.navigator"
+               relationship="right"
+               id="net.sourceforge.fraglets.zeig.eclipse.views.ZeigView">
+         </view>
+      </perspectiveExtension>
+   </extension>
+
+</plugin>

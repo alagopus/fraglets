@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir="..\..\..\.." default="all" name="yaelp">
+
+    <target depends="query" name="init">
+        <property name="package" value="net/sourceforge/fraglets/yaelp"/>
+        <property file="${package}/version.properties"/>
+        
+        <!-- Jar signing parameters. -->
+        <property name="signer-alias" value="klaus werner rennecke&apos;s thawte id #2"/>
+        <property name="signer-keystore" value="../sign/sign-noiram.p12"/>
+        <property name="signer-storetype" value="PKCS12"/>
+        
+        <!-- Wizard signing parameters. -->
+        <property name="wizard-alias" value="thawte freemail member's thawte id"/>
+        <property name="wizard-keystore" value="../sign/sign-noiram.p12"/>
+        <property name="wizard-storetype" value="PKCS12"/>
+        
+        <!-- system and SF user configuration. -->
+        <property location="C:\Programme\putty\pscp.exe" name="scp"/>
+        <property name="deploy-destination" value="marion@fraglets.sourceforge.net:fraglets/htdocs/jars"/>
+
+        <!-- Task definition for interactive query -->
+        <taskdef classname="net.sourceforge.fraglets.taskdef.Query" classpath="." name="query"/>
+    </target>
+    
+    <target name="query">
+        <javac debug="false" includes="net/sourceforge/fraglets/taskdef/*.java" optimize="true" srcdir="." verbose="false">
+            <classpath>
+                <pathelement path="${netbeans.library.path}"/>
+                <pathelement path="${netbeans.filesystems.path}"/>
+            </classpath>
+        </javac>
+    </target>
+    
+    <target depends="jars" name="all">
+        <!-- WRITEME -->
+    </target>
+    
+    <target depends="init" name="compile">
+        <javac classpath=".;../jars/sax.jar;../jars/xp.jar;../jars/xt.jar" debug="false" includes="${package}/*.java" optimize="true" srcdir="." verbose="false"/>
+    </target>
+    
+    <target depends="init" name="wizard">
+        <delete>
+            <fileset dir="." includes="${package}/**/*.class"/>
+        </delete>
+        <javac classpath=".;../jars/sax.jar;../jars/xp.jar;../jars/xt.jar" debug="false" includes="${package}/UpdateApplet.java" optimize="true" srcdir="." verbose="false"/>
+        <jar compress="true" defaultexcludes="false" jarfile="../jars/wizard-${version}.jar" manifest="${package}/wizard.mf">
+            <fileset dir=".">
+                <include name="${package}/**/*.class"/>
+                <include name="${package}/model/**/*.properties"/>
+                <include name="${package}/version.properties"/>
+                <include name="${package}/logo.gif"/>
+                <include name="${package}/gpl.txt"/>
+                <include name="${package}/copying_xp.txt"/>
+                <include name="net/sourceforge/fraglets/targa/TGADecoder*.class"/>
+            </fileset>
+        </jar>
+        <query prompt="Enter keystore password for ${wizard-keystore}" property="wizard-storepass" secret="true" title="Keystore password"/>
+        <signjar alias="${wizard-alias}" jar="../jars/wizard-${version}.jar" keystore="${wizard-keystore}" signedjar="../wiz/wizard-${version}.jar" storepass="${wizard-storepass}" storetype="${wizard-storetype}"/>
+        <signjar alias="${wizard-alias}" jar="../jars/sax.jar" keystore="${wizard-keystore}" signedjar="../wiz/sax.jar" storepass="${wizard-storepass}" storetype="${wizard-storetype}"/>
+        <signjar alias="${wizard-alias}" jar="../jars/xp.jar" keystore="${wizard-keystore}" signedjar="../wiz/xp.jar" storepass="${wizard-storepass}" storetype="${wizard-storetype}"/>
+        <property name="wizard-storepass" value="*"/> <!-- minimum security measure -->
+        <exec dir="../wiz" executable="${scp}">
+            <arg value="-q"/>
+            <arg value="*.jar"/>
+            <arg value="${deploy-destination}/../wiz/."/>
+        </exec>
+    </target>
+    
+    <target depends="compile" name="jars">
+        <jar basedir="." excludes="**/*.java" includes="${package}/**" jarfile="../jars/yaelp-${version}.jar" manifest="${package}/yaelp.mf"/>
+    </target>
+    
+    <target depends="jars" name="release">
+        <zip basedir="../jars" includes="yaelp-${version}.jar,sax.jar,xp.jar,xt.jar" zipfile="../jars/yaelp-${version}.zip">
+            <fileset dir="${package}" includes="*.txt"/>
+        </zip>
+        <zip basedir="../html/yaelp" includes="*.html,*.png" zipfile="../jars/yaelp-${version}-manual.zip"/>
+        <zip basedir="." excludes="**/*.class" includes="${package}/**" zipfile="../jars/yaelp-${version}-source.zip"/>
+        <zip basedir="../jars" includes="wizard-${version}.jar,sax.jar,xp.jar" zipfile="../jars/wizard-${version}.zip">
+            <fileset dir="${package}" includes="*.txt"/>
+        </zip>
+    </target>
+    
+    <target depends="init,jars,sign-uptodate" description="Sign jars." name="sign" unless="sign-uptodate-all">
+        <query prompt="Enter keystore password for ${signer-keystore}" property="signer-storepass" secret="true" title="Keystore password"/>
+        <signjar alias="${signer-alias}" jar="../jars/yaelp-${version}.jar" keystore="${signer-keystore}" signedjar="../sign/yaelp-${version}.jar" storepass="${signer-storepass}" storetype="${signer-storetype}"/>
+        <signjar alias="${signer-alias}" jar="../jars/sax.jar" keystore="${signer-keystore}" signedjar="../sign/sax.jar" storepass="${signer-storepass}" storetype="${signer-storetype}"/>
+        <signjar alias="${signer-alias}" jar="../jars/xp.jar" keystore="${signer-keystore}" signedjar="../sign/xp.jar" storepass="${signer-storepass}" storetype="${signer-storetype}"/>
+        <signjar alias="${signer-alias}" jar="../jars/xt.jar" keystore="${signer-keystore}" signedjar="../sign/xt.jar" storepass="${signer-storepass}" storetype="${signer-storetype}"/>
+        <property name="signer-storepass" value="*"/> <!-- minimum security measure -->
+    </target>
+    
+    <target depends="init" name="sign-uptodate">
+        <uptodate property="sign-uptodate-yaelp" targetfile="../sign/yaelp-${version}.jar">
+            <srcfiles dir="../jars" includes="yaelp-${version}.jar"/>
+        </uptodate>
+        <uptodate property="sign-uptodate-sax" targetfile="../sign/sax.jar">
+            <srcfiles dir="../jars" includes="../jars/sax.jar"/>
+        </uptodate>
+        <uptodate property="sign-uptodate-xp" targetfile="../sign/xp.jar">
+            <srcfiles dir="../jars" includes="../jars/xp.jar"/>
+        </uptodate>
+        <uptodate property="sign-uptodate-xt" targetfile="../sign/xt.jar">
+            <srcfiles dir="../jars" includes="../jars/xt.jar"/>
+        </uptodate>
+        <condition property="sign-uptodate-all" value="true">
+            <and>
+                <equals arg1="${sign-uptodate-yaelp}" arg2="true"/>
+                <equals arg1="${sign-uptodate-sax}" arg2="true"/>
+                <equals arg1="${sign-uptodate-xp}" arg2="true"/>
+                <equals arg1="${sign-uptodate-xt}" arg2="true"/>
+            </and>
+        </condition>
+    </target>
+    
+    <target depends="init" description="List signatures." name="list">
+        <query prompt="Enter keystore password for ${signer-keystore}" property="signer-storepass" secret="true" title="Keystore password"/>
+        <exec executable="keytool">
+            <arg value="-v"/>
+            <arg value="-list"/>
+            <arg value="-keystore"/>
+            <arg path="${signer-keystore}"/>
+            <arg value="-storepass"/>
+            <arg value="${signer-storepass}"/>
+            <arg value="-storetype"/>
+            <arg value="${signer-storetype}"/>
+        </exec> <!-- minimum security measure -->
+        <property name="signer-storepass" value="*"/>
+    </target>
+    
+    <target depends="init,sign" name="deploy">
+        <exec dir="../sign" executable="${scp}">
+            <arg value="-q"/>
+            <arg value="*.jar"/>
+            <arg value="${deploy-destination}/."/>
+        </exec>
+    </target>
+</project>

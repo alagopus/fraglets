@@ -1,0 +1,58 @@
+<project name="cca" default="jar">
+
+	<target name="clean">
+		<delete dir="bin"/>
+	</target>
+	
+	<target name="compile">
+		<mkdir dir="bin"/>
+		<javac srcdir="src" destdir="bin">
+			<classpath location="../cruisecontrol/main/classes"/>
+			<classpath location="../cruisecontrol/main/lib/log4j.jar"/>
+			<classpath location="../cruisecontrol/main/lib/jdom.jar"/>
+		</javac>
+		<copy todir="bin">
+			<fileset dir="src" includes="**/*.properties"/>
+		</copy>
+	</target>
+	
+	<target name="jar" depends="clean,compile">
+		<jar destfile="cca.jar">
+			<fileset dir="bin"/>
+		</jar>
+	</target>
+	
+	<target name="release" depends="bin-zip,src-zip"/>
+	
+	<target name="timestamp">
+		<tstamp>
+			<format property="release" pattern="yyyyMMdd"/>
+		</tstamp>
+	</target>
+	
+	<target name="bin-zip" depends="jar,timestamp">
+		<zip destfile="cca-${release}-bin.zip">
+			<fileset dir=".">
+				<include name="cca.jar"/>
+				<include name="LICENSE"/>
+				<include name="README"/>
+				<include name="CHANGES"/>
+				<include name="cca.html"/>
+			</fileset>
+		</zip>
+	</target>
+	
+	<target name="src-zip" depends="timestamp">
+		<zip destfile="cca-${release}-src.zip">
+			<fileset dir=".">
+				<include name="src/**"/>
+				<include name="build.xml"/>
+				<include name="LICENSE"/>
+				<include name="README"/>
+				<include name="CHANGES"/>
+				<include name="cca.html"/>
+			</fileset>
+		</zip>
+	</target>
+	
+</project>

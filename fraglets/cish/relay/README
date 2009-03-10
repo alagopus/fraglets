@@ -1,0 +1,51 @@
+This is a crude inetd replacement. The design is quite crude and
+minimalistic. Few effort is done towards portability or
+configurability. If you need a more able program, look for a free and
+complete inetd distribution.
+
+Start building by invoking ./configure. This is GNU configure created
+by autoconf. Don't expect too much from this configuration, since the
+inetd.c and relay.c don't make overall use of the facts that are
+detected by configure.
+
+Next, run make. If that does not succeed, you probably should
+abandon this package.
+
+Configuration for inetd is found in inetd.cnf. The format is explained
+in the example supplied with the sources.
+
+Configuration for the relay program is found in relay.cnf, which is
+searched in the current directory where the relay runs, which in turn
+is inherited from the inetd program when an incoming connection is
+accepted. That file contains exactly two words, separated by whitespace
+(space, tab newline or carriage return). The first word is the host
+name to connect, the second is the port number in decimal.
+
+WARNING: NEVER configure the relay program to connect your inetd.
+Apart from not leading to the desired result, it will most likely lock
+up the machine you are using, eating up all internet resources quickly.
+Please be aware that both inetd and relay provided here are quite
+minimal programs, running fast.  Don't expect to be able to interrupt
+it any more, once you looped relay to inetd. If you are lucky, the last
+sensible response will be you shell's prompt. If you are very lucky,
+the machine is not locked up completely.
+
+Permission is hereby granted, free of charge, to any person
+obtaining a copy of this software and associated documentation
+files (the "Software"), to deal in the Software without
+restriction, including without limitation the rights to use, copy,
+modify, merge, publish, distribute, sublicense, and/or sell copies
+of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+DEALINGS IN THE SOFTWARE.

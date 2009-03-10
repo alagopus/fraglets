@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fragment
+   id="net.sourceforge.fraglets.3rd"
+   name="3rd party software"
+   version="0.0.1"
+   provider-name="fraglets.sourceforge.net"
+   plugin-id="net.sourceforge.fraglets.zeig.core"
+   plugin-version="0.0.1"
+   match="compatible">
+
+   <runtime>
+      <library name="3rd/jaf-1.0.2/activation.jar">
+         <export name="*"/>
+         <packages prefixes="javax.activation,com.sun.activation"/>
+      </library>
+      <library name="3rd/mysql-connector-java-3.0.6-stable/mysql-connector-java-3.0.6-stable-bin.jar">
+         <export name="*"/>
+         <packages prefixes="com.mysql.jdbc,org.gjt.mm.mysql"/>
+      </library>
+      <library name="3rd/xalan-j_2_5_0/bin/xalan.jar">
+         <export name="*"/>
+         <packages prefixes="org.apache,java_cup,JLex"/>
+      </library>
+      <library name="3rd/xalan-j_2_5_0/bin/bsf.jar">
+         <export name="*"/>
+         <packages prefixes="com.ibm.bsf"/>
+      </library>
+      <library name="3rd/xalan-j_2_5_0/bin/xercesImpl.jar">
+         <export name="*"/>
+         <packages prefixes="org.apache,org.w3c"/>
+      </library>
+      <library name="3rd/xalan-j_2_5_0/bin/xml-apis.jar">
+         <export name="*"/>
+         <packages prefixes="org.w3c,org.apache"/>
+         <packages prefixes="javax.xml"/>
+      </library>
+   </runtime>
+
+
+</fragment>

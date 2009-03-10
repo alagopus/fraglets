@@ -1,0 +1,114 @@
+#
+#   $Id: Makefile.in,v 1.1 2000-04-30 06:27:22 marion Exp $
+#
+#   Makefile.in -
+#   Sep 03 1995 by marion@marble.sax.de
+#   (C) Copyright 1995 Klaus Rennecke (marion@marble.sax.de)
+#		       all rights reserved.
+#
+#  Permission is hereby granted, free of charge, to any person
+#  obtaining a copy of this software and associated documentation
+#  files (the "Software"), to deal in the Software without
+#  restriction, including without limitation the rights to use, copy,
+#  modify, merge, publish, distribute, sublicense, and/or sell copies
+#  of the Software, and to permit persons to whom the Software is
+#  furnished to do so, subject to the following conditions:
+#
+#  The above copyright notice and this permission notice shall be
+#  included in all copies or substantial portions of the Software.
+#
+#  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+#  EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+#  MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+#  NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+#  HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+#  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+#  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+#  DEALINGS IN THE SOFTWARE.
+# 
+#
+
+# $Log: Makefile.in,v $
+# Revision 1.1  2000-04-30 06:27:22  marion
+# Converted to MIT license.
+#
+# Revision 1.3  1995/09/06 00:03:22  marion
+# Added a configuration file for inetd.
+# The ancient header file relay.h vanished. All configuration
+#   previously defined therein is now in the inetd configuration
+#   file.
+# New header file config.h for overall configuration of default
+#   parameters.
+# New ftprelay program, which is able to relay ftp sessions if
+#   no use of PORT commands is made.
+# All three programs now accept one optional argument, the name
+#   of the respective configuration file.
+#
+# Revision 1.2  1995/09/04  05:31:42  marion
+# Straightened up the Makefile a bit.
+#
+# Revision 1.1  1995/09/03  23:47:34  marion
+# Put under GPL. Added README. Added check for getdtablesize
+#
+#
+#
+
+#### Start of system configuration section. ####
+
+srcdir		= @srcdir@
+VPATH		= @srcdir@
+
+prefix		= /usr/local
+exec_prefix	=$(prefix)
+
+binprefix	=
+libprefix	= lib
+manprefix	=
+
+bindir		= $(exec_prefix)/bin
+libdir		= $(exec_prefix)/lib
+incdir		= $(prefix)/include
+manext		= 8
+mandir		= $(prefix)/man/man$(manext)
+
+CC		= @CC@
+CFLAGS		= @CFLAGS@ $(DEFINES)
+DEFINES		= @DEFS@
+
+LDFLAGS		= @LDFLAGS@
+LIBS		= @LIBS@
+
+#### End of system configuration section. ####
+
+SHELL		= /bin/sh
+@SET_MAKE@
+
+PARTS		= inetd relay ftprelay
+SOURCE		= $(PARTS:%=%.c)
+
+all: $(PARTS)
+
+inetd: inetd.o
+	$(CC) -o $@ $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) inetd.o $(LIBS)
+
+relay: relay.o
+	$(CC) -o $@ $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) relay.o $(LIBS)
+
+ftprelay: ftprelay.o
+	$(CC) -o $@ $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) ftprelay.o $(LIBS)
+
+clean:
+	rm -f $(PARTS:%=%.o) *~ core
+
+clobber: clean
+	rm -f $(PARTS)
+
+distclean: clobber
+	rm -f Makefile config.status config.log config.cache
+
+realclean: distclean
+	rm -f tags TAGS
+
+.PHONY: all test clean clobber
+
+inetd.o relay.o ftprelay.o: config.h

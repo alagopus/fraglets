@@ -1,0 +1,17 @@
+<!ELEMENT roster (heading,avatar*)>
+<!ATTLIST roster
+    title CDATA #IMPLIED>
+
+<!ELEMENT heading (column*)>
+<!ELEMENT column (#PCDATA)>
+<!ATTLIST column
+    id CDATA #REQUIRED>
+
+<!ELEMENT avatar (name|culture|class|level|guild|zone|time)*>
+<!ELEMENT name (#PCDATA)>
+<!ELEMENT culture (#PCDATA)>
+<!ELEMENT class (#PCDATA)>
+<!ELEMENT level (#PCDATA)>
+<!ELEMENT guild (#PCDATA)>
+<!ELEMENT zone (#PCDATA)>
+<!ELEMENT time (#PCDATA)>

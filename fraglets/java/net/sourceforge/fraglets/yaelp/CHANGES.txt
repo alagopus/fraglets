@@ -1,0 +1,89 @@
+Changes for version 1.25:
+    - Fix NPE in UpdateWizard.initRosterTable
+
+Changes for version 1.24:
+    - Updated recognized to handle AFK and <LINKDEAD>
+    - Fixed file headers on UpdateWizard and UpdateApplet
+    - Separated about text generation to utility class
+    - Added about button and text to UpdateWizard
+    - Added editing functions to UpdateWizard
+    - Added synthetic property EX for the previous guild
+    - Instanciate known character classes
+    - Fix broken example link
+    - Fix EqXMLParser overriding guild timestamp with avatar timestamp
+    - Minor layout enhancements for UpdateWizard
+
+Changes for version 1.23:
+    - Completed level 65 class titles
+    - Added access methods to ui files
+    - Changed search for installation to be more flexible
+    - Created a wizard for easy updates
+    - Created an applet to run the wizard
+
+Changes for version 1.22:
+    - Fixed link color in NEoP style.
+    - Big refactoring effort, including repackaging
+    - Added recognizer rules for /guildstatus output
+    - Fix line.substring(int)
+    - Fix raid joins recognized as guild
+    - Fix culture occasionally reset to Unknown
+    - Added some level 65 class titles
+
+Changes for version 1.21:
+    - Fix 610864 ArrayIndexOutOfBounds on huge line
+
+Changes for version 1.20:
+    - Added filter inversion.
+    - Cleanup XSTL processor on error.
+    - Simplify NEoP style.
+
+Changes for version 1.19:
+    - Add ordering by guild and zone.
+    - Make all order expressions complete (deferring to character name).
+    - Fixes 435751 new entry fails to find right entry.
+    - Don't reset file filters on each chooser invocation.
+    - Decouple html and csv and xml file choosers.
+    - Updated NEoP roster style.
+
+Changes for version 1.18:
+    - Fixed log file format error due to new item link feature.
+    - Completely revamped parser core for extra speed.
+    - Reload style when initialized from file, for style development.
+
+Changes for version 1.17:
+    - Fixed predefined guilds not appearing in cell editor.
+
+Changes for version 1.16:
+    - Made an applet version. Has to be signed though.
+    - Update timestamp when editing roster.
+    - Added new style for NEoP
+
+Changes for version 1.15:
+    - Added drag-and-drop for the table selection.
+
+Changes for version 1.14:
+    - Added export HTML to clipboard option.
+
+Changes for version 1.13:
+    - Fixed a severe bug where property entries would override
+      the avatar timestamp.
+    - Load/import files on the command line on startup.
+    - Started a user manual.
+
+Changes for version 1.12 and 1.11:
+    - Added gzipped XML save file format.
+    - Added loading and saving the current roster.
+    - Track changes and ask for confirm on quit.
+    - Tightened guild tracking.
+    - More filter settings.
+    - Add guild normalizeName.
+    - Fix class canonicalName for names including spaces.
+    - Allow adding new properties.
+    - Added property editor.
+    - Added extra avatar properties.
+    - Added skill advance parsing.
+    - Normalize avatar names.
+
+Changes for version 1.10:
+    - Make EqlogParser ignore empty lines. These seem to occur recently.
+

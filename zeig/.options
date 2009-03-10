@@ -1,0 +1,3 @@
+net.sourceforge.fraglets.zeig.core/debug = true
+net.sourceforge.fraglets.zeig.core/warn = true
+net.sourceforge.fraglets.zeig.core/info = false

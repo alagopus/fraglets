@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Form version="1.1">
+  <NonVisualComponents>
+    <Component class="net.sourceforge.fraglets.yaelp.action.AboutAction" name="aboutAction">
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_CreateCodePost" type="java.lang.String" value="Defaults.configure(aboutAction);"/>
+      </AuxValues>
+    </Component>
+    <Menu class="javax.swing.JMenu" name="fileMenu">
+      <Properties>
+        <Property name="name" type="java.lang.String" value="fileMenu"/>
+      </Properties>
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="Defaults.configure(fileMenu);"/>
+      </AuxValues>
+    </Menu>
+    <Menu class="javax.swing.JMenu" name="helpMenu">
+      <Properties>
+        <Property name="name" type="java.lang.String" value="helpMenu"/>
+      </Properties>
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="Defaults.configure(helpMenu);"/>
+      </AuxValues>
+      <SubComponents>
+        <MenuItem class="javax.swing.JMenuItem" name="aboutItem">
+          <Properties>
+            <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+              <Connection component="aboutAction" type="bean"/>
+            </Property>
+          </Properties>
+        </MenuItem>
+      </SubComponents>
+    </Menu>
+  </NonVisualComponents>
+  <Properties>
+    <Property name="name" type="java.lang.String" value="menuBar"/>
+  </Properties>
+
+  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBoxLayout"/>
+</Form>

@@ -1,0 +1,21 @@
+2004-07-30
+* Fix [ 1000649 ] CVSHistory: spurious URL-Encoding on log query
+* Updated the README
+
+2004-06-11
+* Add branch level and log message support
+* Add documentation in cca.html
+
+2004-05-06
+* Add an ANT publisher
+* Remove unused local in CVSHistory
+
+2004-03-19
+* Fix build.xml to include .properties in jar
+
+2004-03-01
+* Allow to fetch the history from a URL
+* Internationalize messages
+* Add ANT bootstrapper
+* Allow multiple modules
+* Allow module selection

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin
+   id="net.sourceforge.fraglets.zeig.core"
+   name="Zeig Core"
+   version="0.0.1"
+   provider-name="fraglets.sourceforge.net"
+   class="net.sourceforge.fraglets.zeig.eclipse.CorePlugin">
+
+   <runtime>
+      <library name="zeig-core.jar">
+         <export name="*"/>
+         <packages prefixes="net.sourceforge.fraglets.zeig,"/>
+      </library>
+      <library name="lib/otphash.jar">
+         <packages prefixes="net.sourceforge.fraglets.codec"/>
+      </library>
+   </runtime>
+   <requires>
+      <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="org.eclipse.core.resources"/>
+      <import plugin="org.eclipse.ui"/>
+   </requires>
+
+
+   <extension
+         point="org.eclipse.core.runtime.urlHandlers">
+      <handler
+            class="net.sourceforge.fraglets.zeig.zeigURLStreamHandler"
+            protocol="zeig">
+      </handler>
+   </extension>
+
+</plugin>

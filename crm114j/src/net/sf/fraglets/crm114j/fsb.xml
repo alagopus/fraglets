@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dialog gap="0" width="400" height="350"
+  modal="true" resizable="true" closable="true" maximizable="true"
+  text="i18n.fsb.Title"
+  init="init(this)" columns="1" weightx="1" weighty="1">
+  <splitpane weightx="1" weighty="1" divider="200">
+    <tree name="tree" width="300" 
+      weightx="1" weighty="1" action="syncScroll(this,table)"
+      perform="choose(item)" expand="expand(item)" collapse="collapse(item)"
+      angle="true" line="false">
+      <node name="root" text="i18n.fsb.Root" enabled="false"/>
+    </tree>
+    <table name="table" weighty="1" width="100"
+      line="false" enabled="false" action="syncScroll(this,tree)">
+      <header>
+        <column text="i18n.fsb.Date" width="120"/>
+        <column text="i18n.fsb.Size" width="80"/>
+      </header>
+    </table>
+  </splitpane>
+  <panel weightx="1">
+    <label weightx="1"/>
+    <button text="i18n.fsb.Open" alignment="right" action="chooseCurrent()"/>
+    <button text="i18n.fsb.Cancel" alignment="right" action="close()"/>
+  </panel>
+</dialog>

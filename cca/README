@@ -1,0 +1,71 @@
+Introduction
+============
+
+CruiseControl add-ons (plugins) enabling use of the CVS history file for
+modification detection, and using an ANT script for bootstrapping.
+Using this is much faster and the history file can be pulled via HTTP,
+enabling builds from viewcvs tarballs.
+
+This software is Copyright(C) 2004 Klaus Rennecke, see LICENSE for details.
+
+The CruiseControl home page is at http://cruisecontrol.sourceforge.net
+
+See cca.html for detailed documentation.
+
+CVSHistory
+==========
+
+To use CVSHistory, add the following line to your <project .../>:
+
+	<plugin name="cvshistory" classname="net.sf.fraglets.cca.CVSHistory"/>
+	
+And use the plugin in the <modificationset .../>:
+
+	<cvshistory historyfilename="checkout/cvshistory/history"/>
+
+You can pull the history from CVS in a separate project and make your
+project dependent on it using the buildstatus modification set.
+
+Alternatively, the history file can be mapped into URL space using
+a web server and be fetched by CVSHistory automatically.
+
+Modifications can be limited to modules using either a module="..."
+attribute, or using nested module elements:
+
+	<cvshistory historyurl="..." viewcvsurl="...">
+		<module name="main"/>
+		<module name="lib/aux" branch="rc1_0"/>
+	</cvshistory>
+
+Several projects can be driven from a single history file, by using
+different module selectors.
+
+Note that in order to get the modification accurate with regard to
+branching, you will need to integrate the viewcvs support. See the
+cca.html documentation for details.
+
+
+ANTBootstrapper
+===============
+
+To use the ANTBootstrapper, add the following line to your <project .../>:
+
+	<plugin name="antbootstrapper" classname="net.sf.fraglets.cca.ANTBootstrapper"/>
+
+And use it just like the ANT builder. In fact, it is just the ANT builder,
+with the bootstrap() method calling the build. So you can set properties
+and build files with the standard builder.
+
+
+ANTPublisher
+============
+
+To use the ANTPublisher, add the following line to your <project .../>:
+
+	<plugin name="antpublisher" classname="net.sf.fraglets.cca.ANTPublisher"/>
+
+And use it just like the ANT builder. In fact, it is just the ANT builder,
+with the publish() method calling the build. So you can set properties
+and build files as with the standard builder. Properties which were set
+for the build process are copied to the publisher.
+

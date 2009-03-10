@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dialog name="dialog" icon="/icons/information.gif"
+	  text="License" modal="true" width="280"
+		columns="1" gap="4" top="4" left="4" bottom="4" right="4">
+ 	<textarea name="licenseText" editable="false" wrap="true" columns="72" rows="12" weightx="1" weighty="1"/>
+  <separator />
+ 	<button text=" OK " halign="right" action="remove(dialog)"/>
+</dialog>

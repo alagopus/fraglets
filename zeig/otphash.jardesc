@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jardesc>
+    <jar path="C:/usr/workspace/net.sourceforge.fraglets.zeig.core/lib/otphash.jar"/>
+    <options overwrite="true" compress="true" exportErrors="true"
+        exportWarnings="true" saveDescription="true"
+        descriptionLocation="/net.sourceforge.fraglets.zeig.core/otphash.jardesc"
+        useSourceFolders="false" buildIfNeeded="true"/>
+    <manifest manifestVersion="1.0" usesManifest="true"
+        reuseManifest="false" saveManifest="false"
+        generateManifest="true" manifestLocation="">
+        <sealing sealJar="true">
+            <packagesToSeal/>
+            <packagesToUnSeal/>
+        </sealing>
+    </manifest>
+    <selectedElements exportClassFiles="true" exportJavaFiles="false">
+        <javaElement handleIdentifier="=fraglets-codec/&lt;net.sourceforge.fraglets.codec{OTPHash.java"/>
+    </selectedElements>
+</jardesc>
